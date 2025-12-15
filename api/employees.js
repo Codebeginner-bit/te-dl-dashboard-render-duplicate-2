@@ -1,10 +1,7 @@
-// /api/employees.js
+
 
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize the Supabase client.
-// These environment variables will be set in your Vercel project settings.
-// IMPORTANT: Use the SERVICE_ROLE_KEY for server-side operations to bypass Row Level Security.
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
