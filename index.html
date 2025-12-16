@@ -132,7 +132,7 @@
             let allEmployees = []; 
             let isAddingNew = false, editingRow = null; 
 
-            const pioneerData=[{name:"Echo, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"},{name:"Brian Alban, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"},{name:"Kim Ramos, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"}];
+            const pioneerData=[{name:"Jericho Sulapas, TE Spartan",quote:'"The past cannot be changed. The future is yet in your power."',logo:"https://github.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/blob/main/pictures/picture.jpg"},{name:"Brian Alban, TE Spartan",quote:"Change your life today. Don't gamble on the future, act now, without delay",logo:"https://github.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/blob/main/pictures/picture.jpg"},{name:"Kim Ryan Ramos, TE Spartan",quote:"There is only one corner of the universe you can be certain of improving, and that's your own self.",logo:"https://github.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/blob/main/pictures/picture.jpg"}];
             const siteLinkData=[{siteName:"N2",description:"Find all relevant links for the N2 site here.",links:[{text:"FusionEye",href:"http://10.38.248.180/"},{text:"MIC",href:"https://f60h.cim.wistron.com/"}]},{siteName:"A1",description:"Find all relevant links for the A1 site here.",links:[{text:"FusionEye",href:"http://10.28.158.180/"},{text:"MIC",href:"https://f605.cim.wistron.com/"}]},{siteName:"A3",description:"Find all relevant links for the A3 site here.",links:[{text:"FusionEye",href:"http://10.28.156.180/"},{text:"MIC",href:"https://f606.cim.wistron.com/"}]}];
             
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="TE Logo"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
@@ -329,7 +329,7 @@
 
                 currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
                 
-                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry for ${monthName} ${year}`;
+                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry Table`;
                 
                 let existingDataMap = new Map();
                 try {
@@ -408,3 +408,4 @@
     </script>
 </body>
 </html>
+
