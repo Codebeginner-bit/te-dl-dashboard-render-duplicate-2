@@ -33,22 +33,11 @@
         @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(calc(-100% - var(--gap))); } }
         .testimonials-container { padding:4rem 1rem; text-align:center; background-color:rgb(var(--muted)); } .testimonials-header h2 { font-size:2.25rem; font-weight:500; margin-bottom:1rem; } .testimonials-header p { color:rgb(var(--muted-foreground)); max-width:600px; margin:0 auto 2.5rem auto; } .testimonials-grid { display:flex; justify-content:center; align-items:flex-start; gap:1.25rem; flex-wrap:wrap; }
         .link-list a:hover { background-color:#e2e8f0; transform:translateY(-1px); }
-
-        /* 5. Marquee and Pioneer Card Styles */
-        .testimonial-card {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border));
-            background-color: rgba(var(--muted), 0.4);
-            padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0;
-        }
+        .testimonial-card { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border)); background-color: rgba(var(--muted), 0.4); padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0; }
         .testimonial-card img { width: 150px; height: auto; margin-bottom: 0.5rem; }
         .testimonial-card h3 { font-size: 1.125rem; font-weight: 600; color: rgb(var(--foreground)); margin: 0; }
         .testimonial-card p { font-size: 1rem; color: rgb(var(--muted-foreground)); font-style: italic; margin: 0; }
-        .marquee-container {
-            position: relative; width: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; overflow: hidden;
-            margin-top: 4rem; margin-bottom: 4rem;
-        }
+        .marquee-container { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; margin-top: 4rem; margin-bottom: 4rem; }
         .marquee-track-wrapper { display: flex; overflow: hidden; padding: 0.5rem 0; }
         .marquee-track { display: flex; flex-shrink: 0; gap: var(--gap); animation: marquee var(--duration) linear infinite; }
         .marquee-track-wrapper:hover .marquee-track { animation-play-state: paused; }
@@ -56,32 +45,17 @@
         .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
-
-        /* 6. Site Link Card Styles */
         .testimonials-container { padding: 4rem 1rem; text-align: center; background-color: rgb(var(--muted)); }
         .testimonials-header h2 { font-size: 2.25rem; font-weight: 500; margin-bottom: 1rem; }
         .testimonials-header p { color: rgb(var(--muted-foreground)); max-width: 600px; margin: 0 auto 2.5rem auto; }
         .testimonials-grid { display: flex; justify-content: center; align-items: flex-start; gap: 1.25rem; flex-wrap: wrap; }
-        .site-link-card {
-            width: 340px; background-color: white; border: 1px solid rgb(var(--border));
-            border-radius: 0.75rem; padding: 1.5rem; text-align: left;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        }
+        .site-link-card { width: 340px; background-color: white; border: 1px solid rgb(var(--border)); border-radius: 0.75rem; padding: 1.5rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
         .site-link-card .card-site-name { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
         .site-link-card .card-description { color: rgb(var(--muted-foreground)); margin-bottom: 1.5rem; min-height: 40px; }
         .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-        .link-list a {
-            display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted));
-            border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-        }
+        .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
         .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
-
-        /* 7. LEAVE PLAN PAGE STYLING */
-        #leave-plan-section {
-            padding: 5rem 2rem; text-align: center; min-height: 50vh; color: rgb(var(--muted-foreground));
-        }
-        /* --- OVERTIME ENTRY STYLES --- */
+        #leave-plan-section { padding: 5rem 2rem; text-align: center; min-height: 50vh; color: rgb(var(--muted-foreground)); }
         #ot-entry-controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap; }
         .ot-entry-table-container { width: 100%; overflow-x: auto; }
         #ot-entry-table { border-collapse: collapse; width: 100%; font-size: 12px; }
@@ -96,8 +70,6 @@
         .ot-input.ot-hours-entry:not([readonly]) { background-color: #d4edda; }
         .ot-input.leave-entry:not([readonly]) { background-color: #cce5ff; }
         .ot-total-preview { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-left: 8px; }
-
-        /* --- NAVIGATION BAR STYLES --- */
         .navbar-container { position:fixed; top:50%; right:1.5rem; transform:translateY(-50%); z-index:50; }
         .navbar { position:relative; display:flex; flex-direction:column; align-items:center; gap:0.75rem; background-color:rgba(255,255,255,0.75); border:1px solid rgb(var(--border)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:0.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
         .nav-item { position:relative; cursor:pointer; font-weight:600; padding:0.75rem; border-radius:9999px; color:rgba(0,0,0,0.8); text-decoration:none; transition:color 0.3s ease; z-index:10; display:flex; align-items:center; justify-content:center; }
@@ -156,7 +128,6 @@
             const API_BASE = "/api"; 
             let allEmployees = []; 
             let isAddingNew = false, editingRow = null; 
-            let isOtTableEditable = false;
 
             const pioneerData=[{name:"Echo, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"},{name:"Brian Alban, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"},{name:"Kim Ramos, TE Spartan",quote:'"Wistron.1"',logo:"https://te.com/content/dam/te-com/images/logos/te-logo-black.png"}];
             const siteLinkData=[{siteName:"N2",description:"Find all relevant links for the N2 site here.",links:[{text:"FusionEye",href:"http://10.38.248.180/"},{text:"MIC",href:"https://f60h.cim.wistron.com/"}]},{siteName:"A1",description:"Find all relevant links for the A1 site here.",links:[{text:"FusionEye",href:"http://10.28.158.180/"},{text:"MIC",href:"https://f605.cim.wistron.com/"}]},{siteName:"A3",description:"Find all relevant links for the A3 site here.",links:[{text:"FusionEye",href:"http://10.28.156.180/"},{text:"MIC",href:"https://f606.cim.wistron.com/"}]}];
@@ -164,7 +135,6 @@
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="TE Logo"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
             function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site.",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
             
-            // This function fetches from /api/employees
             window.fetchTableData = async function() {
                 try {
                     const response = await fetch(`${API_BASE}/employees`);
@@ -187,7 +157,6 @@
 
             window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalPlanActual").value=n[8].textContent||"",document.getElementById("modalOtTotal").value=parseFloat(n[9].textContent)||0}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
             
-            // This function POSTs or PUTs to /api/employees
             window.saveRow = async function() {
                 const employeeData = {
                     site: document.getElementById("modalSite").value,
@@ -204,21 +173,11 @@
                 try {
                     let response;
                     if (isAddingNew) {
-                        response = await fetch(`${API_BASE}/employees`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(employeeData)
-                        });
+                        response = await fetch(`${API_BASE}/employees`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });
                     } else if (editingRow) {
                         const employeeId = editingRow.getAttribute("data-id");
                         if (!employeeId) return alert("Error: Could not find employee ID to update.");
-                        
-                        // Pass ID as a query parameter for the serverless function
-                        response = await fetch(`${API_BASE}/employees?id=${employeeId}`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(employeeData)
-                        });
+                        response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });
                     }
 
                     if (response && response.ok) {
@@ -235,15 +194,12 @@
                 }
             };
             
-            // This function sends a DELETE request to /api/employees
             window.deleteRow = async function(button) {
                 const row = button.closest("tr");
                 const employeeId = row.getAttribute("data-id");
                 if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) {
                     try {
-                        const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, {
-                            method: "DELETE"
-                        });
+                        const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" });
                         if (response.ok) {
                             row.remove();
                             alert("Employee deleted successfully.");
@@ -263,176 +219,163 @@
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
             
             // --- Overtime Entry Logic ---
-           // --- Overtime Entry Logic ---
-let currentOtMonthYear = ''; 
-let isOtTableEditable = false; 
+            let currentOtMonthYear = ''; 
+            let isOtTableEditable = false; 
 
-window.AddOvertime = function() {
-    generateOvertimeTable(); 
-};
+            window.AddOvertime = function() {
+                generateOvertimeTable(); 
+            };
 
-window.toggleOtTableEdit = function(button) { 
-    isOtTableEditable = !isOtTableEditable; 
-    const inputs = document.querySelectorAll('#ot-entry-table .ot-input'); 
-    inputs.forEach(input => input.readOnly = !isOtTableEditable); 
-    button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
-    button.classList.toggle('del-btn', isOtTableEditable); 
-};
+            window.toggleOtTableEdit = function(button) { 
+                isOtTableEditable = !isOtTableEditable; 
+                const inputs = document.querySelectorAll('#ot-entry-table .ot-input'); 
+                inputs.forEach(input => input.readOnly = !isOtTableEditable); 
+                button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
+                button.classList.toggle('del-btn', isOtTableEditable); 
+            };
 
-window.submitOvertime = async function() {
-    if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
-    
-    const payload = [];
-    const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
+            window.submitOvertime = async function() {
+                if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
+                
+                const payload = [];
+                const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
 
-    // 1. Gather data from the table for each employee
-    employeeRows.forEach(row => {
-        const employeeId = row.dataset.otRowId;
-        if (!employeeId) return;
+                employeeRows.forEach(row => {
+                    const employeeId = row.dataset.otRowId;
+                    if (!employeeId) return;
 
-        const daily_data = {};
-        const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
-        inputs.forEach(input => {
-            if (input.value.trim() !== '') {
-                daily_data[input.dataset.day] = input.value.trim();
-            }
-        });
+                    const daily_data = {};
+                    const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
+                    inputs.forEach(input => {
+                        if (input.value.trim() !== '') {
+                            daily_data[input.dataset.day] = input.value.trim();
+                        }
+                    });
 
-        const total_ot = calculateOtForEmployee(employeeId);
-        
-        // Always include employee, even if OT is zero, to clear their record if needed
-        payload.push({
-            employee_id: employeeId,
-            month_year: currentOtMonthYear,
-            daily_data: daily_data,
-            total_ot: total_ot
-        });
-    });
+                    const total_ot = calculateOtForEmployee(employeeId);
+                    
+                    payload.push({
+                        employee_id: employeeId,
+                        month_year: currentOtMonthYear,
+                        daily_data: daily_data,
+                        total_ot: total_ot
+                    });
+                });
 
-    if (payload.length === 0) {
-        alert("No employees found to submit overtime for.");
-        return;
-    }
-
-    // 2. Send the data to the backend API
-    try {
-        const response = await fetch(`${API_BASE}/overtime`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error || 'Server error during submission.');
-        }
-
-        alert("Overtime has been submitted successfully!");
-        
-        // 3. Refresh the main dashboard to reflect the new totals from the database
-        await fetchTableData();
-        
-        // Lock the table and switch back to the main page
-        if (isOtTableEditable) {
-            const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-            toggleOtTableEdit(editButton);
-        }
-        switchToPage('#home-section');
-        const homeNavItem = document.querySelector('a[href="#home-section"]');
-        moveLamp(homeNavItem);
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        homeNavItem.classList.add('active');
-
-
-    } catch (error) {
-        console.error("Failed to submit overtime:", error);
-        alert(`Submission failed: ${error.message}`);
-    }
-};
-
-async function generateOvertimeTable() {
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const monthName = now.toLocaleString("default", { month: "long" });
-
-    // Store the month/year string for submission
-    currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
-    
-    document.getElementById("ot-entry-month-title").textContent = `Overtime Entry for ${monthName} ${year}`;
-    
-    // --- Fetch existing data for this month ---
-    let existingDataMap = new Map();
-    try {
-        const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
-        if (res.ok) {
-            const existingRecords = await res.json();
-            existingRecords.forEach(rec => {
-                existingDataMap.set(rec.employee_id, rec.daily_data);
-            });
-        }
-    } catch (e) {
-        console.error("Could not fetch existing OT data:", e);
-    }
-
-    // --- Table generation logic---
-    let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
-    const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const dayOfWeek = date.getDay();
-        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const weekendClass = isWeekend ? ' class="weekend-header"' : "";
-        headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
-        dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
-    }
-    headerHtml += "</tr>", dayRow += "</tr>";
-    
-    const groupedEmployees = allEmployees.reduce((acc, emp) => { const shift = emp.shift || "Unassigned"; acc[shift] || (acc[shift] = []); acc[shift].push(emp); return acc; }, {});
-    let bodyHtml = "<tbody>";
-    ["Dayshift", "Nightshift", "Unassigned"].forEach(shift => {
-        if (groupedEmployees[shift]) {
-            bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
-            groupedEmployees[shift].forEach(emp => {
-                // Get this employee's saved data from the map
-                const employeeOtData = existingDataMap.get(emp.id_number) || {};
-                bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayValue = employeeOtData[day] || ''; // Get pre-filled value for the input
-                    bodyHtml += `<td><input type="text" class="ot-input" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" readonly></td>`;
+                if (payload.length === 0) {
+                    alert("No employees found to submit overtime for.");
+                    return;
                 }
-                bodyHtml += "</tr>";
-            });
-        }
-    });
-    bodyHtml += "</tbody>";
-    document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
 
-    // --- Post-generation tasks ---
-    document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
-    
-    // Style and calculate totals for any pre-filled data
-    document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
-        if (input.value) {
-            styleInputCell(input);
-            updateOtPreview(input.dataset.employeeId);
-        }
-    });
+                try {
+                    const response = await fetch(`${API_BASE}/overtime`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-    isOtTableEditable = false;
-    const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-    editButton.textContent = 'Edit';
-    editButton.classList.remove('del-btn');
-}
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error || 'Server error during submission.');
+                    }
 
-// --- HELPER FUNCTIONS---
-function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
-function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
-function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
-function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = `(Total: ${total.toFixed(1)})`; } } }
+                    alert("Overtime has been submitted successfully!");
+                    
+                    await fetchTableData();
+                    
+                    if (isOtTableEditable) {
+                        const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                        toggleOtTableEdit(editButton);
+                    }
 
-            
+                   // Reset navigation back to the home page
+                    switchToPage('#home-section');
+                    const homeNavItem = document.querySelector('a[href="#home-section"]');
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    homeNavItem.classList.add('active');
+                    moveLamp(homeNavItem);
+
+                } catch (error) {
+                    console.error("Failed to submit overtime:", error);
+                    alert(`Submission failed: ${error.message}`);
+                }
+            };
+
+            async function generateOvertimeTable() {
+                const now = new Date();
+                const month = now.getMonth();
+                const year = now.getFullYear();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const monthName = now.toLocaleString("default", { month: "long" });
+
+                currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
+                
+                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry for ${monthName} ${year}`;
+                
+                let existingDataMap = new Map();
+                try {
+                    const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
+                    if (res.ok) {
+                        const existingRecords = await res.json();
+                        existingRecords.forEach(rec => {
+                            existingDataMap.set(rec.employee_id, rec.daily_data);
+                        });
+                    }
+                } catch (e) {
+                    console.error("Could not fetch existing OT data:", e);
+                }
+
+                let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
+                const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    const weekendClass = isWeekend ? ' class="weekend-header"' : "";
+                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
+                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+                }
+                headerHtml += "</tr>", dayRow += "</tr>";
+                
+                const groupedEmployees = allEmployees.reduce((acc, emp) => { const shift = emp.shift || "Unassigned"; acc[shift] || (acc[shift] = []); acc[shift].push(emp); return acc; }, {});
+                let bodyHtml = "<tbody>";
+                ["Dayshift", "Nightshift", "Unassigned"].forEach(shift => {
+                    if (groupedEmployees[shift]) {
+                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
+                        groupedEmployees[shift].forEach(emp => {
+                            const employeeOtData = existingDataMap.get(emp.id_number) || {};
+                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                            for (let day = 1; day <= daysInMonth; day++) {
+                                const dayValue = employeeOtData[day] || '';
+                                bodyHtml += `<td><input type="text" class="ot-input" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" readonly></td>`;
+                            }
+                            bodyHtml += "</tr>";
+                        });
+                    }
+                });
+                bodyHtml += "</tbody>";
+                document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
+
+                document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
+                
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
+                    if (input.value) {
+                        styleInputCell(input);
+                        updateOtPreview(input.dataset.employeeId);
+                    }
+                });
+
+                isOtTableEditable = false;
+                const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                editButton.textContent = 'Edit';
+                editButton.classList.remove('del-btn');
+            }
+
+            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
+            function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
+            function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
+            function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = `(Total: ${total.toFixed(1)})`; } } }
+
             // --- SECTION 2: NAVIGATION BAR LOGIC ---
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
             function moveLamp(e){if(e){const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}}
@@ -449,5 +392,3 @@ function updateOtPreview(employeeId) { const total = calculateOtForEmployee(empl
     </script>
 </body>
 </html>
-
-
