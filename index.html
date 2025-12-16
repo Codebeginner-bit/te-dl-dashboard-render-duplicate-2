@@ -154,12 +154,15 @@
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="TE Logo"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
             function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this link is only available for wistron devices, do not open the link using the personal device (e.q cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
             
+            // shows the current month's overtime on the dashboard.
             window.fetchTableData = async function() {
                 try {
                     // Fetch the base list of all employees
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     if (!empResponse.ok) throw new Error(`Server responded with ${empResponse.status} on employee fetch`);
                     allEmployees = await empResponse.json();
+
+                    // Determine the current month and year string (e.g., "2024-07")
                     const now = new Date();
                     const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
                     
@@ -178,6 +181,8 @@
                     } catch (otError) {
                         console.error("Error fetching current month's overtime data:", otError);
                     }
+
+                    // Render the table, using the current month's OT data
                     const tableBody = document.querySelector("#overtimeTable tbody");
                     tableBody.innerHTML = ""; // Clear existing rows
                     
@@ -185,6 +190,7 @@
                         const row = document.createElement("tr");
                         row.setAttribute("data-id", emp.id_number);
                         const currentMonthOtTotal = otMap.get(emp.id_number) || 0;
+
                         row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
                                         `<td>${emp.site}</td>` +
                                         `<td>${emp.department}</td>` +
@@ -216,7 +222,7 @@
                     english_name: document.getElementById("modalEngName").value,
                     shift: document.getElementById("modalShift").value,
                     plan_actual: document.getElementById("modalPlanActual").value || null,
-                    ot_total: parseFloat(document.getElementById("modalOtTotal").value) || 0
+                    ot_total: parseFloat(document.getElementById("modalOtTotal").value) || 0 
                 };
                 
                 try {
@@ -454,7 +460,3 @@
     </script>
 </body>
 </html>
-
-
-
-
