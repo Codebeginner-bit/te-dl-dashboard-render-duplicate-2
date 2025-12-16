@@ -32,7 +32,7 @@
         .modal-content .hidden-field { display: none; }
         .marquee-container { position:relative; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-top:4rem; margin-bottom:4rem; }
         .testimonial-card { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border)); background-color: rgba(var(--muted), 0.4); padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0; }
-        .testimonial-card img { width: 150px; height: auto; margin-bottom: 0.5rem; }
+        .testimonial-card img { width: 70px; height: auto; margin-bottom: 0.5rem; }
         .testimonial-card h3 { font-size: 1.125rem; font-weight: 600; color: rgb(var(--foreground)); margin: 0; }
         .testimonial-card p { font-size: 1rem; color: rgb(var(--muted-foreground)); font-style: italic; margin: 0; }
         .marquee-track-wrapper { display: flex; overflow: hidden; padding: 0.5rem 0; }
@@ -76,8 +76,6 @@
         .lamp-light { position:absolute; left:-0.4rem; top:50%; transform:translateY(-50%); width:0.25rem; height:1.5rem; background-color:var(--primary); border-radius:9999px 0 0 9999px; }
         .lamp-light::before, .lamp-light::after { content:''; position:absolute; border-radius:9999px; background-color:rgba(0,123,255,0.2); filter:blur(10px); }
         .lamp-light::before { width:1.5rem; height:3rem; top:-0.75rem; left:-0.5rem; } .lamp-light::after { width:1.5rem; height:2.25rem; top:-0.375rem; left:-0.25rem; }
-        
-        /* --- NEW STYLES FOR LEAVE PLAN --- */
         #leave-plan-section { padding: 2rem 1rem; }
         .leave-plan-header { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto 2rem auto; }
         .leave-plan-header h2 { margin: 0; }
@@ -117,8 +115,8 @@
         </div>
         <div class="ot-entry-table-container" id="ot-entry-table-wrapper"></div>
     </div>
-
-    <!-- NEW LEAVE PLAN SECTION -->
+    
+    <!--LEAVE PLAN SECTION -->
     <div id="leave-plan-section" class="page-section">
         <div class="leave-plan-header">
             <h2>Leave Plan</h2>
@@ -132,8 +130,8 @@
     <div id="links-section" class="page-section">
         <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
     </div>
-
-    <!-- Employee Add/Edit Modal -->
+    
+    <!-- Employee Modal -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Add Employee</h2>
@@ -143,9 +141,13 @@
             <input type="text" id="modalChineseName" placeholder="Enter Chinese Name">
             <input type="text" id="modalDorm" placeholder="Enter Dormitory">
             <input type="text" id="modalEngName" placeholder="Enter English Name" required>
-            <select id="modalShift"><option value="Dayshift">Dayshift</option><option value="Nightshift">Nightshift</option></select>
+            <select id="modalShift">
+                <option value="Dayshift">Dayshift</option>
+                <option value="Nightshift">Nightshift</option>
+            </select>
             <input type="text" id="modalPlanActual" placeholder="Plan/Actual">
-            <button class="save-btn" onclick="saveRow()">Save</button><button class="cancel-btn" onclick="closeModal()">Cancel</button>
+            <button class="save-btn" onclick="saveRow()">Save</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
         </div>
     </div>
 
@@ -183,27 +185,30 @@
             const API_BASE = "/api"; 
             let allEmployees = []; 
             let isAddingNew = false, editingRow = null; 
-            
-            // --- State for Leave Plan ---
+
+            // --- variables for Leave Plan ---
             let allLeaves = [];
             let isAddingNewLeave = false, editingLeaveId = null;
 
-            const pioneerData = [];
-            const siteLinkData = [];
+            const pioneerData = [
+                { name: "Jericho Sulapas, TE Spartan", quote: '"The past cannot be changed. The future is yet in your power."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
+                { name: "Brian Alban, TE Spartan", quote: "Change your life today. Don't gamble on the future, act now, without delay.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
+                { name: "Kim Ryan Ramos, TE Spartan", quote: "There is only one corner of the universe you can be certain of improving, and that's your own self.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
+                { name: "Joshua Almerol, TE DL", quote: '"Lost wealth is nothing, lost health is something, lost character is everything."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" }
+            ];
+            const siteLinkData=[{siteName:"N2",description:"Find all relevant links for the N2 site here.",links:[{text:"FusionEye",href:"http://10.38.248.180/"},{text:"MIC",href:"https://f60h.cim.wistron.com/"}]},{siteName:"A1",description:"Find all relevant links for the A1 site here.",links:[{text:"FusionEye",href:"http://10.28.158.180/"},{text:"MIC",href:"https://f605.cim.wistron.com/"}]},{siteName:"A3",description:"Find all relevant links for the A3 site here.",links:[{text:"FusionEye",href:"http://10.28.156.180/"},{text:"MIC",href:"https://f606.cim.wistron.com/"}]}];
             
-            function renderMarqueeSection(){}
-            function renderSiteLinks(){}
+            function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="Member picture"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
+            function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
             
-            // Fetches and renders the main dashboard table
+            // --- Dashboard and Employee Logic---
             window.fetchTableData = async function() {
-                try {
+                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     if (!empResponse.ok) throw new Error(`Failed to fetch employees: ${empResponse.status}`);
                     allEmployees = await empResponse.json();
-
                     const now = new Date();
                     const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-                    
                     const otMap = new Map();
                     try {
                         const otResponse = await fetch(`${API_BASE}/overtime?month_year=${currentMonthYear}`);
@@ -214,16 +219,13 @@
                             });
                         }
                     } catch (otError) { console.error("Error fetching current month's overtime data:", otError); }
-                    
                     const tableBody = document.querySelector("#overtimeTable tbody");
                     tableBody.innerHTML = "";
-                    
                     allEmployees.forEach(emp => {
                         const row = document.createElement("tr");
                         const employeeId = emp.id_number;
                         row.setAttribute("data-id", employeeId);
                         const currentMonthOtTotal = otMap.get(employeeId) || 0;
-
                         row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
                                         `<td>${emp.site || ""}</td><td>${emp.department || ""}</td><td>${employeeId || ""}</td><td>${emp.chinese_name || ""}</td><td>${emp.dormitory || ""}</td>`+
                                         `<td>${emp.english_name || ""}</td><td>${emp.shift || ""}</td><td>${emp.plan_actual || ""}</td><td class="ot-total-cell">${parseFloat(currentMonthOtTotal).toFixed(1)}</td>`;
@@ -231,115 +233,73 @@
                     });
                 } catch (error) { console.error("Failed to build dashboard table:", error); alert("Could not load dashboard data."); }
             };
-
-            // Employee modal functions
-            window.showModalForEdit=function(e=null){};
-            window.saveRow = async function() {};
-            window.deleteRow = async function(button) {};
+            window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalPlanActual").value=n[8].textContent||""}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
+            window.saveRow = async function() {
+                const employeeData = {site: document.getElementById("modalSite").value,department: document.getElementById("modalDept").value,id_number: document.getElementById("modalId").value,chinese_name: document.getElementById("modalChineseName").value || null,dormitory: document.getElementById("modalDorm").value || null,english_name: document.getElementById("modalEngName").value,shift: document.getElementById("modalShift").value,plan_actual: document.getElementById("modalPlanActual").value || null};
+                try {
+                    let response;
+                    if (isAddingNew) {response = await fetch(`${API_BASE}/employees`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });} else if (editingRow) {const employeeId = editingRow.getAttribute("data-id");if (!employeeId) return alert("Error: Could not find employee ID to update.");response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });}
+                    if (response && response.ok) {alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");closeModal();await fetchTableData();} else if (response) {const errorData = await response.json();alert(`Failed: ${errorData.error || 'Unknown server error'}`);}
+                } catch (error) {console.error("Save error:", error);alert("An unexpected error occurred during the save operation.");}
+            };
+            window.deleteRow = async function(button) {const row = button.closest("tr");const employeeId = row.getAttribute("data-id");if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) {try {const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" });if (response.ok) {row.remove();alert("Employee deleted successfully.");} else {const errorData = await response.json();alert(`Failed to delete: ${errorData.error || 'Server error'}`);}} catch (error) {console.error("Delete error:", error);alert("An error occurred during deletion.");}}};
             window.closeModal=()=>document.getElementById("modal").style.display="none";
-            window.searchTable = () => {};
-            window.resetSearch = () => {};
+            window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
+            window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
 
             // --- LEAVE PLAN LOGIC ---
-
-            // Initializer for the leave plan page
             window.initializeLeavePlan = async function() {
-                if (allEmployees.length === 0) {
-                    await fetchTableData(); 
-                }
+                if (allEmployees.length === 0) await fetchTableData(); 
                 await fetchAndRenderLeaves();
             };
-
-            // Fetches all leave data and triggers the render function
             async function fetchAndRenderLeaves() {
                 try {
                     const response = await fetch(`${API_BASE}/leaves`);
                     if (!response.ok) throw new Error("Failed to fetch leaves");
                     allLeaves = await response.json();
                     renderLeavePlanTables();
-                } catch (error) {
-                    console.error("Error fetching leaves:", error);
-                    document.getElementById('leave-plan-content').innerHTML = `<p style="color: red;">Could not load leave data.</p>`;
-                }
+                } catch (error) { console.error("Error fetching leaves:", error); document.getElementById('leave-plan-content').innerHTML = `<p style="color: red;">Could not load leave data.</p>`;}
             }
-
-            // Renders the entire leave plan page structure and data
             function renderLeavePlanTables() {
                 const contentDiv = document.getElementById('leave-plan-content');
-                contentDiv.innerHTML = ''; 
-
+                contentDiv.innerHTML = '';
                 const groupedLeaves = allLeaves.reduce((acc, leave) => {
                     const employee = allEmployees.find(e => e.id_number === leave.employee_id);
                     if (!employee) return acc;
-                    
-                    const site = employee.site;
-                    const shift = employee.shift;
-
+                    const site = employee.site; const shift = employee.shift;
                     if (!acc[site]) acc[site] = { Dayshift: [], Nightshift: [] };
-                    if (acc[site][shift]) {
-                        acc[site][shift].push({ ...leave, name: employee.english_name });
-                    }
+                    if (acc[site][shift]) acc[site][shift].push({ ...leave, name: employee.english_name });
                     return acc;
                 }, {});
-
                 const sites = ['N2', 'A1', 'A3'];
                 sites.forEach(site => {
                     const siteSection = document.createElement('div');
                     siteSection.className = 'leave-site-section';
                     siteSection.innerHTML = `<div class="site-header">${site}</div>`;
-                    
-                    const shifts = ['Dayshift', 'Nightshift'];
-                    shifts.forEach(shift => {
+                    ['Dayshift', 'Nightshift'].forEach(shift => {
                         const leavesForShift = groupedLeaves[site]?.[shift] || [];
-                        let tableRows = leavesForShift.map(leave => {
-                            const startDate = new Date(leave.start_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
-                            const endDate = new Date(leave.end_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
-                            return `
-                                <tr data-leave-id="${leave.id}">
-                                    <td>
-                                        <button class="edit-btn" onclick="showLeaveModal('${leave.id}')">Edit</button>
-                                        <button class="del-btn" onclick="deleteLeave('${leave.id}')">Delete</button>
-                                    </td>
-                                    <td>${leave.name}</td>
-                                    <td>${leave.employee_id}</td>
-                                    <td>${startDate} - ${endDate}</td>
-                                    <td>${leave.days} days</td>
-                                    <td>${leave.leave_type === 'Others' ? leave.other_reason : leave.leave_type}</td>
-                                </tr>
-                            `;
-                        }).join('');
-
-                        siteSection.innerHTML += `
-                            <div class="shift-header">${shift.toUpperCase()}</div>
-                            <table class="leave-table">
-                                <thead><tr><th>Actions</th><th>Name</th><th>ID</th><th>Date</th><th>Days</th><th>Leave Type</th></tr></thead>
-                                <tbody>${tableRows}</tbody>
-                            </table>
-                        `;
+                        let tableRows = leavesForShift.map(leave => `
+                            <tr data-leave-id="${leave.id}">
+                                <td><button class="edit-btn" onclick="showLeaveModal(${leave.id})">Edit</button> <button class="del-btn" onclick="deleteLeave(${leave.id})">Delete</button></td>
+                                <td>${leave.name}</td><td>${leave.employee_id}</td>
+                                <td>${new Date(leave.start_date).toLocaleDateString()} - ${new Date(leave.end_date).toLocaleDateString()}</td>
+                                <td>${leave.days}</td><td>${leave.leave_type === 'Others' ? leave.other_reason : leave.leave_type}</td>
+                            </tr>`).join('');
+                        siteSection.innerHTML += `<div class="shift-header">${shift.toUpperCase()}</div><table class="leave-table"><thead><tr><th>Actions</th><th>Name</th><th>ID</th><th>Date</th><th>Days</th><th>Leave Type</th></tr></thead><tbody>${tableRows}</tbody></table>`;
                     });
                     contentDiv.appendChild(siteSection);
                 });
             }
-
-            // Show the modal for adding or editing a leave
             window.showLeaveModal = function(leaveId = null) {
-                isAddingNewLeave = !leaveId;
-                editingLeaveId = leaveId;
-
+                isAddingNewLeave = !leaveId; editingLeaveId = leaveId;
                 const modal = document.getElementById('leaveModal');
                 const title = document.getElementById('leaveModalTitle');
                 const employeeSelect = document.getElementById('leaveEmployeeId');
                 const otherReasonInput = document.getElementById('leaveOtherReason');
-                
-                // Populate employee dropdown
                 employeeSelect.innerHTML = '<option value="" disabled selected>Select Employee</option>';
-                allEmployees.forEach(emp => {
-                    employeeSelect.innerHTML += `<option value="${emp.id_number}">${emp.english_name} (${emp.id_number})</option>`;
-                });
-                
+                allEmployees.forEach(emp => { employeeSelect.innerHTML += `<option value="${emp.id_number}">${emp.english_name} (${emp.id_number})</option>`; });
                 if (isAddingNewLeave) {
-                    title.textContent = "Add Leave";
-                    document.getElementById('leaveModal').querySelectorAll('input, select').forEach(el => el.value = '');
+                    title.textContent = "Add Leave"; document.getElementById('leaveModal').querySelectorAll('input, select').forEach(el => el.value = ''); otherReasonInput.style.display = 'none';
                 } else {
                     title.textContent = "Edit Leave";
                     const leave = allLeaves.find(l => l.id == leaveId);
@@ -348,166 +308,101 @@
                         document.getElementById('leaveStartDate').value = leave.start_date.split('T')[0];
                         document.getElementById('leaveEndDate').value = leave.end_date.split('T')[0];
                         document.getElementById('leaveType').value = leave.leave_type;
-                        if (leave.leave_type === 'Others') {
-                            otherReasonInput.value = leave.other_reason;
-                            otherReasonInput.style.display = 'block';
-                        } else {
-                            otherReasonInput.style.display = 'none';
-                        }
+                        otherReasonInput.style.display = leave.leave_type === 'Others' ? 'block' : 'none';
+                        otherReasonInput.value = leave.other_reason || '';
                     }
                 }
                 modal.style.display = 'flex';
             };
-            
-            // Handle conditional "Other Reason" field
-            document.getElementById('leaveType').addEventListener('change', function() {
-                document.getElementById('leaveOtherReason').style.display = (this.value === 'Others') ? 'block' : 'none';
-            });
-
+            document.getElementById('leaveType').addEventListener('change', function() { document.getElementById('leaveOtherReason').style.display = (this.value === 'Others') ? 'block' : 'none'; });
             window.closeLeaveModal = () => document.getElementById('leaveModal').style.display = 'none';
-
-            // Save new or updated leave to the database
             window.saveLeave = async function() {
-                const employee_id = document.getElementById('leaveEmployeeId').value;
-                const start_date = document.getElementById('leaveStartDate').value;
-                const end_date = document.getElementById('leaveEndDate').value;
-                let leave_type = document.getElementById('leaveType').value;
-                let other_reason = document.getElementById('leaveOtherReason').value;
-
-                if (!employee_id || !start_date || !end_date || !leave_type) {
-                    alert("Please fill all required fields.");
-                    return;
-                }
-                if (leave_type === 'Others' && !other_reason) {
-                    alert("Please specify the reason for 'Others'.");
-                    return;
-                }
-                
-                const startDateObj = new Date(start_date);
-                const endDateObj = new Date(end_date);
-                if(endDateObj < startDateObj) {
-                    alert("End date cannot be before start date.");
-                    return;
-                }
+                const employee_id = document.getElementById('leaveEmployeeId').value; const start_date = document.getElementById('leaveStartDate').value; const end_date = document.getElementById('leaveEndDate').value; let leave_type = document.getElementById('leaveType').value; let other_reason = document.getElementById('leaveOtherReason').value;
+                if (!employee_id || !start_date || !end_date || !leave_type) { alert("Please fill all required fields."); return; }
+                if (leave_type === 'Others' && !other_reason) { alert("Please specify the reason for 'Others'."); return; }
+                const startDateObj = new Date(start_date); const endDateObj = new Date(end_date);
+                if(endDateObj < startDateObj) { alert("End date cannot be before start date."); return; }
                 const days = Math.round((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
-
                 const leaveData = { employee_id, start_date, end_date, days, leave_type, other_reason: leave_type === 'Others' ? other_reason : null };
-                
                 try {
-                    let response;
-                    let url = `${API_BASE}/leaves`;
-                    let method = 'POST';
-
-                    if (!isAddingNewLeave) {
-                        url += `?id=${editingLeaveId}`;
-                        method = 'PUT';
-                    }
-
-                    response = await fetch(url, {
-                        method: method,
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(leaveData)
-                    });
-
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.error || "Server error");
-                    }
-                    
+                    let response, url = `${API_BASE}/leaves`, method = 'POST';
+                    if (!isAddingNewLeave) { url += `?id=${editingLeaveId}`; method = 'PUT'; }
+                    response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(leaveData) });
+                    if (!response.ok) { const err = await response.json(); throw new Error(err.error || "Server error"); }
                     alert(`Leave plan ${isAddingNewLeave ? 'added' : 'updated'} successfully!`);
-                    closeLeaveModal();
-                    await fetchAndRenderLeaves(); // Refresh the leave page
-                } catch (error) {
-                    console.error("Failed to save leave:", error);
-                    alert(`Error: ${error.message}`);
-                }
+                    closeLeaveModal(); await fetchAndRenderLeaves();
+                } catch (error) { console.error("Failed to save leave:", error); alert(`Error: ${error.message}`); }
             };
-            
-            // Delete a leave from the database
             window.deleteLeave = async function(leaveId) {
                 if(!confirm("Are you sure you want to delete this leave plan?")) return;
-                
                 try {
                     const response = await fetch(`${API_BASE}/leaves?id=${leaveId}`, { method: 'DELETE' });
                     if (!response.ok) throw new Error("Failed to delete leave plan.");
-                    
-                    alert("Leave plan deleted successfully.");
-                    await fetchAndRenderLeaves(); // Refresh the view
-                } catch(error) {
-                    console.error("Delete leave error:", error);
-                    alert("An error occurred during deletion.");
-                }
+                    alert("Leave plan deleted successfully."); await fetchAndRenderLeaves();
+                } catch(error) { console.error("Delete leave error:", error); alert("An error occurred during deletion."); }
             };
             
             // --- Overtime Entry Logic ---
             let currentOtMonthYear = '';
             let isOtTableEditable = false;
-
             window.AddOvertime = async function() {
-                if (allLeaves.length === 0) await fetchAndRenderLeaves();
-                if (allEmployees.length === 0) await fetchTableData();
+                await initializeLeavePlan(); // Ensure both employees and leaves are fetched
                 populateMonthYearSelectors();
                 generateOvertimeTable();
             };
-
-            window.toggleOtTableEdit = function(button) {};
-
+            window.toggleOtTableEdit = function(button) { 
+                isOtTableEditable = !isOtTableEditable;
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
+                    // Only make non-leave cells editable
+                    if (!input.classList.contains('leave-entry')) {
+                        input.readOnly = !isOtTableEditable;
+                    }
+                });
+                button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
+                button.classList.toggle('del-btn', isOtTableEditable); 
+            };
             window.submitOvertime = async function() {
                 if (!confirm("Are you sure you want to submit all OT hours?")) return;
                 const payload = [];
                 document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]').forEach(row => {
-                    const employeeId = row.dataset.otRowId;
-                    if (!employeeId) return;
+                    const employeeId = row.dataset.otRowId; if (!employeeId) return;
                     const daily_data = {};
                     row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`).forEach(input => {
                         const value = input.value.trim();
-                        // Only include non-empty values that are not leave types
-                        if (value !== '' && isNaN(parseFloat(value))) {
-                            daily_data[input.dataset.day] = value; // Store leave type as text
-                        } else if (value !== '') {
-                            daily_data[input.dataset.day] = parseFloat(value); // Store OT hours
+                        if (value !== '') {
+                            // Save both numeric OT and string-based leave types
+                            daily_data[input.dataset.day] = value;
                         }
                     });
                     const total_ot = calculateOtForEmployee(employeeId);
                     payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data, total_ot });
                 });
-                
                 try {
                     const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) throw new Error((await response.json()).error || 'Server error');
-                    
                     alert("Overtime has been submitted successfully!");
-                    await fetchTableData(); // Refresh dashboard
+                    await fetchTableData(); 
                     switchToPage('#home-section');
-                    // ... navigation lamp logic
+                    const homeNavItem = document.querySelector('a[href="#home-section"]');
+                    if(homeNavItem) { homeNavItem.classList.add('active'); moveLamp(homeNavItem); }
                 } catch (error) { console.error("Failed to submit overtime:", error); alert(`Submission failed: ${error.message}`); }
             };
-
             async function generateOvertimeTable(year, month) {
                 const now = new Date();
                 year = (year === undefined) ? now.getFullYear() : year;
                 month = (month === undefined) ? now.getMonth() : month;
                 currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
-                
-                if (allLeaves.length === 0) await fetchAndRenderLeaves();
+                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry Table`;
 
                 let existingOtDataMap = new Map();
                 try {
                     const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
-                    if (res.ok) {
-                        const records = await res.json();
-                        records.forEach(rec => { existingOtDataMap.set(rec.employee_id, rec.daily_data); });
-                    }
+                    if (res.ok) { const records = await res.json(); records.forEach(rec => { existingOtDataMap.set(rec.employee_id, rec.daily_data); }); }
                 } catch (e) { console.error("Could not fetch existing OT data:", e); }
                 
-                // Build a quick lookup for leaves
                 const leaveLookup = allLeaves.reduce((acc, leave) => {
                     if (!acc[leave.employee_id]) acc[leave.employee_id] = [];
-                    acc[leave.employee_id].push({
-                        start: new Date(leave.start_date),
-                        end: new Date(leave.end_date),
-                        type: (leave.leave_type.match(/\b(\w)/g) || []).join('').toUpperCase() || 'LEAVE'
-                    });
+                    acc[leave.employee_id].push({ start: new Date(leave.start_date + 'T00:00:00'), end: new Date(leave.end_date + 'T00:00:00'), type: (leave.leave_type.match(/\b(\w)/g) || []).join('').toUpperCase() || 'LEAVE' });
                     return acc;
                 }, {});
 
@@ -515,17 +410,14 @@
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(year, month, day);
-                    const dayOfWeek = date.getDay();
-                    const weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : "";
-                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
-                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+                    const date = new Date(year, month, day); const dayOfWeek = date.getDay(); const weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : "";
+                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`; dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
                 }
                 headerHtml += "</tr>", dayRow += "</tr>";
 
                 const groupedEmployees = allEmployees.reduce((acc, emp) => { (acc[emp.shift] = acc[emp.shift] || []).push(emp); return acc; }, {});
                 let bodyHtml = "<tbody>";
-                ['Dayshift', 'Nightshift'].forEach(shift => {
+                ['Dayshift', 'Nightshift', 'Unassigned'].forEach(shift => {
                     if (groupedEmployees[shift]) {
                         bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
                         groupedEmployees[shift].forEach(emp => {
@@ -533,20 +425,11 @@
                             bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
                             for (let day = 1; day <= daysInMonth; day++) {
                                 const currentDate = new Date(year, month, day);
-                                const employeeLeaves = leaveLookup[emp.id_number] || [];
-                                const onLeave = employeeLeaves.find(l => currentDate >= l.start && currentDate <= l.end);
-
+                                const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
                                 let dayValue = otData[day] || '';
-                                let cellClass = 'ot-input';
-                                let isReadonly = true;
-
-                                if (onLeave) {
-                                    dayValue = onLeave.type;
-                                    cellClass += ' leave-entry';
-                                } else if (isOtTableEditable) {
-                                    isReadonly = false;
-                                }
-
+                                let cellClass = 'ot-input'; let isReadonly = true;
+                                if (onLeave) { dayValue = onLeave.type; cellClass += ' leave-entry'; } 
+                                else if (isOtTableEditable) { isReadonly = false; }
                                 bodyHtml += `<td><input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${isReadonly ? 'readonly' : ''}></td>`;
                             }
                             bodyHtml += "</tr>";
@@ -555,11 +438,12 @@
                 });
                 bodyHtml += "</tbody>";
                 document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
-
                 document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { updateOtPreview(input.dataset.employeeId); });
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
+                const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
+                isOtTableEditable = false; // Reset edit state
             }
-            
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;updateOtPreview(employeeId)}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
@@ -568,9 +452,8 @@
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
             function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}
             window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
-            navItems.forEach(item=>{item.addEventListener("click",e=>{e.preventDefault(),navItems.forEach(e=>e.classList.remove("active")),item.classList.add("active"),moveLamp(item);if(item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } switchToPage(item.getAttribute("href"))})});
+            navItems.forEach(item=>{item.addEventListener("click",e=>{e.preventDefault();navItems.forEach(e=>e.classList.remove("active"));item.classList.add("active");moveLamp(item);if(item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } switchToPage(item.getAttribute("href"));})});
             window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
-
             (async () => {
                 renderMarqueeSection();
                 renderSiteLinks();
