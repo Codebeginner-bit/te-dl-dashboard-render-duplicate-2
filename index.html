@@ -95,18 +95,16 @@
     </div>
 
     <!-- Overtime Entry Page Section -->
-<div id="ot-entry-controls">
-    <h2 id="ot-entry-month-title"></h2>
-    <!--  Month and Year Selectors -->
-    <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
-        <label for="ot-month-select">Select Date:</label>
-        <select id="ot-month-select"></select>
-        <select id="ot-year-select"></select>
+    <div id="overtime-entry-section" class="page-section">
+        <div id="ot-entry-controls">
+            <h2 id="ot-entry-month-title"></h2>
+            <button onclick="toggleOtTableEdit(this)">Edit</button>
+            <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
+            <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
+        </div>
+        <div class="ot-entry-table-container" id="ot-entry-table-wrapper"></div>
     </div>
-    <button onclick="toggleOtTableEdit(this)">Edit</button>
-    <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
-    <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
-</div>
+
     <div id="links-section" class="page-section">
         <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
     </div>
@@ -220,197 +218,163 @@
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
             
-// --- Overtime Entry Logic ---
-let currentOtMonthYear = '';
-let isOtTableEditable = false;
+            // --- Overtime Entry Logic ---
+            let currentOtMonthYear = ''; 
+            let isOtTableEditable = false; 
 
-function populateMonthYearSelectors() {
-    const monthSelect = document.getElementById('ot-month-select');
-    const yearSelect = document.getElementById('ot-year-select');
-    
-    // Clear existing options to prevent duplicates
-    monthSelect.innerHTML = '';
-    yearSelect.innerHTML = '';
+            window.AddOvertime = function() {
+                generateOvertimeTable(); 
+            };
 
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+            window.toggleOtTableEdit = function(button) { 
+                isOtTableEditable = !isOtTableEditable; 
+                const inputs = document.querySelectorAll('#ot-entry-table .ot-input'); 
+                inputs.forEach(input => input.readOnly = !isOtTableEditable); 
+                button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
+                button.classList.toggle('del-btn', isOtTableEditable); 
+            };
 
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-    // Populate months
-    months.forEach((month, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = month;
-        if (index === currentMonth) {
-            option.selected = true; // Select current month by default
-        }
-        monthSelect.appendChild(option);
-    });
+            window.submitOvertime = async function() {
+                if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
+                
+                const payload = [];
+                const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
 
-    // Populate years 
-    for (let i = -1; i <= 1; i++) {
-        const year = currentYear + i;
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        if (year === currentYear) {
-            option.selected = true; // Select current year by default
-        }
-        yearSelect.appendChild(option);
-    }
-    
-    // Add event listeners to rebuild table on change
-    monthSelect.addEventListener('change', handleDateSelectionChange);
-    yearSelect.addEventListener('change', handleDateSelectionChange);
-}
+                employeeRows.forEach(row => {
+                    const employeeId = row.dataset.otRowId;
+                    if (!employeeId) return;
 
-            
-function handleDateSelectionChange() {
-    const selectedMonth = parseInt(document.getElementById('ot-month-select').value);
-    const selectedYear = parseInt(document.getElementById('ot-year-select').value);
-    generateOvertimeTable(selectedYear, selectedMonth);
-}
+                    const daily_data = {};
+                    const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
+                    inputs.forEach(input => {
+                        if (input.value.trim() !== '') {
+                            daily_data[input.dataset.day] = input.value.trim();
+                        }
+                    });
 
-// Called when the user navigates to the OT page
-window.AddOvertime = function() {
-    populateMonthYearSelectors(); // Set up the dropdowns
-    generateOvertimeTable();      // Generate table for the current month by default
-};
+                    const total_ot = calculateOtForEmployee(employeeId);
+                    
+                    payload.push({
+                        employee_id: employeeId,
+                        month_year: currentOtMonthYear,
+                        daily_data: daily_data,
+                        total_ot: total_ot
+                    });
+                });
 
-window.toggleOtTableEdit = function(button) { 
-    isOtTableEditable = !isOtTableEditable; 
-    const inputs = document.querySelectorAll('#ot-entry-table .ot-input'); 
-    inputs.forEach(input => input.readOnly = !isOtTableEditable); 
-    button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
-    button.classList.toggle('del-btn', isOtTableEditable); 
-};
-
-window.submitOvertime = async function() {
-    if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
-    const payload = [];
-    const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
-    employeeRows.forEach(row => {
-        const employeeId = row.dataset.otRowId;
-        if (!employeeId) return;
-        const daily_data = {};
-        const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
-        inputs.forEach(input => {
-            if (input.value.trim() !== '') {
-                daily_data[input.dataset.day] = input.value.trim();
-            }
-        });
-        const total_ot = calculateOtForEmployee(employeeId);
-        payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data: daily_data, total_ot: total_ot });
-    });
-    if (payload.length === 0) {
-        alert("No employees found to submit overtime for.");
-        return;
-    }
-    try {
-        const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error || 'Server error during submission.');
-        }
-        alert("Overtime has been submitted successfully!");
-        await fetchTableData();
-        if (isOtTableEditable) {
-            const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-            toggleOtTableEdit(editButton);
-        }
-        switchToPage('#home-section');
-        const homeNavItem = document.querySelector('a[href="#home-section"]');
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        homeNavItem.classList.add('active');
-        moveLamp(homeNavItem);
-    } catch (error) {
-        console.error("Failed to submit overtime:", error);
-        alert(`Submission failed: ${error.message}`);
-    }
-};
-
-async function generateOvertimeTable(year, month) {
-    const now = new Date();
-    // If year or month aren't provided, default to the current ones
-    year = (year === undefined) ? now.getFullYear() : year;
-    month = (month === undefined) ? now.getMonth() : month;
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
-
-    // Update the global month/year string for submission
-    currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
-    
-    document.getElementById("ot-entry-month-title").textContent = `Overtime Entry for ${monthName} ${year}`;
-    
-    // Fetch existing data for the selected month
-    let existingDataMap = new Map();
-    try {
-        const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
-        if (res.ok) {
-            const existingRecords = await res.json();
-            existingRecords.forEach(rec => {
-                existingDataMap.set(rec.employee_id, rec.daily_data);
-            });
-        }
-    } catch (e) {
-        console.error("Could not fetch existing OT data:", e);
-    }
-
-    // Table generation logic 
-    let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
-    const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const dayOfWeek = date.getDay();
-        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const weekendClass = isWeekend ? ' class="weekend-header"' : "";
-        headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
-        dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
-    }
-    headerHtml += "</tr>", dayRow += "</tr>";
-    
-    const groupedEmployees = allEmployees.reduce((acc, emp) => { const shift = emp.shift || "Unassigned"; acc[shift] || (acc[shift] = []); acc[shift].push(emp); return acc; }, {});
-    let bodyHtml = "<tbody>";
-    ["Dayshift", "Nightshift", "Unassigned"].forEach(shift => {
-        if (groupedEmployees[shift]) {
-            bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
-            groupedEmployees[shift].forEach(emp => {
-                const employeeOtData = existingDataMap.get(emp.id_number) || {};
-                bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayValue = employeeOtData[day] || '';
-                    bodyHtml += `<td><input type="text" class="ot-input" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" readonly></td>`;
+                if (payload.length === 0) {
+                    alert("No employees found to submit overtime for.");
+                    return;
                 }
-                bodyHtml += "</tr>";
-            });
-        }
-    });
-    bodyHtml += "</tbody>";
-    document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
 
-    document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
-    document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
-        if (input.value) {
-            styleInputCell(input);
-            updateOtPreview(input.dataset.employeeId);
-        }
-    });
+                try {
+                    const response = await fetch(`${API_BASE}/overtime`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-    isOtTableEditable = false;
-    const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-    editButton.textContent = 'Edit';
-    editButton.classList.remove('del-btn');
-}
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error || 'Server error during submission.');
+                    }
 
-            // --- HELPER FUNCTIONS ---
+                    alert("Overtime has been submitted successfully!");
+                    
+                    await fetchTableData();
+                    
+                    if (isOtTableEditable) {
+                        const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                        toggleOtTableEdit(editButton);
+                    }
+
+                    // Reset navigation back to the home page
+                    switchToPage('#home-section');
+                    const homeNavItem = document.querySelector('a[href="#home-section"]');
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    homeNavItem.classList.add('active');
+                    moveLamp(homeNavItem);
+
+                } catch (error) {
+                    console.error("Failed to submit overtime:", error);
+                    alert(`Submission failed: ${error.message}`);
+                }
+            };
+
+            async function generateOvertimeTable() {
+                const now = new Date();
+                const month = now.getMonth();
+                const year = now.getFullYear();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const monthName = now.toLocaleString("default", { month: "long" });
+
+                currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
+                
+                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry for ${monthName} ${year}`;
+                
+                let existingDataMap = new Map();
+                try {
+                    const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
+                    if (res.ok) {
+                        const existingRecords = await res.json();
+                        existingRecords.forEach(rec => {
+                            existingDataMap.set(rec.employee_id, rec.daily_data);
+                        });
+                    }
+                } catch (e) {
+                    console.error("Could not fetch existing OT data:", e);
+                }
+
+                let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
+                const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    const weekendClass = isWeekend ? ' class="weekend-header"' : "";
+                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
+                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+                }
+                headerHtml += "</tr>", dayRow += "</tr>";
+                
+                const groupedEmployees = allEmployees.reduce((acc, emp) => { const shift = emp.shift || "Unassigned"; acc[shift] || (acc[shift] = []); acc[shift].push(emp); return acc; }, {});
+                let bodyHtml = "<tbody>";
+                ["Dayshift", "Nightshift", "Unassigned"].forEach(shift => {
+                    if (groupedEmployees[shift]) {
+                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
+                        groupedEmployees[shift].forEach(emp => {
+                            const employeeOtData = existingDataMap.get(emp.id_number) || {};
+                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                            for (let day = 1; day <= daysInMonth; day++) {
+                                const dayValue = employeeOtData[day] || '';
+                                bodyHtml += `<td><input type="text" class="ot-input" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" readonly></td>`;
+                            }
+                            bodyHtml += "</tr>";
+                        });
+                    }
+                });
+                bodyHtml += "</tbody>";
+                document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
+
+                document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
+                
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
+                    if (input.value) {
+                        styleInputCell(input);
+                        updateOtPreview(input.dataset.employeeId);
+                    }
+                });
+
+                isOtTableEditable = false;
+                const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                editButton.textContent = 'Edit';
+                editButton.classList.remove('del-btn');
+            }
+
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
             function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
             function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = `(Total: ${total.toFixed(1)})`; } } }
-
 
             // --- SECTION 2: NAVIGATION BAR LOGIC ---
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
@@ -428,4 +392,3 @@ async function generateOvertimeTable(year, month) {
     </script>
 </body>
 </html>
-
