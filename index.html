@@ -112,8 +112,6 @@
     </div>
 
     <div id="leave-plan-section" class="page-section"><h2>Leave Plan</h2><p>This section is under development.</p></div>
-    
-    <!-- MODAL: The total OT input has been removed from here -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Add Employee</h2>
@@ -143,12 +141,11 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // --- SECTION 1: DASHBOARD AND COMPONENT LOGIC ---
             const API_BASE = "/api"; 
             let allEmployees = []; 
             let isAddingNew = false, editingRow = null; 
 
-             const pioneerData = [
+            const pioneerData = [
                 { name: "Jericho Sulapas, TE Spartan", quote: '"The past cannot be changed. The future is yet in your power."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
                 { name: "Brian Alban, TE Spartan", quote: "Change your life today. Don't gamble on the future, act now, without delay.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
                 { name: "Kim Ryan Ramos, TE Spartan", quote: "There is only one corner of the universe you can be certain of improving, and that's your own self.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" }
@@ -161,50 +158,40 @@
                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     if (!empResponse.ok) throw new Error(`Server responded with ${empResponse.status} on employee fetch`);
-                    allEmployees = await empResponse.json();
-
-                    const now = new Date();
-                    const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
                     
-                    const otMap = new Map();
-                    try {
-                        const otResponse = await fetch(`${API_BASE}/overtime?month_year=${currentMonthYear}`);
-                        if (otResponse.ok) {
-                            const otRecords = await otResponse.json();
-                            otRecords.forEach(rec => {
-                                otMap.set(rec.employee_id, rec.total_ot || 0);
-                            });
-                        } else {
-                            console.warn(`Could not fetch OT data for ${currentMonthYear}. Totals will show as 0.`);
-                        }
-                    } catch (otError) {
-                        console.error("Error fetching current month's overtime data:", otError);
-                    }
+                    allEmployees = await empResponse.json();
                     
                     const tableBody = document.querySelector("#overtimeTable tbody");
-                    tableBody.innerHTML = ""; 
+                    tableBody.innerHTML = ""; // Clear existing rows
                     
+                    if (!allEmployees || allEmployees.length === 0) {
+                        console.warn("No employees fetched from the API.");
+                        return;
+                    }
+
                     allEmployees.forEach(emp => {
                         const row = document.createElement("tr");
                         row.setAttribute("data-id", emp.id_number);
-                        const currentMonthOtTotal = otMap.get(emp.id_number) || 0;
+                        
+                        // Directly use the ot_total from the employee object. 
+                        const currentMonthOtTotal = emp.ot_total || 0;
 
                         row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
-                                        `<td>${emp.site}</td>` +
-                                        `<td>${emp.department}</td>` +
+                                        `<td>${emp.site || ""}</td>` +
+                                        `<td>${emp.department || ""}</td>` +
                                         `<td>${emp.id_number || ""}</td>` +
                                         `<td>${emp.chinese_name || ""}</td>` +
                                         `<td>${emp.dormitory || ""}</td>` +
-                                        `<td>${emp.english_name}</td>` +
-                                        `<td>${emp.shift}</td>` +
+                                        `<td>${emp.english_name || ""}</td>` +
+                                        `<td>${emp.shift || ""}</td>` +
                                         `<td>${emp.plan_actual || ""}</td>` +
-                                        `<td class="ot-total-cell">${currentMonthOtTotal.toFixed(1)}</td>`;
+                                        `<td class="ot-total-cell">${parseFloat(currentMonthOtTotal).toFixed(1)}</td>`;
                         
                         tableBody.appendChild(row);
                     });
                 } catch (error) {
                     console.error("Failed to build dashboard table:", error);
-                    alert("Could not load employee data. Please check the console for errors.");
+                    alert("Could not load employee data. Please check the console for errors and verify the backend API response.");
                 }
             };
 
@@ -235,7 +222,7 @@
                     if (response && response.ok) {
                         alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");
                         closeModal();
-                        await fetchTableData();
+                        await fetchTableData(); // Refresh the dashboard to show the latest data
                     } else if (response) {
                         const errorData = await response.json();
                         alert(`Failed: ${errorData.error || 'Unknown server error'}`);
@@ -278,31 +265,24 @@
                 const monthSelect = document.getElementById('ot-month-select');
                 const yearSelect = document.getElementById('ot-year-select');
                 if (!monthSelect || !yearSelect) return;
-                monthSelect.innerHTML = '';
-                yearSelect.innerHTML = '';
-
+                monthSelect.innerHTML = ''; yearSelect.innerHTML = '';
                 const now = new Date();
                 const currentYear = now.getFullYear();
                 const currentMonth = now.getMonth();
                 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                
                 months.forEach((month, index) => {
                     const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = month;
+                    option.value = index; option.textContent = month;
                     if (index === currentMonth) option.selected = true;
                     monthSelect.appendChild(option);
                 });
-
                 for (let i = -1; i <= 1; i++) {
                     const year = currentYear + i;
                     const option = document.createElement('option');
-                    option.value = year;
-                    option.textContent = year;
+                    option.value = year; option.textContent = year;
                     if (year === currentYear) option.selected = true;
                     yearSelect.appendChild(option);
                 }
-                
                 monthSelect.addEventListener('change', handleDateSelectionChange);
                 yearSelect.addEventListener('change', handleDateSelectionChange);
             }
@@ -352,16 +332,17 @@
                         throw new Error(err.error || 'Server error during submission.');
                     }
                     alert("Overtime has been submitted successfully!");
+                    
+                    // After submitting, it re-fetches the data, updated totals from the backend.
                     await fetchTableData();
-                    if (isOtTableEditable) {
-                        const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-                        toggleOtTableEdit(editButton);
-                    }
+
                     switchToPage('#home-section');
                     const homeNavItem = document.querySelector('a[href="#home-section"]');
                     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                    homeNavItem.classList.add('active');
-                    moveLamp(homeNavItem);
+                    if (homeNavItem) {
+                        homeNavItem.classList.add('active');
+                        moveLamp(homeNavItem);
+                    }
                 } catch (error) {
                     console.error("Failed to submit overtime:", error);
                     alert(`Submission failed: ${error.message}`);
@@ -372,12 +353,8 @@
                 const now = new Date();
                 year = (year === undefined) ? now.getFullYear() : year;
                 month = (month === undefined) ? now.getMonth() : month;
-
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
-
                 currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
-                
                 document.getElementById("ot-entry-month-title").textContent = `Overtime Entry Table`;
                 
                 let existingDataMap = new Map();
@@ -387,9 +364,7 @@
                         const existingRecords = await res.json();
                         existingRecords.forEach(rec => { existingDataMap.set(rec.employee_id, rec.daily_data); });
                     }
-                } catch (e) {
-                    console.error("Could not fetch existing OT data:", e);
-                }
+                } catch (e) { console.error("Could not fetch existing OT data:", e); }
 
                 let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
                 const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -432,27 +407,35 @@
 
                 isOtTableEditable = false;
                 const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-                editButton.textContent = 'Edit';
-                editButton.classList.remove('del-btn');
+                if (editButton) {
+                  editButton.textContent = 'Edit';
+                  editButton.classList.remove('del-btn');
+                }
             }
 
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
             function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
             function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
-            function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = `(Total: ${total.toFixed(1)})`; } } }
+            function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = ` (Total: ${total.toFixed(1)})`; } } }
 
-            // --- SECTION 2: NAVIGATION BAR LOGIC ---
+            // --- Navigation Bar Logic ---
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
-            function moveLamp(e){if(e){const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}}
+            function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}
             window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
             navItems.forEach(item=>{item.addEventListener("click",e=>{e.preventDefault(),navItems.forEach(e=>e.classList.remove("active")),item.classList.add("active"),moveLamp(item),switchToPage(item.getAttribute("href"))})});
             window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
 
             // --- INITIALIZATION ---
-            renderMarqueeSection();
-            renderSiteLinks();
-            fetchTableData(); 
-            const initialActiveItem=document.querySelector(".nav-item.active");if(initialActiveItem){moveLamp(initialActiveItem),switchToPage(initialActiveItem.getAttribute("href"))}
+            (async () => {
+                renderMarqueeSection();
+                renderSiteLinks();
+                await fetchTableData(); 
+                const initialActiveItem=document.querySelector(".nav-item.active");
+                if(initialActiveItem){
+                    moveLamp(initialActiveItem);
+                    switchToPage(initialActiveItem.getAttribute("href"));
+                }
+            })();
         });
     </script>
 </body>
