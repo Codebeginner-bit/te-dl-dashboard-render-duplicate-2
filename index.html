@@ -6,7 +6,6 @@
     <title>TE-DL Dashboard</title>
     
     <style>
-   
         :root { --background: 255 255 255; --foreground: 0 0 0; --muted: 241 245 249; --muted-foreground: 100 116 139; --border: 226 232 240; --primary: #007bff; --gap: 2rem; --duration: 120s; }
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; background-color: rgb(var(--background)); color: rgb(var(--foreground)); line-height: 1.5; margin: 0; padding: 1rem; }
         .page-section { display: none; } .page-section.active { display: block; }
@@ -30,14 +29,10 @@
         .modal-content input, .modal-content select, .modal-content button { margin:8px 0; width:100%; padding:12px; font-size:1rem; border:1px solid rgb(var(--border)); border-radius:4px; box-sizing:border-box; }
         .modal-content button { color:white; } .modal-content button.save-btn { background-color:#2ecc71; } .modal-content button.cancel-btn { background-color:#e74c3c; }
         .marquee-container { position:relative; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-top:4rem; margin-bottom:4rem; }
-        @keyframes marquee { from { transform:translateX(0); } to { transform:translateX(calc(-100% - var(--gap))); } }
-        .testimonials-container { padding:4rem 1rem; text-align:center; background-color:rgb(var(--muted)); } .testimonials-header h2 { font-size:2.25rem; font-weight:500; margin-bottom:1rem; } .testimonials-header p { color:rgb(var(--muted-foreground)); max-width:600px; margin:0 auto 2.5rem auto; } .testimonials-grid { display:flex; justify-content:center; align-items:flex-start; gap:1.25rem; flex-wrap:wrap; }
-        .link-list a:hover { background-color:#e2e8f0; transform:translateY(-1px); }
         .testimonial-card { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border)); background-color: rgba(var(--muted), 0.4); padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0; }
         .testimonial-card img { width: 150px; height: auto; margin-bottom: 0.5rem; }
         .testimonial-card h3 { font-size: 1.125rem; font-weight: 600; color: rgb(var(--foreground)); margin: 0; }
         .testimonial-card p { font-size: 1rem; color: rgb(var(--muted-foreground)); font-style: italic; margin: 0; }
-        .marquee-container { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; margin-top: 4rem; margin-bottom: 4rem; }
         .marquee-track-wrapper { display: flex; overflow: hidden; padding: 0.5rem 0; }
         .marquee-track { display: flex; flex-shrink: 0; gap: var(--gap); animation: marquee var(--duration) linear infinite; }
         .marquee-track-wrapper:hover .marquee-track { animation-play-state: paused; }
@@ -57,6 +52,8 @@
         .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
         #leave-plan-section { padding: 5rem 2rem; text-align: center; min-height: 50vh; color: rgb(var(--muted-foreground)); }
         #ot-entry-controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        #ot-entry-controls select, #ot-entry-controls label { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; }
+        #ot-entry-controls label { border: none; font-weight: 600; }
         .ot-entry-table-container { width: 100%; overflow-x: auto; }
         #ot-entry-table { border-collapse: collapse; width: 100%; font-size: 12px; }
         #ot-entry-table th, #ot-entry-table td { border: 1px solid #ccc; padding: 4px; text-align: center; min-width: 60px; }
@@ -98,6 +95,11 @@
     <div id="overtime-entry-section" class="page-section">
         <div id="ot-entry-controls">
             <h2 id="ot-entry-month-title"></h2>
+            <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
+                <label for="ot-month-select">Select Date:</label>
+                <select id="ot-month-select"></select>
+                <select id="ot-year-select"></select>
+            </div>
             <button onclick="toggleOtTableEdit(this)">Edit</button>
             <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
             <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
@@ -108,6 +110,7 @@
     <div id="links-section" class="page-section">
         <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
     </div>
+
     <div id="leave-plan-section" class="page-section"><h2>Leave Plan</h2><p>This section is under development.</p></div>
     
     <div class="modal" id="modal">
@@ -219,11 +222,51 @@
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
             
             // --- Overtime Entry Logic ---
-            let currentOtMonthYear = ''; 
-            let isOtTableEditable = false; 
+            let currentOtMonthYear = '';
+            let isOtTableEditable = false;
+
+            function populateMonthYearSelectors() {
+                const monthSelect = document.getElementById('ot-month-select');
+                const yearSelect = document.getElementById('ot-year-select');
+                if (!monthSelect || !yearSelect) return;
+                monthSelect.innerHTML = '';
+                yearSelect.innerHTML = '';
+
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth();
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = month;
+                    if (index === currentMonth) option.selected = true;
+                    monthSelect.appendChild(option);
+                });
+
+                for (let i = -1; i <= 1; i++) {
+                    const year = currentYear + i;
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    if (year === currentYear) option.selected = true;
+                    yearSelect.appendChild(option);
+                }
+                
+                monthSelect.addEventListener('change', handleDateSelectionChange);
+                yearSelect.addEventListener('change', handleDateSelectionChange);
+            }
+                        
+            function handleDateSelectionChange() {
+                const selectedMonth = parseInt(document.getElementById('ot-month-select').value);
+                const selectedYear = parseInt(document.getElementById('ot-year-select').value);
+                generateOvertimeTable(selectedYear, selectedMonth);
+            }
 
             window.AddOvertime = function() {
-                generateOvertimeTable(); 
+                populateMonthYearSelectors();
+                generateOvertimeTable();
             };
 
             window.toggleOtTableEdit = function(button) { 
@@ -236,77 +279,53 @@
 
             window.submitOvertime = async function() {
                 if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
-                
                 const payload = [];
                 const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
-
                 employeeRows.forEach(row => {
                     const employeeId = row.dataset.otRowId;
                     if (!employeeId) return;
-
                     const daily_data = {};
                     const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
                     inputs.forEach(input => {
-                        if (input.value.trim() !== '') {
-                            daily_data[input.dataset.day] = input.value.trim();
-                        }
+                        if (input.value.trim() !== '') daily_data[input.dataset.day] = input.value.trim();
                     });
-
                     const total_ot = calculateOtForEmployee(employeeId);
-                    
-                    payload.push({
-                        employee_id: employeeId,
-                        month_year: currentOtMonthYear,
-                        daily_data: daily_data,
-                        total_ot: total_ot
-                    });
+                    payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data: daily_data, total_ot: total_ot });
                 });
-
                 if (payload.length === 0) {
                     alert("No employees found to submit overtime for.");
                     return;
                 }
-
                 try {
-                    const response = await fetch(`${API_BASE}/overtime`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
+                    const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) {
                         const err = await response.json();
                         throw new Error(err.error || 'Server error during submission.');
                     }
-
                     alert("Overtime has been submitted successfully!");
-                    
                     await fetchTableData();
-                    
                     if (isOtTableEditable) {
                         const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
                         toggleOtTableEdit(editButton);
                     }
-
-                    // Reset navigation back to the home page
                     switchToPage('#home-section');
                     const homeNavItem = document.querySelector('a[href="#home-section"]');
                     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
                     homeNavItem.classList.add('active');
                     moveLamp(homeNavItem);
-
                 } catch (error) {
                     console.error("Failed to submit overtime:", error);
                     alert(`Submission failed: ${error.message}`);
                 }
             };
 
-            async function generateOvertimeTable() {
+            async function generateOvertimeTable(year, month) {
                 const now = new Date();
-                const month = now.getMonth();
-                const year = now.getFullYear();
+                year = (year === undefined) ? now.getFullYear() : year;
+                month = (month === undefined) ? now.getMonth() : month;
+
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const monthName = now.toLocaleString("default", { month: "long" });
+                const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
 
                 currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
                 
@@ -317,9 +336,7 @@
                     const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
                     if (res.ok) {
                         const existingRecords = await res.json();
-                        existingRecords.forEach(rec => {
-                            existingDataMap.set(rec.employee_id, rec.daily_data);
-                        });
+                        existingRecords.forEach(rec => { existingDataMap.set(rec.employee_id, rec.daily_data); });
                     }
                 } catch (e) {
                     console.error("Could not fetch existing OT data:", e);
@@ -357,7 +374,6 @@
                 document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
 
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
-                
                 document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
                     if (input.value) {
                         styleInputCell(input);
