@@ -156,20 +156,50 @@
             
             window.fetchTableData = async function() {
                 try {
-                    const response = await fetch(`${API_BASE}/employees`);
-                    if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-                    const employees = await response.json();
-                    allEmployees = employees;
+                    // Fetch the base list of all employees
+                    const empResponse = await fetch(`${API_BASE}/employees`);
+                    if (!empResponse.ok) throw new Error(`Server responded with ${empResponse.status} on employee fetch`);
+                    allEmployees = await empResponse.json();
+                    const now = new Date();
+                    const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    // Fetch overtime data specifically for the current month
+                    const otMap = new Map();
+                    try {
+                        const otResponse = await fetch(`${API_BASE}/overtime?month_year=${currentMonthYear}`);
+                        if (otResponse.ok) {
+                            const otRecords = await otResponse.json();
+                            otRecords.forEach(rec => {
+                                otMap.set(rec.employee_id, rec.total_ot || 0);
+                            });
+                        } else {
+                            console.warn(`Could not fetch OT data for ${currentMonthYear}. Totals will show as 0.`);
+                        }
+                    } catch (otError) {
+                        console.error("Error fetching current month's overtime data:", otError);
+                    }
                     const tableBody = document.querySelector("#overtimeTable tbody");
-                    tableBody.innerHTML = "";
+                    tableBody.innerHTML = ""; // Clear existing rows
+                    
                     allEmployees.forEach(emp => {
                         const row = document.createElement("tr");
                         row.setAttribute("data-id", emp.id_number);
-                        row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td><td>${emp.site}</td><td>${emp.department}</td><td>${emp.id_number||""}</td><td>${emp.chinese_name||""}</td><td>${emp.dormitory||""}</td><td>${emp.english_name}</td><td>${emp.shift}</td><td>${emp.plan_actual||""}</td><td class="ot-total-cell">${emp.ot_total||0}</td>`;
+                        const currentMonthOtTotal = otMap.get(emp.id_number) || 0;
+                        row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
+                                        `<td>${emp.site}</td>` +
+                                        `<td>${emp.department}</td>` +
+                                        `<td>${emp.id_number || ""}</td>` +
+                                        `<td>${emp.chinese_name || ""}</td>` +
+                                        `<td>${emp.dormitory || ""}</td>` +
+                                        `<td>${emp.english_name}</td>` +
+                                        `<td>${emp.shift}</td>` +
+                                        `<td>${emp.plan_actual || ""}</td>` +
+                                        `<td class="ot-total-cell">${currentMonthOtTotal.toFixed(1)}</td>`; // Use the current month total
+                        
                         tableBody.appendChild(row);
                     });
                 } catch (error) {
-                    console.error("Failed to fetch employees:", error);
+                    console.error("Failed to build dashboard table:", error);
                     alert("Could not load employee data. Please check the console for errors.");
                 }
             };
@@ -424,6 +454,7 @@
     </script>
 </body>
 </html>
+
 
 
 
