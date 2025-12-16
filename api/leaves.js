@@ -26,14 +26,14 @@ export default async function handler(req, res) {
     case 'PUT': {
       // Update an existing leave record
       if (!id) return res.status(400).json({ error: 'Leave ID is required for update' });
-      const { data, error } = await supabase.from('leaves').update(req.body).eq('id', id).select();
+      const { data, error } = await supabase.from('leaves').update(req.body).eq('id_number', id).select();
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json(data);
     }
 
     case 'DELETE': {
       if (!id) return res.status(400).json({ error: 'Leave ID is required for deletion' });
-      const { error } = await supabase.from('leaves').delete().eq('id', id);
+      const { error } = await supabase.from('leaves').delete().eq('id_number', id);
       if (error) return res.status(500).json({ error: error.message });
       return res.status(204).send(); // 204 No Content for successful deletion
     }
