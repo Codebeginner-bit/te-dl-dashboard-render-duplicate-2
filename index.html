@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TE-DL Dashboard</title>
+    <title>Test Engineer - DL Dashboard</title>
     
     <style>
         :root { --background: 255 255 255; --foreground: 0 0 0; --muted: 241 245 249; --muted-foreground: 100 116 139; --border: 226 232 240; --primary: #007bff; --gap: 2rem; --duration: 120s; }
@@ -78,8 +78,6 @@
     </style>
 </head>
 <body>
-
-    <!-- === PAGE SECTIONS WRAPPER === -->
     <div id="home-section" class="page-section active">
         <h1>Welcome to TE-DL Dashboard</h1><p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
@@ -90,8 +88,6 @@
             <table id="overtimeTable"><thead><tr><th>Actions</th><th>Site</th><th>Department</th><th>Employee ID</th><th>Chinese Name</th><th>Dormitory</th><th>English Name</th><th>Shift</th><th>Plan/Actual</th><th>Total Overtime (Current Month)</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
-
-    <!-- Overtime Entry Page Section -->
     <div id="overtime-entry-section" class="page-section">
         <div id="ot-entry-controls">
             <h2 id="ot-entry-month-title"></h2>
@@ -106,14 +102,12 @@
         </div>
         <div class="ot-entry-table-container" id="ot-entry-table-wrapper"></div>
     </div>
-
     <div id="links-section" class="page-section">
         <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
     </div>
-
     <div id="leave-plan-section" class="page-section"><h2>Leave Plan</h2><p>This section is under development.</p></div>
     
-    <!-- **\* FIX: The modal no longer has a manual input for Total OT. This is critical. **\* -->
+    <!-- *** FIX: The modal no longer has a manual input for Total OT. *** -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Add Employee</h2>
@@ -133,7 +127,6 @@
         </div>
     </div>
 
-    <!-- === VERTICAL NAVIGATION BAR === -->
     <nav class="navbar-container" role="navigation"><div class="navbar"><div class="navbar-lamp"><div class="lamp-light"></div></div>
         <a href="#home-section" class="nav-item active"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span><span class="nav-text">HOME</span></a>
         <a href="#overtime-entry-section" onclick="AddOvertime()" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><span class="nav-text">OVERTIME</span></a>
@@ -160,8 +153,7 @@
             window.fetchTableData = async function() {
                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
-                    if (!empResponse.ok) throw new Error(`Server responded with ${empResponse.status} on employee fetch`);
-                    allEmployees = await empResponse.json();
+                    if (!empResponse.ok) throw new Error(`Failed to fetch employees: ${empResponse.status}`);
                     const now = new Date();
                     const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
                     const otMap = new Map();
@@ -178,15 +170,14 @@
                     } catch (otError) {
                         console.error("Error fetching current month's overtime data:", otError);
                     }
-                    
+
                     const tableBody = document.querySelector("#overtimeTable tbody");
                     tableBody.innerHTML = "";
                     
                     allEmployees.forEach(emp => {
                         const row = document.createElement("tr");
-                        const employeeId = emp.id_number;
+                        const employeeId = emp.id_number; 
                         row.setAttribute("data-id", employeeId);
-                        
                         const currentMonthOtTotal = otMap.get(employeeId) || 0;
 
                         row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
@@ -204,12 +195,12 @@
                     });
                 } catch (error) {
                     console.error("Failed to build dashboard table:", error);
-                    alert("Could not load employee data. Please check the console for errors.");
+                    alert("Could not load dashboard data. Please check console for errors.");
                 }
             };
 
             window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalPlanActual").value=n[8].textContent||""}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
-
+            
             window.saveRow = async function() {
                 const employeeData = {
                     site: document.getElementById("modalSite").value,
@@ -270,7 +261,6 @@
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
             
-            // --- Overtime Entry Logic ---
             let currentOtMonthYear = '';
             let isOtTableEditable = false;
 
@@ -306,10 +296,7 @@
                 generateOvertimeTable(selectedYear, selectedMonth);
             }
 
-            window.AddOvertime = async function() {
-                if (allEmployees.length === 0) {
-                    await fetchTableData();
-                }
+            window.AddOvertime = function() {
                 populateMonthYearSelectors();
                 generateOvertimeTable();
             };
@@ -337,10 +324,7 @@
                     const total_ot = calculateOtForEmployee(employeeId);
                     payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data: daily_data, total_ot: total_ot });
                 });
-                if (payload.length === 0) {
-                    alert("No employees found to submit overtime for.");
-                    return;
-                }
+                if (payload.length === 0) { alert("No employees found to submit overtime for."); return; }
                 try {
                     const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) {
@@ -348,8 +332,8 @@
                         throw new Error(err.error || 'Server error during submission.');
                     }
                     alert("Overtime has been submitted successfully!");
+
                     await fetchTableData();
-                    
                     switchToPage('#home-section');
                     const homeNavItem = document.querySelector('a[href="#home-section"]');
                     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -410,29 +394,20 @@
                 });
                 bodyHtml += "</tbody>";
                 document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
-
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
                 document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
-                    if (input.value) {
-                        styleInputCell(input);
-                        updateOtPreview(input.dataset.employeeId);
-                    }
+                    if (input.value) { styleInputCell(input); updateOtPreview(input.dataset.employeeId); }
                 });
-
                 isOtTableEditable = false;
                 const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
-                if(editButton) {
-                    editButton.textContent = 'Edit';
-                    editButton.classList.remove('del-btn');
-                }
+                if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
             }
 
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
             function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
             function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = ` (Total: ${total.toFixed(1)})`; } } }
-
-            // --- Navigation Bar Logic ---
+            
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
             function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}
             window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
