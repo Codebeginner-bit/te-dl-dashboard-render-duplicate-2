@@ -238,11 +238,11 @@
                 const employeeData = {site: document.getElementById("modalSite").value,department: document.getElementById("modalDept").value,id_number: document.getElementById("modalId").value,chinese_name: document.getElementById("modalChineseName").value || null,dormitory: document.getElementById("modalDorm").value || null,english_name: document.getElementById("modalEngName").value,shift: document.getElementById("modalShift").value,plan_actual: document.getElementById("modalPlanActual").value || null};
                 try {
                     let response;
-                    if (isAddingNew) {response = await fetch(`${API_BASE}/employees`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });} else if (editingRow) {const employeeId = editingRow.getAttribute("data-id");if (!employeeId) return alert("Error: Could not find employee ID to update.");response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });}
+                    if (isAddingNew) {response = await fetch(`${API_BASE}/employees`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });} else if (editingRow) {const employeeId = editingRow.getAttribute("data-id");if (!employeeId) return alert("Error: Could not find employee ID to update.");response = await fetch(`${API_BASE}/employees/${employeeId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(employeeData) });}
                     if (response && response.ok) {alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");closeModal();await fetchTableData();} else if (response) {const errorData = await response.json();alert(`Failed: ${errorData.error || 'Unknown server error'}`);}
                 } catch (error) {console.error("Save error:", error);alert("An unexpected error occurred during the save operation.");}
             };
-            window.deleteRow = async function(button) {const row = button.closest("tr");const employeeId = row.getAttribute("data-id");if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) {try {const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" });if (response.ok) {row.remove();alert("Employee deleted successfully.");} else {const errorData = await response.json();alert(`Failed to delete: ${errorData.error || 'Server error'}`);}} catch (error) {console.error("Delete error:", error);alert("An error occurred during deletion.");}}};
+            window.deleteRow = async function(button) {const row = button.closest("tr");const employeeId = row.getAttribute("data-id");if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) {try {const response = await fetch(`${API_BASE}/employees/${employeeId}`, { method: "DELETE" });if (response.ok) {row.remove();alert("Employee deleted successfully.");} else {const errorData = await response.json();alert(`Failed to delete: ${errorData.error || 'Server error'}`);}} catch (error) {console.error("Delete error:", error);alert("An error occurred during deletion.");}}};
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
@@ -326,7 +326,14 @@
                 const leaveData = { employee_id, start_date, end_date, days, leave_type, other_reason: leave_type === 'Others' ? other_reason : null };
                 try {
                     let response, url = `${API_BASE}/leaves`, method = 'POST';
-                    if (!isAddingNewLeave) { url += `?id=${editingLeaveId}`; method = 'PUT'; }
+                    
+                    // *** THIS IS THE FIX ***
+                    // For updates (PUT), the ID should be part of the URL path, not a query parameter.
+                    if (!isAddingNewLeave) { 
+                        url += `/${editingLeaveId}`; // Correct URL format: /api/leaves/123
+                        method = 'PUT'; 
+                    }
+                    
                     response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(leaveData) });
                     
                     if (!response.ok) {
@@ -349,7 +356,7 @@
             window.deleteLeave = async function(leaveId) {
                 if(!confirm("Are you sure you want to delete this leave plan?")) return;
                 try {
-                    const response = await fetch(`${API_BASE}/leaves?id=${leaveId}`, { method: 'DELETE' });
+                    const response = await fetch(`${API_BASE}/leaves/${leaveId}`, { method: 'DELETE' });
                     if (!response.ok) throw new Error("Failed to delete leave plan.");
                     alert("Leave plan deleted successfully."); await fetchAndRenderLeaves();
                 } catch(error) { console.error("Delete leave error:", error); alert("An error occurred during deletion."); }
@@ -359,7 +366,6 @@
             let currentOtMonthYear = '';
             let isOtTableEditable = false;
             
-            // **FIXED**: Implemented the missing function to populate date selectors.
             function populateMonthYearSelectors() {
                 const monthSelect = document.getElementById('ot-month-select');
                 const yearSelect = document.getElementById('ot-year-select');
@@ -388,9 +394,9 @@
             }
 
             window.AddOvertime = async function() {
-                await initializeLeavePlan(); // Ensure both employees and leaves are fetched
+                await initializeLeavePlan();
                 populateMonthYearSelectors();
-                generateOvertimeTable(); // Initial generation for the current month
+                generateOvertimeTable();
             };
             window.toggleOtTableEdit = function(button) { 
                 isOtTableEditable = !isOtTableEditable;
@@ -493,7 +499,7 @@
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
                 const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]');
                 if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
-                isOtTableEditable = false; // Reset edit state
+                isOtTableEditable = false;
             }
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;updateOtPreview(employeeId)}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
