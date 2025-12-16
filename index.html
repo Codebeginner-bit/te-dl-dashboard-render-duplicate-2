@@ -113,8 +113,24 @@
 
     <div id="leave-plan-section" class="page-section"><h2>Leave Plan</h2><p>This section is under development.</p></div>
     
+    <!-- MODAL: The total OT input has been removed from here -->
     <div class="modal" id="modal">
-        <div class="modal-content"><h2 id="modalTitle">Add Employee</h2><input type="text" id="modalSite" placeholder="Enter Site" required><input type="text" id="modalDept" placeholder="Enter Department" required><input type="text" id="modalId" placeholder="Enter Employee ID" required><input type="text" id="modalChineseName" placeholder="Enter Chinese Name"><input type="text" id="modalDorm" placeholder="Enter Dormitory"><input type="text" id="modalEngName" placeholder="Enter English Name" required><select id="modalShift"><option value="Dayshift">Dayshift</option><option value="Nightshift">Nightshift</option></select><input type="text" id="modalPlanActual" placeholder="Plan/Actual"><input type="number" id="modalOtTotal" placeholder="Enter Total OT"><button class="save-btn" onclick="saveRow()">Save</button><button class="cancel-btn" onclick="closeModal()">Cancel</button></div>
+        <div class="modal-content">
+            <h2 id="modalTitle">Add Employee</h2>
+            <input type="text" id="modalSite" placeholder="Enter Site" required>
+            <input type="text" id="modalDept" placeholder="Enter Department" required>
+            <input type="text" id="modalId" placeholder="Enter Employee ID" required>
+            <input type="text" id="modalChineseName" placeholder="Enter Chinese Name">
+            <input type="text" id="modalDorm" placeholder="Enter Dormitory">
+            <input type="text" id="modalEngName" placeholder="Enter English Name" required>
+            <select id="modalShift">
+                <option value="Dayshift">Dayshift</option>
+                <option value="Nightshift">Nightshift</option>
+            </select>
+            <input type="text" id="modalPlanActual" placeholder="Plan/Actual">
+            <button class="save-btn" onclick="saveRow()">Save</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
     </div>
 
     <!-- === VERTICAL NAVIGATION BAR === -->
@@ -133,28 +149,15 @@
             let isAddingNew = false, editingRow = null; 
 
              const pioneerData = [
-                {
-                    name: "Jericho Sulapas, TE Spartan",
-                    quote: '"The past cannot be changed. The future is yet in your power."',
-                    logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg"
-                },
-                {
-                    name: "Brian Alban, TE Spartan",
-                    quote: "Change your life today. Don't gamble on the future, act now, without delay.",
-                    logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg"
-                },
-                {
-                    name: "Kim Ryan Ramos, TE Spartan",
-                    quote: "There is only one corner of the universe you can be certain of improving, and that's your own self.",
-                    logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg"
-                }
+                { name: "Jericho Sulapas, TE Spartan", quote: '"The past cannot be changed. The future is yet in your power."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
+                { name: "Brian Alban, TE Spartan", quote: "Change your life today. Don't gamble on the future, act now, without delay.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
+                { name: "Kim Ryan Ramos, TE Spartan", quote: "There is only one corner of the universe you can be certain of improving, and that's your own self.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" }
             ];
             const siteLinkData=[{siteName:"N2",description:"Find all relevant links for the N2 site here.",links:[{text:"FusionEye",href:"http://10.38.248.180/"},{text:"MIC",href:"https://f60h.cim.wistron.com/"}]},{siteName:"A1",description:"Find all relevant links for the A1 site here.",links:[{text:"FusionEye",href:"http://10.28.158.180/"},{text:"MIC",href:"https://f605.cim.wistron.com/"}]},{siteName:"A3",description:"Find all relevant links for the A3 site here.",links:[{text:"FusionEye",href:"http://10.28.156.180/"},{text:"MIC",href:"https://f606.cim.wistron.com/"}]}];
-            function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="TE Logo"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
-            function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this link is only available for wistron devices, do not open the link using the personal device (e.q cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
+            function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="Member picture"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
+            function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
             
-            // shows the current month's overtime on the dashboard.
-           window.fetchTableData = async function() {
+            window.fetchTableData = async function() {
                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     if (!empResponse.ok) throw new Error(`Server responded with ${empResponse.status} on employee fetch`);
@@ -179,7 +182,7 @@
                     }
                     
                     const tableBody = document.querySelector("#overtimeTable tbody");
-                    tableBody.innerHTML = ""; // Clear existing rows
+                    tableBody.innerHTML = ""; 
                     
                     allEmployees.forEach(emp => {
                         const row = document.createElement("tr");
@@ -204,7 +207,8 @@
                     alert("Could not load employee data. Please check the console for errors.");
                 }
             };
-            window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalPlanActual").value=n[8].textContent||"",document.getElementById("modalOtTotal").value=parseFloat(n[9].textContent)||0}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
+
+            window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalPlanActual").value=n[8].textContent||""}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
             
             window.saveRow = async function() {
                 const employeeData = {
@@ -215,8 +219,7 @@
                     dormitory: document.getElementById("modalDorm").value || null,
                     english_name: document.getElementById("modalEngName").value,
                     shift: document.getElementById("modalShift").value,
-                    plan_actual: document.getElementById("modalPlanActual").value || null,
-                    ot_total: parseFloat(document.getElementById("modalOtTotal").value) || 0 
+                    plan_actual: document.getElementById("modalPlanActual").value || null
                 };
                 
                 try {
@@ -454,4 +457,3 @@
     </script>
 </body>
 </html>
-
