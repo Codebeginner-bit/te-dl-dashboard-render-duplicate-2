@@ -328,7 +328,20 @@
                     let response, url = `${API_BASE}/leaves`, method = 'POST';
                     if (!isAddingNewLeave) { url += `?id=${editingLeaveId}`; method = 'PUT'; }
                     response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(leaveData) });
-                    if (!response.ok) { const err = await response.json(); throw new Error(err.error || "Server error"); }
+                    
+                    if (!response.ok) {
+                        let errorMessage = `Request failed with status: ${response.status}`;
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            const errData = await response.json();
+                            errorMessage = errData.error || JSON.stringify(errData);
+                        } else {
+                            const textData = await response.text();
+                            errorMessage = `Server returned a non-JSON error. Response: ${textData.substring(0, 200)}...`;
+                        }
+                        throw new Error(errorMessage);
+                    }
+
                     alert(`Leave plan ${isAddingNewLeave ? 'added' : 'updated'} successfully!`);
                     closeLeaveModal(); await fetchAndRenderLeaves();
                 } catch (error) { console.error("Failed to save leave:", error); alert(`Error: ${error.message}`); }
@@ -345,15 +358,43 @@
             // --- Overtime Entry Logic ---
             let currentOtMonthYear = '';
             let isOtTableEditable = false;
+            
+            // **FIXED**: Implemented the missing function to populate date selectors.
+            function populateMonthYearSelectors() {
+                const monthSelect = document.getElementById('ot-month-select');
+                const yearSelect = document.getElementById('ot-year-select');
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth();
+
+                yearSelect.innerHTML = '';
+                for (let i = currentYear - 1; i <= currentYear + 1; i++) {
+                    yearSelect.innerHTML += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}</option>`;
+                }
+
+                monthSelect.innerHTML = '';
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                for (let i = 0; i < 12; i++) {
+                    monthSelect.innerHTML += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${monthNames[i]}</option>`;
+                }
+
+                const updateTable = () => {
+                    const selectedYear = parseInt(yearSelect.value, 10);
+                    const selectedMonth = parseInt(monthSelect.value, 10);
+                    generateOvertimeTable(selectedYear, selectedMonth);
+                };
+                yearSelect.addEventListener('change', updateTable);
+                monthSelect.addEventListener('change', updateTable);
+            }
+
             window.AddOvertime = async function() {
                 await initializeLeavePlan(); // Ensure both employees and leaves are fetched
                 populateMonthYearSelectors();
-                generateOvertimeTable();
+                generateOvertimeTable(); // Initial generation for the current month
             };
             window.toggleOtTableEdit = function(button) { 
                 isOtTableEditable = !isOtTableEditable;
                 document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
-                    // Only make non-leave cells editable
                     if (!input.classList.contains('leave-entry')) {
                         input.readOnly = !isOtTableEditable;
                     }
@@ -369,22 +410,32 @@
                     const daily_data = {};
                     row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`).forEach(input => {
                         const value = input.value.trim();
-                        if (value !== '') {
-                            // Save both numeric OT and string-based leave types
-                            daily_data[input.dataset.day] = value;
-                        }
+                        if (value !== '') { daily_data[input.dataset.day] = value; }
                     });
                     const total_ot = calculateOtForEmployee(employeeId);
                     payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data, total_ot });
                 });
                 try {
                     const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error((await response.json()).error || 'Server error');
+                    if (!response.ok) {
+                        let errorMessage = 'Server error during OT submission.';
+                        try {
+                            const err = await response.json();
+                            errorMessage = err.error || JSON.stringify(err);
+                        } catch(e) {
+                            errorMessage = `Request failed with status ${response.status}. Could not parse error response.`;
+                        }
+                        throw new Error(errorMessage);
+                    }
                     alert("Overtime has been submitted successfully!");
                     await fetchTableData(); 
                     switchToPage('#home-section');
                     const homeNavItem = document.querySelector('a[href="#home-section"]');
-                    if(homeNavItem) { homeNavItem.classList.add('active'); moveLamp(homeNavItem); }
+                    if(homeNavItem) { 
+                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                        homeNavItem.classList.add('active'); 
+                        moveLamp(homeNavItem); 
+                    }
                 } catch (error) { console.error("Failed to submit overtime:", error); alert(`Submission failed: ${error.message}`); }
             };
             async function generateOvertimeTable(year, month) {
@@ -418,8 +469,8 @@
                 const groupedEmployees = allEmployees.reduce((acc, emp) => { (acc[emp.shift] = acc[emp.shift] || []).push(emp); return acc; }, {});
                 let bodyHtml = "<tbody>";
                 ['Dayshift', 'Nightshift', 'Unassigned'].forEach(shift => {
-                    if (groupedEmployees[shift]) {
-                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
+                    if (groupedEmployees[shift] && groupedEmployees[shift].length > 0) {
+                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 2}">${shift}</td></tr>`;
                         groupedEmployees[shift].forEach(emp => {
                             const otData = existingOtDataMap.get(emp.id_number) || {};
                             bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
@@ -429,7 +480,7 @@
                                 let dayValue = otData[day] || '';
                                 let cellClass = 'ot-input'; let isReadonly = true;
                                 if (onLeave) { dayValue = onLeave.type; cellClass += ' leave-entry'; } 
-                                else if (isOtTableEditable) { isReadonly = false; }
+                                else if (isOtTableEditable) { isReadonly = false; cellClass += ' ot-hours-entry'; }
                                 bodyHtml += `<td><input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${isReadonly ? 'readonly' : ''}></td>`;
                             }
                             bodyHtml += "</tr>";
@@ -440,7 +491,7 @@
                 document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
                 document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { updateOtPreview(input.dataset.employeeId); });
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
-                const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]');
                 if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
                 isOtTableEditable = false; // Reset edit state
             }
@@ -450,9 +501,9 @@
 
             // --- Navigation and Initialization ---
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
-            function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`,navItems.forEach(e=>{e.style.backgroundColor=""}),e.style.backgroundColor="rgb(var(--muted))"}
+            function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`}
             window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
-            navItems.forEach(item=>{item.addEventListener("click",e=>{e.preventDefault();navItems.forEach(e=>e.classList.remove("active"));item.classList.add("active");moveLamp(item);if(item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } switchToPage(item.getAttribute("href"));})});
+            navItems.forEach(item=>{item.addEventListener("click",e=>{e.preventDefault();navItems.forEach(e=>e.classList.remove("active"));item.classList.add("active");moveLamp(item);if(item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } if(item.getAttribute('href') === '#overtime-entry-section') { AddOvertime(); } switchToPage(item.getAttribute("href"));})});
             window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
             (async () => {
                 renderMarqueeSection();
