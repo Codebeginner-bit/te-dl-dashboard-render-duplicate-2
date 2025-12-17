@@ -103,7 +103,13 @@
         footer small {font-size: 0.875rem;}
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
-        .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
+            .navbar-container {
+                top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
+            .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
+            .nav-item { padding: 0.5rem; border-radius: 4px; }
+            .navbar-lamp { display: none; }
+            .nav-item.active { background-color: rgba(0,123,255,0.1); }
+            .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
             .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
             .leave-plan-header .date-selector-container { flex-direction: column; }
             .leave-site-section { padding: 15px; }
@@ -122,7 +128,6 @@
             .leave-table td:nth-of-type(5)::before { content: "Days"; }
             .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }}
          @media (max-width: 480px) {
-            .testimonial-card, .site-link-card {width: 100%;}
             #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) { min-width: 150px; }
             #ot-entry-table th:nth-child(2), #ot-entry-table td:nth-child(2) { left: 150px; min-width: 60px; }
             #ot-entry-table th:nth-child(3), #ot-entry-table td:nth-child(3) { left: 210px; min-width: 80px; }}
@@ -671,6 +676,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
