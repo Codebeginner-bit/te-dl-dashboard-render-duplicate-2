@@ -111,31 +111,37 @@
     </div>
 
     <!-- === OVERTIME SECTION === -->
-    <div id="ot-entry-controls">
-    <h2 id="ot-entry-month-title"></h2>
-    <div class="filter-container" style="display: flex; gap: 10px; align-items: center;">
-        <label for="ot-site-filter">Filter by:</label>
-        <select id="ot-site-filter" onchange="filterOvertimeTable()">
-            <option value="All">All Sites</option>
-            <option value="N2">N2</option>
-            <option value="A1">A1</option>
-            <option value="A3">A3</option>
-        </select>
-        <select id="ot-shift-filter" onchange="filterOvertimeTable()">
-            <option value="All">All Shifts</option>
-            <option value="Dayshift">Dayshift</option>
-            <option value="Nightshift">Nightshift</option>
-            <option value="Unassigned">Unassigned</option>
-        </select>
-    </div>
-    <button onclick="toggleOtTableEdit(this)">Edit</button>
-    <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
-    <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
-</div>
-    <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
-        <label for="ot-month-select">Select Date:</label>
-        <select id="ot-month-select"></select>
-        <select id="ot-year-select"></select>
+        <div id="overtime-entry-section" class="page-section">
+        <div id="ot-entry-controls">
+            <h2 id="ot-entry-month-title"></h2>
+            <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
+                <label for="ot-month-select">Select Date:</label>
+                <select id="ot-month-select"></select>
+                <select id="ot-year-select"></select>
+            </div>
+
+            <div class="filter-container" style="display: flex; gap: 10px; align-items: center;">
+                <label for="ot-site-filter">Filter by:</label>
+                <select id="ot-site-filter" onchange="filterOvertimeTable()">
+                    <option value="All">All Sites</option>
+                    <option value="N2">N2</option>
+                    <option value="A1">A1</option>
+                    <option value="A3">A3</option>
+                </select>
+                <select id="ot-shift-filter" onchange="filterOvertimeTable()">
+                    <option value="All">All Shifts</option>
+                    <option value="Dayshift">Dayshift</option>
+                    <option value="Nightshift">Nightshift</option>
+                    <option value="Unassigned">Unassigned</option>
+                </select>
+            </div>
+
+            <button onclick="toggleOtTableEdit(this)">Edit</button>
+            <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
+            <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
+        </div>
+        <div class="ot-entry-table-container" id="ot-entry-table-wrapper">
+        </div>
     </div>
     
     <!-- === LEAVE PLAN SECTION === -->
@@ -634,6 +640,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
