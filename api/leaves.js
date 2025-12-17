@@ -5,26 +5,39 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-// The main handler for the /api/leaves endpoint
 export default async function handler(req, res) {
-  const { id } = req.query; 
+  const { id, month_year } = req.query; 
+
   switch (req.method) {
     case 'GET': {
-      // Fetch all leaves, ordered by start date
-      const { data, error } = await supabase.from('leaves').select('*').order('start_date', { ascending: false });
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json(data);
+      try {
+        let query = supabase.from('leaves').select('*');
+
+        if (month_year) {
+          const [year, month] = month_year.split('-').map(Number);
+          const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+          const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+
+          query = query.lte('start_date', endDate).gte('end_date', startDate);
+        }
+
+        const { data, error } = await query.order('start_date', { ascending: false });
+
+        if (error) throw error;
+        return res.status(200).json(data);
+
+      } catch (error) {
+        return res.status(500).json({ error: error.message });
+      }
     }
     
     case 'POST': {
-      // Create a new leave record
       const { data, error } = await supabase.from('leaves').insert([req.body]).select();
       if (error) return res.status(500).json({ error: error.message });
       return res.status(201).json(data);
     }
 
     case 'PUT': {
-      // Update an existing leave record
       if (!id) return res.status(400).json({ error: 'Leave ID is required for update' });
       const { data, error } = await supabase.from('leaves').update(req.body).eq('id', id).select();
       if (error) return res.status(500).json({ error: error.message });
@@ -35,7 +48,7 @@ export default async function handler(req, res) {
       if (!id) return res.status(400).json({ error: 'Leave ID is required for deletion' });
       const { error } = await supabase.from('leaves').delete().eq('id', id);
       if (error) return res.status(500).json({ error: error.message });
-      return res.status(204).send(); // 204 No Content for successful deletion
+      return res.status(204).send();
     }
 
     default:
