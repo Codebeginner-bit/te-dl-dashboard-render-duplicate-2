@@ -101,61 +101,65 @@
         .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
-        @media (max-width: 768px) { body {padding: 0.5rem; padding-bottom: 80px;}
-        .navbar-container {top: auto;bottom: 0;left: 0;right: 0;transform: translateY(0);width: 100%;border-radius: 0;background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px);border-top: 1px solid rgb(var(--border));}
-        .navbar {flex-direction: row;justify-content: space-around;width: 100%;padding: 0.25rem 0;gap: 0;border-radius: 0;}
-        .nav-item {padding: 0.5rem;border-radius: 4px;}
-        .navbar-lamp {display: none;}
-        .nav-item.active { background-color: rgba(0,123,255,0.1);}
-        h1 { font-size: 1.75rem; }
-        h2 { font-size: 1.3rem; }
-        .search-container { flex-direction: column; gap: 0.5rem; align-items: stretch; }
-        .modal-content { width: 95%; padding: 20px 15px; }
-        .overtime-table-container {overflow-x: hidden;border: none;box-shadow: none;background: transparent;}
-        #overtimeTable { border: none; }
-        #overtimeTable thead { display: none; }
-        #overtimeTable, #overtimeTable tbody, #overtimeTable tr, #overtimeTable td {display: block;width: 100%;}
-        #overtimeTable tr {margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 8px; padding: 0.5rem; background-color: white;}
-        #overtimeTable td {text-align: right; padding-left: 50%;position: relative; border: none; border-bottom: 1px solid #eee; padding-top: 0.75rem; padding-bottom: 0.75rem;white-space: normal;}
-        #overtimeTable tr td:last-child { border-bottom: none; }
-        #overtimeTable td::before {content: ''; position: absolute;left: 6px;width: 45%;padding-right: 10px;white-space: nowrap;text-align: left;font-weight: bold;color: #333;}
-        #overtimeTable td:nth-of-type(1)::before { content: "Actions"; }
-        #overtimeTable td:nth-of-type(2)::before { content: "Site"; }
-        #overtimeTable td:nth-of-type(3)::before { content: "Dept"; }
-        #overtimeTable td:nth-of-type(4)::before { content: "Emp. ID"; }
-        #overtimeTable td:nth-of-type(5)::before { content: "Chinese Name"; }
-        #overtimeTable td:nth-of-type(6)::before { content: "Dorm"; }
-        #overtimeTable td:nth-of-type(7)::before { content: "English Name"; }
-        #overtimeTable td:nth-of-type(8)::before { content: "Shift"; }
-        #overtimeTable td:nth-of-type(9)::before { content: "Plan/Actual"; }
-        #overtimeTable td:nth-of-type(10)::before { content: "Total OT"; }
-        #overtimeTable td:nth-of-type(1) {text-align: center; padding-left: 0;}
-        .leave-plan-header {grid-template-columns: 1fr;gap: 1rem;}
-        .leave-plan-header h2,
-        .leave-plan-header .date-selector-container,
-        .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
-        .leave-plan-header .date-selector-container { flex-direction: column; }
-        .leave-site-section { padding: 15px; }
-        .leave-table thead { display: none; }
-        .leave-table { border: none; }
-        .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
-        .leave-table tr {margin-bottom: 1rem;border: 1px solid #dee2e6;border-radius: 8px;padding: 0.5rem}
-        .leave-table td {text-align: right;padding-left: 40%;position: relative;border: none;border-bottom: 1px solid #f1f1f1;padding-top: 0.75rem;padding-bottom: 0.75rem;white-space: normal;}
-        .leave-table tr td:last-child { border-bottom: none; }
-        .leave-table td::before {content: '';position: absolute;left: 6px;width: 35%;padding-right: 10px;white-space: nowrap;text-align: left;font-weight: bold;}
-        .leave-table td:nth-of-type(1)::before { content: "Actions"; }
-        .leave-table td:nth-of-type(2)::before { content: "Name"; }
-        .leave-table td:nth-of-type(3)::before { content: "ID"; }
-        .leave-table td:nth-of-type(4)::before { content: "Date"; }
-        .leave-table td:nth-of-type(5)::before { content: "Days"; }
-        .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }
-        .leave-table td:nth-of-type(1) {text-align: center;padding-left: 0;}}
+         @media (max-width: 768px) {
+            body {padding: 1rem 0.5rem 80px 0.5rem; }
+            .navbar-container {
+                top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
+            .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
+            .nav-item { padding: 0.5rem; border-radius: 4px; }
+            .navbar-lamp { display: none; }
+            .nav-item.active { background-color: rgba(0,123,255,0.1); }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; }
+            .modal-content { width: 95%; padding: 20px 15px; }
+            .search-container {flex-direction: column; gap: 0.75rem; align-items: stretch;}
+            .search-container input, .search-container button {width: 100%; box-sizing: border-box;}
+            .overtime-table-container {overflow-x: hidden; border: none; box-shadow: none; background: transparent;}
+            #overtimeTable { border: none; }
+            #overtimeTable thead { display: none; }
+            #overtimeTable, #overtimeTable tbody, #overtimeTable tr, #overtimeTable td {display: block; width: 100%;}
+            #overtimeTable tr {margin-bottom: 1rem; border: 1px solid #ddd;border-radius: 8px; padding: 0.5rem; background-color: white;}
+            #overtimeTable td {text-align: right; padding-left: 50%; position: relative;border: none; border-bottom: 1px solid #eee; padding-top: 0.75rem; padding-bottom: 0.75rem; white-space: normal;}
+            #overtimeTable tr td:last-child { border-bottom: none; }
+            #overtimeTable td::before {position: absolute; left: 10px; width: 45%;white-space: nowrap; text-align: left; font-weight: bold; color: #333;}
+            #overtimeTable td:nth-of-type(1) { padding-left: 0; text-align: center; }
+            #overtimeTable td:nth-of-type(1)::before { content: ""; }
+            #overtimeTable td:nth-of-type(2)::before { content: "Site"; }
+            #overtimeTable td:nth-of-type(3)::before { content: "Dept"; }
+            #overtimeTable td:nth-of-type(4)::before { content: "Emp. ID"; }
+            #overtimeTable td:nth-of-type(5)::before { content: "Chinese Name"; }
+            #overtimeTable td:nth-of-type(6)::before { content: "Dorm"; }
+            #overtimeTable td:nth-of-type(7)::before { content: "English Name"; }
+            #overtimeTable td:nth-of-type(8)::before { content: "Shift"; }
+            #overtimeTable td:nth-of-type(9)::before { content: "Plan/Actual"; }
+            #overtimeTable td:nth-of-type(10)::before { content: "Total OT"; }
+            #ot-entry-controls {flex-direction: column; align-items: stretch; gap: 0.75rem;}
+            #ot-entry-controls .date-selector-container,
+            #ot-entry-controls .filter-container {justify-content: center; flex-wrap: wrap; gap: 0.5rem;}
+            #ot-entry-table {width: auto;}
+            .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
+            .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
+            .leave-plan-header .date-selector-container { flex-direction: column; }
+            .leave-site-section { padding: 15px; }
+            .leave-table thead { display: none; }
+            .leave-table { border: none; }
+            .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
+            .leave-table tr {margin-bottom: 1rem; border: 1px solid #dee2e6;border-radius: 8px; padding: 0.5rem;}
+            .leave-table td {text-align: right; padding-left: 40%; position: relative;border: none; border-bottom: 1px solid #f1f1f1;padding-top: 0.75rem; padding-bottom: 0.75rem; white-space: normal;}
+            .leave-table tr td:last-child { border-bottom: none; }
+            .leave-table td::before {position: absolute; left: 10px; width: 35%; white-space: nowrap; text-align: left; font-weight: bold;}
+            .leave-table td:nth-of-type(1) { padding-left: 0; text-align: center; }
+            .leave-table td:nth-of-type(1)::before { content: ""; }
+            .leave-table td:nth-of-type(2)::before { content: "Name"; }
+            .leave-table td:nth-of-type(3)::before { content: "ID"; }
+            .leave-table td:nth-of-type(4)::before { content: "Date"; }
+            .leave-table td:nth-of-type(5)::before { content: "Days"; }
+            .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }}
         @media (max-width: 480px) {
-        h1 { font-size: 1.5rem;}
-        .testimonial-card, .site-link-card {width: 100%;}
-        #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) { min-width: 150px; }
-        #ot-entry-table th:nth-child(2), #ot-entry-table td:nth-child(2) { left: 150px; }
-        #ot-entry-table th:nth-child(3), #ot-entry-table td:nth-child(3) { left: 230px; }}
+            .testimonial-card, .site-link-card {width: 100%;}
+            #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) { min-width: 150px; }
+            #ot-entry-table th:nth-child(2), #ot-entry-table td:nth-child(2) { left: 150px; min-width: 60px; }
+            #ot-entry-table th:nth-child(3), #ot-entry-table td:nth-child(3) { left: 210px; min-width: 80px; }}
     </style>
 </head>
 <body>
@@ -701,6 +705,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
