@@ -60,6 +60,9 @@
         #ot-entry-table th, #ot-entry-table td { border: 1px solid #ccc; padding: 4px; text-align: center; min-width: 60px; }
         #ot-entry-table thead th { background-color: #f2f2f2; font-weight: bold; position: sticky; top: 0; z-index: 2; }
         #ot-entry-table td:first-child { font-weight: bold; background-color: #f8f9fa; position: sticky; left: 0; z-index: 1; text-align: left; padding-left: 8px; }
+        #ot-entry-controls .filter-container {display: flex; gap: 10px; align-items: center;}
+        #ot-entry-controls .filter-container label {font-weight: 600; font-size: 14px; border: none; background-color: transparent;}
+        #ot-entry-controls .filter-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}        
         .weekend-header { background-color: #ffff99 !important; }
         .shift-header-row td { background-color: #6c757d; color: white; font-weight: bold; text-align: center; }
         .ot-input { width: 100%; border: 1px solid transparent; text-align: center; background-color: transparent; padding: 4px 2px; box-sizing: border-box; border-radius: 3px; }
@@ -108,20 +111,33 @@
     </div>
 
     <!-- === OVERTIME SECTION === -->
-    <div id="overtime-entry-section" class="page-section">
-        <div id="ot-entry-controls">
-            <h2 id="ot-entry-month-title"></h2>
-            <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
-                <label for="ot-month-select">Select Date:</label>
-                <select id="ot-month-select"></select>
-                <select id="ot-year-select"></select>
-            </div>
-            <button onclick="toggleOtTableEdit(this)">Edit</button>
-            <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
-            <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
-        </div>
-        <div class="ot-entry-table-container" id="ot-entry-table-wrapper"></div>
+    <div id="ot-entry-controls">
+    <h2 id="ot-entry-month-title"></h2>
+    <div class="date-selector-container" style="display: flex; gap: 10px; align-items: center;">
+        <label for="ot-month-select">Select Date:</label>
+        <select id="ot-month-select"></select>
+        <select id="ot-year-select"></select>
     </div>
+    <div class="filter-container" style="display: flex; gap: 10px; align-items: center;">
+        <label for="ot-site-filter">Filter by:</label>
+        <select id="ot-site-filter" onchange="filterOvertimeTable()">
+            <option value="All">All Sites</option>
+            <option value="N2">N2</option>
+            <option value="A1">A1</option>
+            <option value="A3">A3</option>
+        </select>
+        <select id="ot-shift-filter" onchange="filterOvertimeTable()">
+            <option value="All">All Shifts</option>
+            <option value="Dayshift">Dayshift</option>
+            <option value="Nightshift">Nightshift</option>
+            <option value="Unassigned">Unassigned</option>
+        </select>
+    </div>
+    <button onclick="toggleOtTableEdit(this)">Edit</button>
+    <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
+    <button onclick="switchToPage('#home-section')">Back to Dashboard</button>
+</div>
+
     
     <!-- === LEAVE PLAN SECTION === -->
     <div id="leave-plan-section" class="page-section">
@@ -533,8 +549,8 @@
                     acc[leave.employee_id].push({ start: new Date(leave.start_date + 'T00:00:00'), end: new Date(leave.end_date + 'T00:00:00'), type: (leave.leave_type.match(/\b(\w)/g) || []).join('').toUpperCase() || 'LEAVE' });
                     return acc;
                 }, {});
-
-                let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
+                
+                let headerHtml = '<thead><tr><th>Employee Name</th><th>Site</th><th>Shift</th>', dayRow = '<tr><th>Day</th><th></th><th></th>';
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 for (let day = 1; day <= daysInMonth; day++) {
@@ -547,10 +563,14 @@
                 let bodyHtml = "<tbody>";
                 ['Dayshift', 'Nightshift', 'Unassigned'].forEach(shift => {
                     if (groupedEmployees[shift] && groupedEmployees[shift].length > 0) {
-                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
+                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 3}">${shift}</td></tr>`;
                         groupedEmployees[shift].forEach(emp => {
                             const otData = existingOtDataMap.get(emp.id_number) || {};
-                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}" data-site="${emp.site || ''}" data-shift="${emp.shift || 'Unassigned'}">`;
+                            bodyHtml += `<td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                            bodyHtml += `<td>${emp.site || ''}</td>`;
+                            bodyHtml += `<td>${emp.shift || 'Unassigned'}</td>`;
+
                             for (let day = 1; day <= daysInMonth; day++) {
                                 const currentDate = new Date(year, month, day);
                                 const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
@@ -571,8 +591,27 @@
                 const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]');
                 if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
                 isOtTableEditable = false;
+                filterOvertimeTable();
             }
+                window.filterOvertimeTable = function() {
+                const siteFilter = document.getElementById('ot-site-filter').value;
+                const shiftFilter = document.getElementById('ot-shift-filter').value;
+                const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
 
+                employeeRows.forEach(row => {
+                    const rowSite = row.dataset.site;
+                    const rowShift = row.dataset.shift;
+
+                    const siteMatch = (siteFilter === 'All' || rowSite === siteFilter);
+                    const shiftMatch = (shiftFilter === 'All' || rowShift === shiftFilter);
+
+                    if (siteMatch && shiftMatch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none'; 
+                    }
+                });
+            }
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;updateOtPreview(employeeId)}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
@@ -596,4 +635,5 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
