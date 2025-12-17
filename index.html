@@ -91,7 +91,7 @@
 <body>
 
     <div id="home-section" class="page-section active">
-        <h1>Welcome to TE-DL Dashboard</h1><p>One Team, One Goal</p>
+        <h1>Welcome to Test Engineer - DL Dashboard</h1><p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search by Name or Site"><button onclick="searchTable()">Search</button><button onclick="resetSearch()">Reset</button><button class="add-btn" onclick="showModalForEdit()">Add Member</button>
@@ -423,9 +423,112 @@
                 button.classList.toggle('del-btn', isOtTableEditable); 
             };
             
-            window.submitOvertime = async function() { /* This function can be implemented later */ };
+            window.submitOvertime = async function() {
+                if (!confirm("Are you sure you want to submit all OT hours? This will update the database.")) return;
+                const payload = [];
+                const employeeRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
+                employeeRows.forEach(row => {
+                    const employeeId = row.dataset.otRowId;
+                    if (!employeeId) return;
+                    const daily_data = {};
+                    const inputs = row.querySelectorAll(`.ot-input[data-employee-id="${employeeId}"]`);
+                    inputs.forEach(input => {
+                        if (input.value.trim() !== '') daily_data[input.dataset.day] = input.value.trim();
+                    });
+                    const total_ot = calculateOtForEmployee(employeeId);
+                    payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data: daily_data, total_ot: total_ot });
+                });
+                if (payload.length === 0) {
+                    alert("No employees found to submit overtime for.");
+                    return;
+                }
+                try {
+                    const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error || 'Server error during submission.');
+                    }
+                    alert("Overtime has been submitted successfully!");
+                    
+                    // After submitting, it re-fetches the data, updated totals from the backend.
+                    await fetchTableData();
 
-            async function generateOvertimeTable(year, month) { /* This function can be implemented later */ }
+                    switchToPage('#home-section');
+                    const homeNavItem = document.querySelector('a[href="#home-section"]');
+                    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                    if (homeNavItem) {
+                        homeNavItem.classList.add('active');
+                        moveLamp(homeNavItem);
+                    }
+                } catch (error) {
+                    console.error("Failed to submit overtime:", error);
+                    alert(`Submission failed: ${error.message}`);
+                }
+            };
+
+            async function generateOvertimeTable(year, month) {
+                const now = new Date();
+                year = (year === undefined) ? now.getFullYear() : year;
+                month = (month === undefined) ? now.getMonth() : month;
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
+                document.getElementById("ot-entry-month-title").textContent = `Overtime Entry Table`;
+                
+                let existingDataMap = new Map();
+                try {
+                    const res = await fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`);
+                    if (res.ok) {
+                        const existingRecords = await res.json();
+                        existingRecords.forEach(rec => { existingDataMap.set(rec.employee_id, rec.daily_data); });
+                    }
+                } catch (e) { console.error("Could not fetch existing OT data:", e); }
+
+                let headerHtml = '<thead><tr><th>Employee Name</th>', dayRow = '<tr><th>Day</th>';
+                const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    const weekendClass = isWeekend ? ' class="weekend-header"' : "";
+                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
+                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+                }
+                headerHtml += "</tr>", dayRow += "</tr>";
+                
+                const groupedEmployees = allEmployees.reduce((acc, emp) => { const shift = emp.shift || "Unassigned"; acc[shift] || (acc[shift] = []); acc[shift].push(emp); return acc; }, {});
+                let bodyHtml = "<tbody>";
+                ["Dayshift", "Nightshift", "Unassigned"].forEach(shift => {
+                    if (groupedEmployees[shift]) {
+                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 1}">${shift}</td></tr>`;
+                        groupedEmployees[shift].forEach(emp => {
+                            const employeeOtData = existingDataMap.get(emp.id_number) || {};
+                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}"><td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                            for (let day = 1; day <= daysInMonth; day++) {
+                                const dayValue = employeeOtData[day] || '';
+                                bodyHtml += `<td><input type="text" class="ot-input" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" readonly></td>`;
+                            }
+                            bodyHtml += "</tr>";
+                        });
+                    }
+                });
+                bodyHtml += "</tbody>";
+                document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
+
+                document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => {
+                    if (input.value) {
+                        styleInputCell(input);
+                        updateOtPreview(input.dataset.employeeId);
+                    }
+                });
+
+                isOtTableEditable = false;
+                const editButton = document.querySelector('#ot-entry-controls button:first-of-type');
+                if (editButton) {
+                  editButton.textContent = 'Edit';
+                  editButton.classList.remove('del-btn');
+                }
+            }
             function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;updateOtPreview(employeeId)}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
@@ -447,3 +550,4 @@
     </script>
 </body>
 </html>
+
