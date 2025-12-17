@@ -76,23 +76,27 @@
         .lamp-light { position:absolute; left:-0.4rem; top:50%; transform:translateY(-50%); width:0.25rem; height:1.5rem; background-color:var(--primary); border-radius:9999px 0 0 9999px; }
         .lamp-light::before, .lamp-light::after { content:''; position:absolute; border-radius:9999px; background-color:rgba(0,123,255,0.2); filter:blur(10px); }
         .lamp-light::before { width:1.5rem; height:3rem; top:-0.75rem; left:-0.5rem; } .lamp-light::after { width:1.5rem; height:2.25rem; top:-0.375rem; left:-0.25rem; }
-        #leave-plan-section { padding: 2rem 1rem; }
-        .leave-plan-header h2 { margin: 0; }
-        .leave-site-section { background-color: #f8f9fa; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 1000px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        .site-header { font-size: 1.5rem; font-weight: 600; text-align: center; padding: 10px; background-color: #e9ecef; border-radius: 8px; margin-bottom: 20px; }
-        .shift-header { font-size: 1.1rem; font-weight: bold; text-align: center; background-color: #f1f3f5; padding: 8px; border-top-left-radius: 8px; border-top-right-radius: 8px; }
-        .leave-table { width: 100%; margin-top: 0; margin-bottom: 25px; border: 1px solid #dee2e6; border-top: none; }
-        .leave-table th, .leave-table td { border: 1px solid #dee2e6; }
-        .leave-table thead th { background-color: #e9ecef; }
-        .leave-table tr:nth-child(even) { background-color: #f8f9fa; }
-        .leave-plan-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
-        .date-selector-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
+        #leave-plan-section {padding: 2rem 1rem;}
+        .leave-plan-header {display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem; max-width: 1000px; margin: 0 auto 2rem auto; }
+        .leave-plan-header h2 {grid-column: 2; margin: 0; text-align: center;}
+        .leave-plan-header .date-selector-container {grid-column: 1; grid-row: 1; justify-self: start; display: flex; align-items: center; gap: 0.5rem;}
+        .leave-plan-header .add-btn {grid-column: 3; grid-row: 1; justify-self: end;}
+        .date-selector-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
         .date-selector-container label {font-weight: 600; font-size: 14px; color: rgb(var(--foreground));}
+        .leave-site-section {background-color: #f8f9fa; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 1000px;box-shadow: 0 4px 8px rgba(0,0,0,0.05);}
+        .site-header {font-size: 1.5rem; font-weight: 600; text-align: center; padding: 10px; background-color: #e9ecef; border-radius: 8px; margin-bottom: 20px;}
+        .shift-header {font-size: 1.1rem; font-weight: bold; text-align: center; background-color: #f1f3f5; padding: 8px; border-top-left-radius: 8px; border-top-right-radius: 8px;}
+        .leave-table {width: 100%; margin-top: 0; margin-bottom: 25px; border: 1px solid #dee2e6; border-top: none;}
+        .leave-table th, .leave-table td {border: 1px solid #dee2e6;}
+        .leave-table thead th {background-color: #e9ecef;}
+        .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
+        footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
+        footer small {font-size: 0.875rem;}
     </style>
 </head>
 <body>
-
-    <div id="home-section" class="page-section active">
+        <!-- === HOME SECTION === -->
+        <div id="home-section" class="page-section active">
         <h1>Welcome to Test Engineer - DL Dashboard</h1><p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
         <div class="search-container">
@@ -103,6 +107,7 @@
         </div>
     </div>
 
+    <!-- === OVERTIME SECTION === -->
     <div id="overtime-entry-section" class="page-section">
         <div id="ot-entry-controls">
             <h2 id="ot-entry-month-title"></h2>
@@ -132,10 +137,12 @@
         <div id="leave-plan-content"></div>
     </div>
 
+    <!-- === LINK SECTION === -->
     <div id="links-section" class="page-section">
         <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
     </div>
-    
+
+    <!-- === ADD EMPLOYEE SECTION === -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Add Employee</h2>
@@ -155,6 +162,7 @@
         </div>
     </div>
 
+    <!-- === LEAVE PLAN SECTION === -->
     <div class="modal" id="leaveModal">
         <div class="modal-content">
             <h2 id="leaveModalTitle">Add Leave</h2>
@@ -176,6 +184,7 @@
         </div>
     </div>
 
+    <!-- === NAVIGATION BAR SECTION === -->
     <nav class="navbar-container" role="navigation"><div class="navbar"><div class="navbar-lamp"><div class="lamp-light"></div></div>
         <a href="#home-section" class="nav-item active"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span><span class="nav-text">HOME</span></a>
         <a href="#overtime-entry-section" onclick="AddOvertime()" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><span class="nav-text">OVERTIME</span></a>
@@ -184,6 +193,7 @@
     </div></nav>
 
     <script>
+        
         document.addEventListener("DOMContentLoaded", () => {
             const API_BASE = "/api"; 
             let allEmployees = []; 
@@ -191,6 +201,7 @@
             let allLeaves = [];
             let isAddingNewLeave = false, editingLeaveId = null;
 
+            // <!-- === DASHBOARD CAROUSEL DESIGN FOR TE MEMBERS AND SITE LINKS === -->
             const pioneerData = [
                 { name: "Jericho Sulapas, TE Spartan", quote: '"The past cannot be changed. The future is yet in your power."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
                 { name: "Brian Alban, TE Spartan", quote: "Change your life today. Don't gamble on the future, act now, without delay.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" },
@@ -201,7 +212,8 @@
             
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="Member picture"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
             function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
-            
+
+            // <!-- === API INTEGRATION === -->
             async function handleApiResponse(response) {
                 if (!response.ok) {
                     let errorMessage = `Request failed with status: ${response.status}`;
@@ -218,6 +230,7 @@
                 return response.json();
             }
 
+            // <!-- === DASSHBOARD FETCH DATA === -->
             window.fetchTableData = async function() {
                  try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
@@ -287,6 +300,7 @@
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
 
+            // <!-- === LEAVE SCRIPT  === -->
             function getCurrentMonthYear() {
                 const now = new Date();
                 return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -430,7 +444,8 @@
                     await filterLeaveByMonthYear();
                 } catch(error) { console.error("Delete leave error:", error.message); alert(`An error occurred during deletion: ${error.message}`); }
             };
-            
+
+            // <!-- === OVERTIME SCRIPT === -->
             let currentOtMonthYear = '';
             let isOtTableEditable = false;
             
@@ -577,5 +592,8 @@
             })();
         });
     </script>
+
+<footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
