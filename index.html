@@ -529,9 +529,10 @@
                   editButton.classList.remove('del-btn');
                 }
             }
-            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;updateOtPreview(employeeId)}}
-            function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
-            function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
+            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){const input=event.target,employeeId=input.dataset.employeeId;styleInputCell(input),updateOtPreview(employeeId)}}
+            function styleInputCell(input){const value=input.value.trim();input.classList.remove("ot-hours-entry","leave-entry"),value!==""&&(!isNaN(parseFloat(value))&&isFinite(value)?input.classList.add("ot-hours-entry"):input.classList.add("leave-entry"))}
+            function calculateOtForEmployee(employeeId) { const otInputs=document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`); let total = 0; otInputs.forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
+            function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const employeeRow = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (employeeRow) { const previewSpan = employeeRow.querySelector('.ot-total-preview'); if (previewSpan) { previewSpan.textContent = ` (Total: ${total.toFixed(1)})`; } } }
 
             const navItems=document.querySelectorAll(".nav-item"),lamp=document.querySelector(".navbar-lamp"),navbar=document.querySelector(".navbar"),pageSections=document.querySelectorAll(".page-section");
             function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`}
@@ -550,4 +551,5 @@
     </script>
 </body>
 </html>
+
 
