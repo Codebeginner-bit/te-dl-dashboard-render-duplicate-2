@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       try {
         const { data, error } = await supabase
           .from('overtime') 
-          .select('employee_id, total_ot') 
+          .select('employee_id, total_ot, daily_data') 
           .eq('month_year', month_year);
 
         if (error) throw error;
