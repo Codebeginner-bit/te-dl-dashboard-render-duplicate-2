@@ -144,19 +144,7 @@
             #ot-entry-table th:nth-child(1), 
             #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
             #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
-        .site-link-card { width: 340px; background-color: white; border: 1px solid rgb(var(--border)); border-radius: 0.75rem; padding: 1.5rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
-        .site-link-card .card-site-name { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .site-link-card .card-description { color: rgb(var(--muted-foreground)); margin-bottom: 1.5rem; min-height: 40px; }
-        .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-        .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
-        .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
          @media (max-width: 480px) {
-        .site-link-card { width: 340px; background-color: white; border: 1px solid rgb(var(--border)); border-radius: 0.75rem; padding: 1.5rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
-        .site-link-card .card-site-name { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .site-link-card .card-description { color: rgb(var(--muted-foreground)); margin-bottom: 1.5rem; min-height: 40px; }
-        .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-        .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
-        .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
             #ot-entry-table th:nth-child(2), 
             #ot-entry-table td:nth-child(2),
             #ot-entry-table th:nth-child(3), 
@@ -164,7 +152,7 @@
     </style>
 </head>
 <body>
-    <!-- === LOGIN FORM (Visible by default) === -->
+    <!-- === LOGIN FORM === -->
     <div id="login-section" class="login-container">
         <form id="login-form" class="login-form">
             <h1>Login</h1>
@@ -183,12 +171,12 @@
         </form>
     </div>
 
-    <!-- === MAIN DASHBOARD CONTAINER (Hidden by default) === -->
+    <!-- === MAIN DASHBOARD CONTAINER === -->
     <div id="dashboard-container" style="display: none;">
         <!-- === HOME SECTION === -->
         <div id="home-section" class="page-section">
             <div class="dashboard-header">
-                <h1>Welcome to Test Engineer - DL Dashboard</h1>
+                <h1>TE Dashboard</h1>
                 <button class="logout-btn" id="logout-button">Logout</button>
             </div>
             <p>One Team, One Goal</p>
@@ -248,7 +236,7 @@
 
         <!-- === LINK SECTION === -->
         <div id="links-section" class="page-section">
-            <div class="testimonials-container"><div class="testimonials-header"><h2 id="testimonials-title"></h2><p id="testimonials-description"></p></div><div id="testimonials-grid" class="testimonials-grid"></div></div>
+            <div class="testimonials-container"><div class="testimonials-header"><h2>Links For Each Site</h2><p>Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)</p></div><div id="testimonials-grid" class="testimonials-grid"><div class="site-link-card"><h3 class="card-site-name">N2</h3><p class="card-description">Find all relevant links for the N2 site here.</p><ul class="link-list"><li><a href="http://10.38.248.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f60h.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div><div class="site-link-card"><h3 class="card-site-name">A1</h3><p class="card-description">Find all relevant links for the A1 site here.</p><ul class="link-list"><li><a href="http://10.28.158.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f605.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div><div class="site-link-card"><h3 class="card-site-name">A3</h3><p class="card-description">Find all relevant links for the A3 site here.</p><ul class="link-list"><li><a href="http://10.28.156.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f606.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div></div></div>
         </div>
 
         <!-- === ADD EMPLOYEE MODAL === -->
@@ -326,14 +314,21 @@
 
             // --- AUTHENTICATION & APP INITIALIZATION ---
             async function initializeDashboard() {
-                const homeNavItem = document.querySelector('a.nav-item[href="#home-section"]');
+                let initialSectionId = location.hash;
+                if (!initialSectionId || !document.querySelector(initialSectionId)) {
+                    initialSectionId = '#home-section';
+                }
+                const initialNavItem = document.querySelector(`.nav-item[href="${initialSectionId}"]`);
                 navItems.forEach(i => i.classList.remove('active'));
-                homeNavItem.classList.add('active');
-                switchToPage(homeNavItem.getAttribute("href"));
+                if (initialNavItem) {
+                    initialNavItem.classList.add('active');
+                }
+                switchToPage(initialSectionId);
                 renderMarqueeSection();
-                renderSiteLinks();
                 await fetchTableData();
-                moveLamp(homeNavItem);
+                if(initialNavItem) {
+                    moveLamp(initialNavItem);
+                }
             }
 
             function showLogin() {
@@ -395,11 +390,9 @@
                 { name: "Kim Ryan Ramos, TE Spartan", quote: "There is only one corner of the universe you can be certain of improving, and that's your own self.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Kim.png"},
                 { name: "Joshua Almerol, TE DL", quote: '"Lost wealth is nothing, lost health is something, lost character is everything."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Joshua.png"}
             ];
-            const siteLinkData=[{siteName:"N2",description:"Find all relevant links for the N2 site here.",links:[{text:"FusionEye",href:"http://10.38.248.180/"},{text:"MIC",href:"https://f60h.cim.wistron.com/"}]},{siteName:"A1",description:"Find all relevant links for the A1 site here.",links:[{text:"FusionEye",href:"http://10.28.158.180/"},{text:"MIC",href:"https://f605.cim.wistron.com/"}]},{siteName:"A3",description:"Find all relevant links for the A3 site here.",links:[{text:"FusionEye",href:"http://10.28.156.180/"},{text:"MIC",href:"https://f606.cim.wistron.com/"}]}];
             
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="Member picture"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
-            function renderSiteLinks(){const c=document.getElementById("testimonials-title"),e=document.getElementById("testimonials-description"),t=document.getElementById("testimonials-grid");if(!t||!c||!e)return;c.textContent="Links For Each Site",e.textContent="Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)",t.innerHTML="",siteLinkData.forEach(c=>{const e=c.links.map(c=>`<li><a href="${c.href}" target="_blank" rel="noopener noreferrer">${c.text}</a></li>`).join("");t.innerHTML+=`<div class="site-link-card"><h3 class="card-site-name">${c.siteName}</h3><p class="card-description">${c.description}</p><ul class="link-list">${e}</ul></div>`})}
-
+            
             async function handleApiResponse(response) {
                 if (!response.ok) {
                     let errorMessage = `Request failed with status: ${response.status}`;
@@ -658,7 +651,3 @@
     </script>
 </body>
 </html>
-
-
-
-
