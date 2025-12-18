@@ -127,10 +127,21 @@
 
             // --- NAVIGATION LOGIC ---
             function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`}
-            const activeNavItem = document.querySelector(".nav-item.active");
-            if (activeNavItem) {
-                moveLamp(activeNavItem);
-            }
+            window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
+            
+            navItems.forEach(item=>{
+                if (item.getAttribute('href').startsWith('#')) {
+                    item.addEventListener("click", e => {
+                        e.preventDefault();
+                        navItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        moveLamp(item);
+                        if (item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } 
+                        if (item.getAttribute('href') === '#overtime-entry-section') { AddOvertime(); } 
+                        switchToPage(item.getAttribute("href"));
+                    });
+                }
+            });
             window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
         });
     </script>
