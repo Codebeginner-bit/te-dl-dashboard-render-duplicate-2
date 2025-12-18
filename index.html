@@ -295,68 +295,78 @@
             let isAddingNewLeave = false, editingLeaveId = null;
 
             // <!-- === login reference === -->
-            const loginSection = document.getElementById('login-section');
-            const dashboardContainer = document.getElementById('dashboard-container');
-            const loginForm = document.getElementById('login-form');
-            const loginError = document.getElementById('login-error');
-            const logoutButton = document.getElementById('logout-button');
-            const navItems = document.querySelectorAll(".nav-item");
-            const lamp = document.querySelector(".navbar-lamp");
-            const navbar = document.querySelector(".navbar");
-            const pageSections = document.querySelectorAll(".page-section");
-
-            async function initializeDashboard() {
-                renderMarqueeSection();
-                renderSiteLinks();
-                await fetchTableData();
-                
-            const initialActiveItem = document.querySelector('a.nav-item[href="#home-section"]');
-                if (initialActiveItem) {
-                    navItems.forEach(i => i.classList.remove('active'));
-                    initialActiveItem.classList.add('active');
-                    switchToPage(initialActiveItem.getAttribute("href"));
-                    moveLamp(initialActiveItem);
-                }
-            }
-
-            function showLogin() {
-                loginSection.style.display = 'flex';
-                dashboardContainer.style.display = 'none';
-                loginError.classList.add('hidden');
-                loginError.textContent = '';
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
-            }
-            async function showDashboard() {
-                loginSection.style.display = 'none';
-                dashboardContainer.style.display = 'block';
-                await initializeDashboard();
-            }
-
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                if (username === 'admin' && password === 'password') {
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    showDashboard();
-                } else {
-                    loginError.textContent = 'Invalid username or password.';
-                    loginError.classList.remove('hidden');
-                }
-            });
-
-            logoutButton.addEventListener('click', () => {
-                sessionStorage.removeItem('isLoggedIn');
-                window.location.reload();
-            });
-
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                showDashboard();
-            } else {
-                showLogin();
-            }
+        const loginSection = document.getElementById('login-section');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutButton = document.getElementById('logout-button');
             
+        async function initializeDashboard() {
+            renderMarqueeSection();
+            renderSiteLinks();
+            await fetchTableData();
+            
+            const initialActiveItem = document.querySelector('a.nav-item[href="#home-section"]');
+            if (initialActiveItem) {
+                navItems.forEach(i => i.classList.remove('active'));
+                initialActiveItem.classList.add('active');
+                switchToPage(initialActiveItem.getAttribute("href"));
+                moveLamp(initialActiveItem);
+            }
+        }
+
+        function showLogin() {
+            loginSection.style.display = 'flex';
+            dashboardContainer.style.display = 'none';
+        }
+
+        async function showDashboard() {
+            loginSection.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+            await initializeDashboard();
+        }
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.classList.add('hidden'); 
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    loginError.textContent = result.error || 'An unknown error occurred.';
+                    loginError.classList.remove('hidden');
+                } else {
+                    localStorage.setItem('authToken', result.token);
+                    await showDashboard();
+                }
+            } catch (error) {
+                console.error('Login request failed:', error);
+                loginError.textContent = 'Could not connect to the server. Please try again later.';
+                loginError.classList.remove('hidden');
+            }
+        });
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('authToken'); 
+            window.location.reload(); 
+        });
+        
+        if (localStorage.getItem('authToken')) {
+            showDashboard();
+        } else {
+            showLogin();
+        }
+    });
 
             // <!-- === DASHBOARD CAROUSEL DESIGN FOR TE MEMBERS AND SITE LINKS === -->
             const pioneerData = [
@@ -776,6 +786,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
