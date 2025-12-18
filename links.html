@@ -115,10 +115,9 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const logoutButton = document.getElementById('logout-button');
             const lamp = document.querySelector(".navbar-lamp");
             const navbar = document.querySelector(".navbar");
-
+            
             // --- AUTHENTICATION ---
             logoutButton.addEventListener('click', () => {
                 localStorage.removeItem('authToken'); 
@@ -126,23 +125,20 @@
             });
 
             // --- NAVIGATION LOGIC ---
-            function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`}
-            window.switchToPage=function(targetId){pageSections.forEach(e=>e.classList.remove("active"));const activeSection=document.querySelector(targetId);if(activeSection)activeSection.classList.add("active")};
+            function moveLamp(element) {
+                if (!element || !lamp || !navbar) return;
+                const targetRect = element.getBoundingClientRect();
+                const navbarRect = navbar.getBoundingClientRect();
+                lamp.style.top = `${targetRect.top - navbarRect.top}px`;
+                lamp.style.height = `${targetRect.height}px`;
+            }
+
+            // --- INITIALIZATION --->
+            if (activeNavItem) {
+                setTimeout(() => moveLamp(activeNavItem), 50);
+            }
             
-            navItems.forEach(item=>{
-                if (item.getAttribute('href').startsWith('#')) {
-                    item.addEventListener("click", e => {
-                        e.preventDefault();
-                        navItems.forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        moveLamp(item);
-                        if (item.getAttribute('href') === '#leave-plan-section') { initializeLeavePlan(); } 
-                        if (item.getAttribute('href') === '#overtime-entry-section') { AddOvertime(); } 
-                        switchToPage(item.getAttribute("href"));
-                    });
-                }
-            });
-            window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
+            window.addEventListener("resize", () => moveLamp(document.querySelector(".nav-item.active")));
         });
     </script>
 </body>
