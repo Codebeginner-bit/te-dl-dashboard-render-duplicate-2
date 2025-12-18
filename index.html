@@ -144,7 +144,19 @@
             #ot-entry-table th:nth-child(1), 
             #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
             #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
+        .site-link-card { width: 340px; background-color: white; border: 1px solid rgb(var(--border)); border-radius: 0.75rem; padding: 1.5rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
+        .site-link-card .card-site-name { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .site-link-card .card-description { color: rgb(var(--muted-foreground)); margin-bottom: 1.5rem; min-height: 40px; }
+        .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+        .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
+        .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
          @media (max-width: 480px) {
+        .site-link-card { width: 340px; background-color: white; border: 1px solid rgb(var(--border)); border-radius: 0.75rem; padding: 1.5rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
+        .site-link-card .card-site-name { text-align: center; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .site-link-card .card-description { color: rgb(var(--muted-foreground)); margin-bottom: 1.5rem; min-height: 40px; }
+        .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+        .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
+        .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
             #ot-entry-table th:nth-child(2), 
             #ot-entry-table td:nth-child(2),
             #ot-entry-table th:nth-child(3), 
@@ -646,6 +658,7 @@
     </script>
 </body>
 </html>
+
 
 
 
