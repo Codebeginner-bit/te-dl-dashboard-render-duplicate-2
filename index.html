@@ -101,6 +101,12 @@
         .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
+        .login-container {background-color: #fff; padding: 2rem; border-raidus: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 1); width: 100%; max-width: 400px;}
+        .login-form h1{text-align: center; color: #333; margin-bottom: 1.5rem;}
+        .input-group{margin-bottom: 1rem;}
+        .input-group input{width: 100%; padding: 10px; border: 1px solid #ddd; border-raidus:4px; box-sizing: border-box;font-size: 1rem;}
+        .button{width: 100%; padding: 10px; background-color: #5c67f2; border: none;border-radius: 4px; color: white; font-size: 1.1rem; cursor: pointer; margin-top: 1rem;}
+        button:hover {background-color: #4a54e1;}
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
             .navbar-container {
@@ -138,6 +144,22 @@
     </style>
 </head>
 <body>
+        <!-- === LOGIN FORM === -->
+        <div class="login-container">  
+        <form action="#" method="POST" class="login-form">
+        <h1>Login</h1>
+        <div class="input-group">
+        <label for="username"> Enter your username </label>
+        <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+        <label for="password"> Enter your username </label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Login</button>
+        </div>
+        </form>
+        </div>
+            
         <!-- === HOME SECTION === -->
         <div id="home-section" class="page-section active">
         <h1>Welcome to Test Engineer - DL Dashboard</h1><p>One Team, One Goal</p>
@@ -680,6 +702,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
