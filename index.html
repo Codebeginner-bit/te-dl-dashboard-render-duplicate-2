@@ -773,20 +773,18 @@
             window.addEventListener("resize",()=>moveLamp(document.querySelector(".nav-item.active")));
             
             (async () => {
-                renderMarqueeSection();
-                renderSiteLinks();
-                await fetchTableData(); 
-                const initialActiveItem=document.querySelector(".nav-item.active");
-                if(initialActiveItem){ moveLamp(initialActiveItem); switchToPage(initialActiveItem.getAttribute("href")); }
+            renderMarqueeSection();
+            renderSiteLinks();
+            await fetchTableData();
+            const initialActiveItem = document.querySelector(".nav-item.active");
+            if (initialActiveItem) {moveLamp(initialActiveItem);switchToPage(initialActiveItem.getAttribute("href"));}
             })();
-        });
-
-    });
     </script>
 
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
