@@ -101,46 +101,17 @@
         .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
-        .login-container {display: flex;align-items: center;justify-content: center;height: 100vh;background-color: rgb(var(--muted));}
+        .login-container {display: flex;align-items: center;justify-content: center;min-height: 100vh;background-color: rgb(var(--muted));}
         .login-form {background-color: #fff;padding: 2rem;border-radius: 8px;box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);width: 100%;max-width: 400px;}
-        .login-form h1 {text-align: center;
-            color: rgb(var(--foreground));
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-        }
-        .input-group {
-            margin-bottom: 1rem;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: rgb(var(--muted-foreground));
-        }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgb(var(--border));
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .input-group button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 4px;
-            color: white;
-            font-size: 1.1rem;
-            cursor: pointer;
-            margin-top: 1rem;}
+        .login-form h1 {text-align: center; color: rgb(var(--foreground)); margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: rgb(var(--muted-foreground)); }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid rgb(var(--border)); border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+        .input-group button { width: 100%; padding: 12px; background-color: var(--primary); border: none; border-radius: 4px; color: white; font-size: 1.1rem; cursor: pointer; margin-top: 1rem;}
         .input-group button:hover {background-color: #0056b3;}
         #login-error {color: red; text-align: center; margin-top: 0.5rem;}
-        .dashboard-header {display: flex; justify-content: space-between; align-items: center;}
-        .logout-btn {padding: 8px 16px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
-        .logout-btn:hover {background-color: #c0392b;}
+        .dashboard-header {display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;}
+        .logout-btn {padding: 8px 16px; background-color: #c0392b;}
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
             .navbar-container {
@@ -196,7 +167,8 @@
             </div>
         </form>
     </div>
-            
+
+         <div id="dashboard-container" style="display: none;">
         <!-- === HOME SECTION === -->
         <div id="home-section" class="page-section active">
         <h1>Welcome to Test Engineer - DL Dashboard</h1><p>One Team, One Goal</p>
@@ -321,6 +293,69 @@
             let isAddingNew = false, editingRow = null; 
             let allLeaves = [];
             let isAddingNewLeave = false, editingLeaveId = null;
+
+            // <!-- === login reference === -->
+            const loginSection = document.getElementById('login-section');
+            const dashboardContainer = document.getElementById('dashboard-container');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const logoutButton = document.getElementById('logout-button');
+            const navItems = document.querySelectorAll(".nav-item");
+            const lamp = document.querySelector(".navbar-lamp");
+            const navbar = document.querySelector(".navbar");
+            const pageSections = document.querySelectorAll(".page-section");
+
+            async function initializeDashboard() {
+                renderMarqueeSection();
+                renderSiteLinks();
+                await fetchTableData();
+                
+            const initialActiveItem = document.querySelector('a.nav-item[href="#home-section"]');
+                if (initialActiveItem) {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    initialActiveItem.classList.add('active');
+                    switchToPage(initialActiveItem.getAttribute("href"));
+                    moveLamp(initialActiveItem);
+                }
+            }
+
+            function showLogin() {
+                loginSection.style.display = 'flex';
+                dashboardContainer.style.display = 'none';
+                loginError.classList.add('hidden');
+                loginError.textContent = '';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+            async function showDashboard() {
+                loginSection.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                await initializeDashboard();
+            }
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                if (username === 'admin' && password === 'password') {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    showDashboard();
+                } else {
+                    loginError.textContent = 'Invalid username or password.';
+                    loginError.classList.remove('hidden');
+                }
+            });
+
+            logoutButton.addEventListener('click', () => {
+                sessionStorage.removeItem('isLoggedIn');
+                window.location.reload();
+            });
+
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showDashboard();
+            } else {
+                showLogin();
+            }
             
 
             // <!-- === DASHBOARD CAROUSEL DESIGN FOR TE MEMBERS AND SITE LINKS === -->
@@ -741,6 +776,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
