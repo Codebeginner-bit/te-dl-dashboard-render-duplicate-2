@@ -127,20 +127,18 @@
             .leave-table td:nth-of-type(4)::before { content: "Date"; }
             .leave-table td:nth-of-type(5)::before { content: "Days"; }
             .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }}
-        #ot-entry-controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        #ot-entry-controls select, #ot-entry-controls label { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; }
-        #ot-entry-controls label { border: none; font-weight: 600; }
-        .ot-entry-table-container { width: 100%; overflow-x: auto; }
-        #ot-entry-table { border-collapse: collapse; width: 100%; font-size: 12px; }
-        #ot-entry-table th, #ot-entry-table td { border: 1px solid #ccc; padding: 4px; text-align: center; min-width: 60px; }
-        #ot-entry-table thead th { background-color: #f2f2f2; font-weight: bold; position: sticky; top: 0; z-index: 2; }
-        #ot-entry-table thead th:nth-child(1), {z-index: 3;}
-        #ot-entry-controls .filter-container {display: flex; gap: 10px; align-items: center;}
-        #ot-entry-controls .filter-container label {font-weight: 600; font-size: 14px; border: none; background-color: transparent;}
-        #ot-entry-controls .filter-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
+            #ot-entry-table th:nth-child(1), 
+            #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
+            #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
+            #ot-entry-table th:nth-child(2), 
+            #ot-entry-table td:nth-child(2),
+            #ot-entry-table th:nth-child(3), 
+            #ot-entry-table td:nth-child(3) {position: static;}}
          @media (max-width: 480px) {
-        #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) {position: sticky; left: 0; z-index: 1;  background-color: #f8f9fa; min-width: 220px;}
-        #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left; padding-left: 8px;}
+            #ot-entry-table th:nth-child(2), 
+            #ot-entry-table td:nth-child(2),
+            #ot-entry-table th:nth-child(3), 
+            #ot-entry-table td:nth-child(3) {position: static;}}
     </style>
 </head>
 <body>
@@ -686,6 +684,7 @@
 <footer> <small>© TE Filipino Workers 2025</small> </footer>
 </body>
 </html>
+
 
 
 
