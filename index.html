@@ -140,15 +140,20 @@
             .leave-table td:nth-of-type(3)::before { content: "ID"; }
             .leave-table td:nth-of-type(4)::before { content: "Date"; }
             .leave-table td:nth-of-type(5)::before { content: "Days"; }
-            .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }}
-            #ot-entry-table th:nth-child(1), 
-            #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
-            #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
+            .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }
+            .testimonials-grid { flex-direction: column; align-items: center; }
+        }
+        #ot-entry-table th:nth-child(1), 
+        #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
+        #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
          @media (max-width: 480px) {
             #ot-entry-table th:nth-child(2), 
             #ot-entry-table td:nth-child(2),
             #ot-entry-table th:nth-child(3), 
-            #ot-entry-table td:nth-child(3) {position: static;}}
+            #ot-entry-table td:nth-child(3) {position: static;}
+            .link-list { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            .link-list li { flex-basis: 45%; }
+        }
     </style>
 </head>
 <body>
@@ -176,7 +181,7 @@
         <!-- === HOME SECTION === -->
         <div id="home-section" class="page-section">
             <div class="dashboard-header">
-                <h1>Test Engineer - DL Dashboard</h1>
+                <h1>TE Dashboard</h1>
                 <button class="logout-btn" id="logout-button">Logout</button>
             </div>
             <p>One Team, One Goal</p>
@@ -236,7 +241,38 @@
 
         <!-- === LINK SECTION === -->
         <div id="links-section" class="page-section">
-            <div class="testimonials-container"><div class="testimonials-header"><h2>Links For Each Site</h2><p>Below are the important links available for each site. Note that this links are only available for wistron devices, do not open the link using the personal device (e.g. cellphone)</p></div><div id="testimonials-grid" class="testimonials-grid"><div class="site-link-card"><h3 class="card-site-name">N2</h3><p class="card-description">Find all relevant links for the N2 site here.</p><ul class="link-list"><li><a href="http://10.38.248.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f60h.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div><div class="site-link-card"><h3 class="card-site-name">A1</h3><p class="card-description">Find all relevant links for the A1 site here.</p><ul class="link-list"><li><a href="http://10.28.158.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f605.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div><div class="site-link-card"><h3 class="card-site-name">A3</h3><p class="card-description">Find all relevant links for the A3 site here.</p><ul class="link-list"><li><a href="http://10.28.156.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li><li><a href="https://f606.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li></ul></div></div></div>
+            <div class="testimonials-container">
+                <div class="testimonials-header">
+                    <h2>Links For Each Site</h2>
+                    <p>Below are the important links available for each site. Note that these links are only available for Wistron devices; do not open the link using a personal device (e.g., cellphone).</p>
+                </div>
+                <div id="testimonials-grid" class="testimonials-grid">
+                    <div class="site-link-card">
+                        <h3 class="card-site-name">N2</h3>
+                        <p class="card-description">Find all relevant links for the N2 site here.</p>
+                        <ul class="link-list">
+                            <li><a href="http://10.38.248.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li>
+                            <li><a href="https://f60h.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li>
+                        </ul>
+                    </div>
+                    <div class="site-link-card">
+                        <h3 class="card-site-name">A1</h3>
+                        <p class="card-description">Find all relevant links for the A1 site here.</p>
+                        <ul class="link-list">
+                            <li><a href="http://10.28.158.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li>
+                            <li><a href="https://f605.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li>
+                        </ul>
+                    </div>
+                    <div class="site-link-card">
+                        <h3 class="card-site-name">A3</h3>
+                        <p class="card-description">Find all relevant links for the A3 site here.</p>
+                        <ul class="link-list">
+                            <li><a href="http://10.28.156.180/" target="_blank" rel="noopener noreferrer">FusionEye</a></li>
+                            <li><a href="https://f606.cim.wistron.com/" target="_blank" rel="noopener noreferrer">MIC</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- === ADD EMPLOYEE MODAL === -->
@@ -318,6 +354,7 @@
                 if (!initialSectionId || !document.querySelector(initialSectionId)) {
                     initialSectionId = '#home-section';
                 }
+
                 const initialNavItem = document.querySelector(`.nav-item[href="${initialSectionId}"]`);
                 navItems.forEach(i => i.classList.remove('active'));
                 if (initialNavItem) {
@@ -651,4 +688,3 @@
     </script>
 </body>
 </html>
-
