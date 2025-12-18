@@ -192,6 +192,9 @@
                 <button class="add-btn" onclick="showLeaveModal()">Add Leave</button>
             </div>
             <div id="leave-plan-content"></div>
+        </div>
+
+        <!-- Modals for this page -->
         <div class="modal" id="modal">
             <div class="modal-content">
                 <h2 id="modalTitle">Add Employee</h2>
@@ -242,7 +245,6 @@
             <a href="#leave-plan-section" class="nav-item">
                 <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></span>
             </a>
-            <!-- UPDATED: This link now points to the new page -->
             <a href="/links.html" class="nav-item">
                 <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></span>
             </a>
@@ -252,7 +254,7 @@
     </div>
 
     <script>
-        // --- GATEKEEPER SCRIPT ---
+        
         if (!localStorage.getItem('authToken')) {
             window.location.href = '/index.html';
         }
@@ -280,7 +282,11 @@
                     initialSectionId = '#home-section';
                 }
                 const initialNavItem = document.querySelector(`.nav-item[href="${initialSectionId}"]`);
-                navItems.forEach(i => i.classList.remove('active'));
+                navItems.forEach(i => {
+                    if(i.getAttribute('href').startsWith('#')) {
+                        i.classList.remove('active');
+                    }
+                });
                 if (initialNavItem) {
                     initialNavItem.classList.add('active');
                 }
@@ -298,7 +304,6 @@
                 window.location.href = '/index.html'; 
             });
         
-            // --- DASHBOARD UI & DATA FUNCTIONS ---
             const pioneerData = [
                 { name: "Jericho Sulapas, TE Spartan", quote: '"The past cannot be changed. The future is yet in your power."', logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Echo.png"},
                 { name: "Brian Alban, TE Spartan", quote: "Change your life today. Don't gamble on the future, act now, without delay.", logo: "https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20brian.png"},
