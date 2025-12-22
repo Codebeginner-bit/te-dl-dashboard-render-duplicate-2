@@ -286,32 +286,85 @@
             }
 
             let daysInCurrentMonth = 0;
+                
             function checkConsecutiveWorkDays(employeeId, changedDay) {
+                const [year, month] = currentOtMonthYear.split('-').map(Number);
+                const monthIndex = month - 1; 
+
                 const inputs = Array.from(document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`));
                 let consecutiveCount = 0;
+
                 for (let day = 1; day <= daysInCurrentMonth; day++) {
                     const input = inputs.find(inp => inp.dataset.day == day);
                     if (!input) continue;
                     input.classList.remove('warning-consecutive');
-
+                    
+                    const date = new Date(year, monthIndex, day);
+                    const dayOfWeek = date.getDay(); 
+                    
                     const value = parseFloat(input.value);
-                    const isWorkDay = !isNaN(value) && value > 0;
+                    const hasOT = !isNaN(value) && value > 0;
+                    const isOnLeave = input.classList.contains('leave-entry');
+                    const isWeekday = dayOfWeek > 0 && dayOfWeek < 6;
 
-                    if (isWorkDay) {
+                    let isConsideredWorkDay = false;
+                    if (!isOnLeave) {
+                        if (isWeekday) {
+                            isConsideredWorkDay = true;
+                        } else if (hasOT) {
+                            isConsideredWorkDay = true;
+                        }
+                    }
+
+                    if (isConsideredWorkDay) {
                         consecutiveCount++;
                     } else {
                         consecutiveCount = 0;
                     }
+
                     if (consecutiveCount >= 7) {
                         input.classList.add('warning-consecutive');
                         if (consecutiveCount === 7 && day === changedDay) {
-                            alert("Warning: Working 7 days consecutively is not recommended.");
+                            alert("Warning: 7 consecutive work days detected.");
                         }
                     }
                 }
             }
+
+            // --- Function to check for work on the same weekend ---
+            function checkWeekendWork(changedInput) {
+                const employeeId = changedInput.dataset.employeeId;
+                const day = parseInt(changedInput.dataset.day, 10);
+                const [year, month] = currentOtMonthYear.split('-').map(Number);
+                const monthIndex = month - 1;
+                const date = new Date(year, monthIndex, day);
+                const dayOfWeek = date.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) return;
+
+                let otherWeekendDay, otherWeekendInput;
+                if (dayOfWeek === 0) { 
+                    otherWeekendDay = day - 1;
+                } else { 
+                    otherWeekendDay = day + 1;
+                }
+
+                otherWeekendInput = document.querySelector(`.ot-input[data-employee-id="${employeeId}"][data-day="${otherWeekendDay}"]`);
+                if (otherWeekendInput) {
+                    const otherValue = parseFloat(otherWeekendInput.value);
+                    const hasOtherOT = !isNaN(otherValue) && otherValue > 0;
+                    
+                    const currentValue = parseFloat(changedInput.value);
+                    const hasCurrentOT = !isNaN(currentValue) && currentValue > 0;
+
+                    if (hasOtherOT && hasCurrentOT) {
+                        alert("Warning: Working on both Saturday and Sunday of the same week is not recommended.");
+                        changedInput.classList.add('warning-consecutive');
+                        otherWeekendInput.classList.add('warning-consecutive');
+                    }
+                }
+            }
             
-            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){ updateOtPreview(event.target.dataset.employeeId);checkConsecutiveWorkDays(event.target.dataset.employeeId, parseInt(event.target.dataset.day, 10));}}
+            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){updateOtPreview(event.target.dataset.employeeId);const changedDay = parseInt(event.target.dataset.day, 10);checkWeekendWork(event.target);checkConsecutiveWorkDays(event.target.dataset.employeeId, changedDay);}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
 
