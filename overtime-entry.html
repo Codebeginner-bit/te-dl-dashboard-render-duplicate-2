@@ -113,7 +113,7 @@
 
     <footer> <small>© TE Filipino Workers 2025</small> </footer>
 
-    <script>
+        <script>
         if (!localStorage.getItem('authToken')) {
             window.location.href = '/index.html';
         }
@@ -123,6 +123,7 @@
             const API_BASE = "/api";
             let allEmployees = [];
             let currentOtMonthYear = '', isOtTableEditable = false;
+            let daysInCurrentMonth = 0;
 
             // --- ELEMENT REFERENCES ---
             const lamp = document.querySelector(".navbar-lamp");
@@ -162,6 +163,7 @@
                 return response.json();
             }
 
+            // --- UI & DATA FUNCTIONS ---
             function populateSiteFilter() {
                 const siteFilterSelect = document.getElementById('ot-site-filter');
                 if (!allEmployees || allEmployees.length === 0) return;
@@ -175,11 +177,6 @@
                 });
             }
 
-            function populateMonthYearSelectors() {
-                // ... existing code ...
-
-            
-            // --- OVERTIME SCRIPT ---
             function populateMonthYearSelectors() {
                 const monthSelect = document.getElementById('ot-month-select'), yearSelect = document.getElementById('ot-year-select'), now = new Date(), currentYear = now.getFullYear(), currentMonth = now.getMonth();
                 if (monthSelect.options.length > 0) return;
@@ -211,15 +208,13 @@
                     payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data, total_ot });
                 });
                 
-                if (payload.length === 0) {
-                    return alert("No overtime data to submit.");
-                }
+                if (payload.length === 0) { return alert("No overtime data to submit."); }
 
                 try {
                     const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     await handleApiResponse(response);
                     alert("Overtime has been submitted successfully!");
-                    window.location.href = '/dashboard.html'; // Navigate to home page
+                    window.location.href = '/dashboard.html';
                 } catch (error) { console.error("Failed to submit overtime:", error); alert(`Submission failed: ${error.message}`); }
             };
 
@@ -300,8 +295,6 @@
                     row.style.display = (siteMatch && shiftMatch) ? '' : 'none';
                 });
             }
-
-            let daysInCurrentMonth = 0;
                 
             function checkConsecutiveWorkDays(employeeId, changedDay) {
                 const [year, month] = currentOtMonthYear.split('-').map(Number);
@@ -325,18 +318,12 @@
 
                     let isConsideredWorkDay = false;
                     if (!isOnLeave) {
-                        if (isWeekday) {
-                            isConsideredWorkDay = true;
-                        } else if (hasOT) {
-                            isConsideredWorkDay = true;
-                        }
+                        if (isWeekday) { isConsideredWorkDay = true; } 
+                        else if (hasOT) { isConsideredWorkDay = true; }
                     }
 
-                    if (isConsideredWorkDay) {
-                        consecutiveCount++;
-                    } else {
-                        consecutiveCount = 0;
-                    }
+                    if (isConsideredWorkDay) { consecutiveCount++; } 
+                    else { consecutiveCount = 0; }
 
                     if (consecutiveCount >= 7) {
                         input.classList.add('warning-consecutive');
@@ -347,7 +334,6 @@
                 }
             }
 
-            // --- Function to check for work on the same weekend ---
             function checkWeekendWork(changedInput) {
                 const employeeId = changedInput.dataset.employeeId;
                 const day = parseInt(changedInput.dataset.day, 10);
@@ -358,11 +344,8 @@
                 if (dayOfWeek !== 0 && dayOfWeek !== 6) return;
 
                 let otherWeekendDay, otherWeekendInput;
-                if (dayOfWeek === 0) { 
-                    otherWeekendDay = day - 1;
-                } else { 
-                    otherWeekendDay = day + 1;
-                }
+                if (dayOfWeek === 0) { otherWeekendDay = day - 1; } 
+                else { otherWeekendDay = day + 1; }
 
                 otherWeekendInput = document.querySelector(`.ot-input[data-employee-id="${employeeId}"][data-day="${otherWeekendDay}"]`);
                 if (otherWeekendInput) {
@@ -389,7 +372,6 @@
                 if (!element || !lamp || !navbar) return;
                 const itemRect = element.getBoundingClientRect();
                 const navbarRect = navbar.getBoundingClientRect();
-
                 lamp.style.top = `${itemRect.top - navbarRect.top}px`;
                 lamp.style.height = `${itemRect.height}px`;
             }
@@ -409,4 +391,5 @@
         });
     </script>
 </body>
+
 </html>
