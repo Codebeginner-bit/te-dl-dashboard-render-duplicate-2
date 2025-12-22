@@ -130,7 +130,7 @@
 
     <footer> <small>© TE Filipino Workers 2025</small> </footer>
 
-    <script>
+        <script>
         if (!localStorage.getItem('authToken')) {
             window.location.href = '/index.html';
         }
@@ -300,15 +300,31 @@
             document.getElementById('leaveType').addEventListener('change', function() { document.getElementById('leaveOtherReason').style.display = (this.value === 'Others') ? 'block' : 'none'; });
             
             window.closeLeaveModal = () => document.getElementById('leaveModal').style.display = 'none';
+
+            function calculateWeekdays(startDate, endDate) {
+                let count = 0;
+                const currentDate = new Date(startDate.getTime());
+                while (currentDate <= endDate) {
+                    const dayOfWeek = currentDate.getDay();
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        count++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                return count;
+            }
             
             window.saveLeave = async function() {
                 const employee_id = document.getElementById('leaveEmployeeId').value, start_date = document.getElementById('leaveStartDate').value, end_date = document.getElementById('leaveEndDate').value, leave_type = document.getElementById('leaveType').value, other_reason = document.getElementById('leaveOtherReason').value;
                 if (!employee_id || !start_date || !end_date || !leave_type) { return alert("Please fill all required fields."); }
                 if (leave_type === 'Others' && !other_reason) { return alert("Please specify the reason for 'Others'."); }
-                const startDateObj = new Date(start_date), endDateObj = new Date(end_date);
-                if(endDateObj < startDateObj) { return alert("End date cannot be before start date."); }
                 
-                const days = Math.round((endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                const startDateObj = new Date(start_date + 'T00:00:00');
+                const endDateObj = new Date(end_date + 'T00:00:00');
+                if(endDateObj < startDateObj) { return alert("End date cannot be before start date."); }
+
+                const days = calculateWeekdays(startDateObj, endDateObj);
+                
                 const leaveData = { employee_id, start_date, end_date, days, leave_type, other_reason: leave_type === 'Others' ? other_reason : null };
                 
                 try {
@@ -346,15 +362,12 @@
                 if (!element || !lamp || !navbar) return;
                 const itemRect = element.getBoundingClientRect();
                 const navbarRect = navbar.getBoundingClientRect();
-
                 lamp.style.top = `${itemRect.top - navbarRect.top}px`;
                 lamp.style.height = `${itemRect.height}px`;
             }
 
             navItems.forEach(item => {
-                item.addEventListener("mouseover", () => {
-                    moveLamp(item);
-                });
+                item.addEventListener("mouseover", () => moveLamp(item));
             });
 
             const activeItem = document.querySelector(".nav-item.active");
@@ -365,5 +378,6 @@
             initializeLeavePlanPage();
         });
     </script>
+
 </body>
 </html>
