@@ -14,23 +14,25 @@
             --text-color: #1e293b;
             --title-color: #0f172a;
             --photo-border: #cbd5e1;
-            --bg-color: #f1f5f9;
-            --gap: 32px; /* Adjusted space between nodes */
-            --node-gap: 60px; /* Space between parent and children */
+            --bg-color: #f8fafc; /* Slightly cleaner background */
+            --gap: 24px; /* Horizontal space between nodes */
+            --node-gap: 50px; /* Vertical space between levels */
         }
 
         *, *::before, *::after {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: var(--text-color);
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
+            padding: 40px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
 
         h1 {
@@ -51,8 +53,6 @@
             display: flex;
             justify-content: center;
             list-style-type: none;
-            margin: 0;
-            padding: 0;
             position: relative;
         }
 
@@ -64,52 +64,78 @@
             position: relative;
         }
 
-        /* --- Connector Lines --- */
-        .node + ul::before {
+        /* --- Connector Lines (Corrected) --- */
+        /* Add vertical space between a node and its children */
+        .node + ul {
+            margin-top: var(--node-gap);
+        }
+
+        /* Vertical line coming DOWN from a parent node */
+        .node::after {
             content: '';
             position: absolute;
             left: 50%;
-            bottom: 100%;
+            top: 100%;
             width: 2px;
-            height: var(--node-gap);
+            height: calc(var(--node-gap) / 2); /* Half the total gap */
+            background-color: var(--connector-color);
+            transform: translateX(-50%);
+        }
+        
+        /* The above rule applies to all nodes. We only want it for nodes that HAVE children.
+           Since :has() is not universally supported, we'll hide it for the last level. */
+        ul ul > li > .node::after {
+            display: none;
+        }
+
+
+        /* Horizontal line connecting all siblings */
+        li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: calc(var(--node-gap) / -2); /* Positioned in the middle of the vertical gap */
+            width: 100%;
+            height: 2px;
+            background-color: var(--connector-color);
+        }
+        
+        /* Vertical line coming UP from a child node to the horizontal line */
+        li::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: calc(var(--node-gap) / -2); /* Start from the horizontal line */
+            width: 2px;
+            height: calc(var(--node-gap) / 2); /* Half the total gap */
             background-color: var(--connector-color);
             transform: translateX(-50%);
         }
 
-        ul ul li::before,
-        ul ul li::after {
-            content: '';
-            position: absolute;
-            background-color: var(--connector-color);
-            top: calc(-1 * var(--node-gap) / 2);
-        }
-
-        ul ul li::before {
-            left: 50%;
-            width: 2px;
-            height: var(--node-gap) / 2;
-        }
-
-        ul ul li::after {
-            height: 2px;
-        }
-
-        li:first-child:not(:only-child)::after {
+        /* Trim the horizontal line for the first and last children */
+        li:first-child::before {
             left: 50%;
             width: 50%;
         }
 
-        li:last-child:not(:only-child)::after {
+        li:last-child::before {
             right: 50%;
             width: 50%;
+            left: auto;
         }
 
-        li:not(:first-child):not(:last-child)::after {
-            left: 0;
-            width: 100%;
+        /* A single child doesn't need any connectors */
+        li:only-child {
+            padding: 0;
         }
-
+        li:only-child::before,
         li:only-child::after {
+            display: none;
+        }
+        
+        /* The root node doesn't need upward/horizontal connectors */
+        .org-chart > ul > li::before,
+        .org-chart > ul > li::after {
             display: none;
         }
 
@@ -126,11 +152,12 @@
             padding: 15px;
             text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
+            position: relative; /* Crucial for ::after pseudo-element */
+            z-index: 1; /* Ensure node is above the lines */
         }
 
         .node:hover {
-            box-shadow: 0 8px 12px -3px rgba(0,0,0,0.15), 0 4px 6px -4px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
             transform: translateY(-5px);
         }
 
@@ -169,25 +196,44 @@
 
         /* --- Responsive Design for Mobile --- */
         @media (max-width: 768px) {
+            /* On mobile, we switch to a simple vertical list and hide connectors */
+             h1 {
+                font-size: 1.5em;
+             }
+            .org-chart {
+                align-items: flex-start;
+                width: 100%;
+            }
             .org-chart ul {
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .org-chart ul ul {
                 margin-left: 20px;
+                padding-left: 10px;
+                border-left: 2px solid var(--connector-color);
             }
-
+             .org-chart li {
+                padding: 10px 0;
+             }
+            /* Hide all complex connectors */
+            .node::after, li::before, li::after {
+                display: none;
+            }
+            
             .node {
                 display: flex;
                 flex-direction: row; /* Stack elements horizontally for mobile */
                 width: 100%;
+                max-width: 350px;
                 text-align: left;
                 align-items: center;
                 padding: 10px;
             }
             .node img {
-                margin-right: 10px;
+                margin-right: 15px;
+                margin-top: 0;
+                margin-bottom: 0;
                 width: 50px;
                 height: 50px;
             }
@@ -196,10 +242,8 @@
                 flex-grow: 1;
             }
 
-            .node .position {
-                width: auto;
-                margin-bottom: 5px;
-                padding: 2px 10px;
+            .node .site {
+                 margin-bottom: 5px;
             }
         }
     </style>
@@ -221,21 +265,21 @@
                         <ul>
                             <li>
                                 <div class="node">
-                                    <img src="ryan.jpg" alt="Ryan">
+                                    <img src="https://i.pravatar.cc/150?u=ryan" alt="Ryan">
                                     <div class="name">Ryan</div>
                                     <div class="dept-code">古瑞思</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
-                                    <img src="allen.jpg" alt="Allen">
+                                    <img src="https://i.pravatar.cc/150?u=allen" alt="Allen">
                                     <div class="name">Allen</div>
                                     <div class="dept-code">卜阿倫</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
-                                    <img src="reza.jpg" alt="Reza">
+                                    <img src="https://i.pravatar.cc/150?u=reza" alt="Reza">
                                     <div class="name">Reza</div>
                                     <div class="dept-code">白瑞紗</div>
                                 </div>
@@ -249,21 +293,21 @@
                         <ul>
                             <li>
                                 <div class="node">
-                                    <img src="brian.jpg" alt="Brian">
+                                    <img src="https://i.pravatar.cc/150?u=brian" alt="Brian">
                                     <div class="name">Brian</div>
                                     <div class="dept-code">布來恩</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
-                                    <img src="kim.jpg" alt="Kim">
+                                    <img src="https://i.pravatar.cc/150?u=kim" alt="Kim">
                                     <div class="name">Kim</div>
                                     <div class="dept-code">德洛斯</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
-                                    <img src="ronie.jpg" alt="Ronie">
+                                    <img src="https://i.pravatar.cc/150?u=ronie" alt="Ronie">
                                     <div class="name">Ronie</div>
                                     <div class="dept-code">羅尼</div>
                                 </div>
@@ -277,14 +321,14 @@
                         <ul>
                             <li>
                                 <div class="node">
-                                    <img src="echo.jpg" alt="Echo">
+                                    <img src="https://i.pravatar.cc/150?u=echo" alt="Echo">
                                     <div class="name">Echo</div>
                                     <div class="dept-code">蕭拉帕</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
-                                    <img src="armein.jpg" alt="Armein">
+                                    <img src="https://i.pravatar.cc/150?u=armein" alt="Armein">
                                     <div class="name">Armein</div>
                                     <div class="dept-code">亞曼尼</div>
                                 </div>
