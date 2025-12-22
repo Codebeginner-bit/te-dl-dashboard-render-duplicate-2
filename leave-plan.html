@@ -212,7 +212,6 @@
                     document.getElementById('leave-plan-content').innerHTML = `<p style="color: red;">Could not load leave data: ${error.message}</p>`;
                 }
             }
-
             function renderLeavePlanTables() {
                 const contentDiv = document.getElementById('leave-plan-content');
                 contentDiv.innerHTML = '';
@@ -228,10 +227,10 @@
                     return acc;
                 }, {});
 
-                const sites = ['N2', 'A1', 'A3'];
+                const sites = Object.keys(groupedLeaves).sort();
+                
                 let contentRendered = false;
                 sites.forEach(site => {
-                    if (!groupedLeaves[site]) return;
                     const siteSection = document.createElement('div');
                     siteSection.className = 'leave-site-section';
                     siteSection.innerHTML = `<div class="site-header">${site}</div>`;
