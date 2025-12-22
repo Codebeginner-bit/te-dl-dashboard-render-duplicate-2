@@ -345,12 +345,12 @@
     </footer>
 
     <script>
+         // --- GATEKEEPER SCRIPT ---
         if (!localStorage.getItem('authToken')) {
             window.location.href = '/index.html';
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-
             const lamp = document.querySelector(".navbar-lamp");
             const navbar = document.querySelector(".navbar");
             const navItems = document.querySelectorAll(".nav-item");
@@ -374,6 +374,7 @@
             if (activeItem) {
                 moveLamp(activeItem);
             }
+
         });
     </script>
 
