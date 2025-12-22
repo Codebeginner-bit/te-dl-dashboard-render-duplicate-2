@@ -127,6 +127,7 @@
             // --- ELEMENT REFERENCES ---
             const lamp = document.querySelector(".navbar-lamp");
             const navbar = document.querySelector(".navbar");
+            const navItems = document.querySelectorAll(".nav-item");
 
             // --- INITIALIZATION ---
             async function initializeOtPage() {
@@ -286,7 +287,25 @@
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
 
             // --- NAVIGATION LOGIC ---
-            function moveLamp(e){if(!e||!lamp||!navbar)return;const t=e.getBoundingClientRect(),o=navbar.getBoundingClientRect();lamp.style.top=`${t.top-o.top}px`,lamp.style.height=`${t.height}px`}
+            function moveLamp(element) {
+                if (!element || !lamp || !navbar) return;
+                const itemRect = element.getBoundingClientRect();
+                const navbarRect = navbar.getBoundingClientRect();
+
+                lamp.style.top = `${itemRect.top - navbarRect.top}px`;
+                lamp.style.height = `${itemRect.height}px`;
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener("mouseover", () => {
+                    moveLamp(item);
+                });
+            });
+
+            const activeItem = document.querySelector(".nav-item.active");
+            if (activeItem) {
+                moveLamp(activeItem);
+            }
             
             initializeOtPage();
         });
