@@ -6,97 +6,17 @@
     <title>TE Dashboard - Links</title>
     
     <style>
-        :root { --background: 255 255 255; --foreground: 0 0 0; --muted: 241 245 249; --muted-foreground: 100 116 139; --border: 226 232 240; --primary: #007bff; --gap: 2rem; --duration: 120s; }
-        .hidden { display: none !important; }
+        :root { --background: 255 255 255; --foreground: 0 0 0; --muted: 241 245 249; --muted-foreground: 100 116 139; --border: 226 232 240; --primary: #007bff; }
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; background-color: rgb(var(--background)); color: rgb(var(--foreground)); line-height: 1.5; margin: 0; padding: 1rem; }
-        .page-section { display: none; } .page-section.active { display: block; }
-        h1, h2 { text-align: center; } p { text-align: center; font-size: 1rem; font-style: italic; }
-        .overtime-table-container { margin: 20px auto; overflow-x: auto; max-width: 95%; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background-color: white; }
-        table { width: 100%; border-collapse: collapse; }
-        table th, table td { padding: 12px 8px; border: 1px solid #ddd; text-align: center; font-size: 14px; white-space: nowrap; }
-        table th { background-color: #f6f6f6; color: #333; font-weight: 600; }
-        .search-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px; flex-wrap: wrap; }
-        button, .search-container input, .date-selector-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
-        button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
-        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-        button.edit-btn { background-color: #3498db; color: white; }
-        button.del-btn { background-color: #e74c3c; color: white; }
-        .search-container button { background-color: #f0f0f0; }
-        button.add-btn { background-color: #2ecc71; color: white; }
-        button:not(:disabled):hover { opacity: 0.85; }
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background-color:white; padding:25px; border-radius:10px; width:90%; max-width:450px; text-align:left; box-shadow:0 4px 15px rgba(0,0,0,0.3); }
-        .modal-content h2 { text-align:center; margin-top:0; }
-        .modal-content input, .modal-content select, .modal-content button { margin:8px 0; width:100%; padding:12px; font-size:1rem; border:1px solid rgb(var(--border)); border-radius:4px; box-sizing:border-box; }
-        .modal-content button { color:white; } .modal-content button.save-btn { background-color:#2ecc71; } .modal-content button.cancel-btn { background-color:#e74c3c; }
-        .modal-content .date-inputs { display: flex; gap: 10px; } .modal-content .date-inputs input { flex: 1; }
-        .modal-content .hidden-field { display: none; }
-        .marquee-container { position:relative; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-top:4rem; margin-bottom:4rem; }
-        .testimonial-card { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border)); background-color: rgba(var(--muted), 0.4); padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0; }
-        .testimonial-card img { width: 120px; height: auto; margin-bottom: 0.5rem; }
-        .testimonial-card h3 { font-size: 1.125rem; font-weight: 600; color: rgb(var(--foreground)); margin: 0; }
-        .testimonial-card p { font-size: 1rem; color: rgb(var(--muted-foreground)); font-style: italic; margin: 0; }
-        .marquee-track-wrapper { display: flex; overflow: hidden; padding: 0.5rem 0; }
-        .marquee-track { display: flex; flex-shrink: 0; gap: var(--gap); animation: marquee var(--duration) linear infinite; }
-        .marquee-track-wrapper:hover .marquee-track { animation-play-state: paused; }
-        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--gap))); } }
-        .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
-        .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
-        .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
-        #ot-entry-controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        #ot-entry-controls select, #ot-entry-controls label { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; }
-        #ot-entry-controls label { border: none; font-weight: 600; }
-        .ot-entry-table-container { width: 100%; overflow-x: auto; }
-        #ot-entry-table { border-collapse: collapse; width: 100%; font-size: 12px; }
-        #ot-entry-table th, #ot-entry-table td { border: 1px solid #ccc; padding: 4px; text-align: center; min-width: 60px; }
-        #ot-entry-table thead th { background-color: #f2f2f2; font-weight: bold; position: sticky; top: 0; z-index: 2; }
-        #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) {position: sticky; left: 0; z-index: 1;  background-color: #f8f9fa; min-width: 220px;}
-        #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left; padding-left: 8px;}
-        #ot-entry-table th:nth-child(2), #ot-entry-table td:nth-child(2) {position: sticky; left: 220px; z-index: 1; background-color: #f8f9fa; min-width: 80px;}
-        #ot-entry-table th:nth-child(3), #ot-entry-table td:nth-child(3) {position: sticky; left: 300px; z-index: 1; background-color: #f8f9fa; min-width: 100px;}
-        #ot-entry-table thead th:nth-child(1), #ot-entry-table thead th:nth-child(2), #ot-entry-table thead th:nth-child(3) {z-index: 3;}
-        #ot-entry-controls .filter-container {display: flex; gap: 10px; align-items: center;}
-        #ot-entry-controls .filter-container label {font-weight: 600; font-size: 14px; border: none; background-color: transparent;}
-        #ot-entry-controls .filter-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}        
-        .weekend-header { background-color: #ffff99 !important; }
-        .shift-header-row td { background-color: #6c757d; color: white; font-weight: bold; text-align: center; }
-        .ot-input { width: 100%; border: 1px solid transparent; text-align: center; background-color: transparent; padding: 4px 2px; box-sizing: border-box; border-radius: 3px; }
-        .ot-input[readonly] { background-color: #f8f9fa; cursor: not-allowed; }
-        .ot-input:not([readonly]) { border-color: #ccc; }
-        .ot-input.ot-hours-entry:not([readonly]) { background-color: #d4edda; }
-        .ot-input.leave-entry { background-color: #cce5ff !important; font-weight: bold; }
-        .ot-total-preview { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-left: 8px; }
+        h2 { text-align: center; } 
+        p { text-align: center; font-size: 1rem; font-style: italic; }
         .navbar-container { position:fixed; top:50%; right:1.5rem; transform:translateY(-50%); z-index:50; }
         .navbar { position:relative; display:flex; flex-direction:column; align-items:center; gap:0.75rem; background-color:rgba(255,255,255,0.75); border:1px solid rgb(var(--border)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:0.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
         .nav-item { position:relative; cursor:pointer; font-weight:600; padding:0.75rem; border-radius:9999px; color:rgba(0,0,0,0.8); text-decoration:none; transition:color 0.3s ease; z-index:10; display:flex; align-items:center; justify-content:center; }
-        .nav-item:hover { color:var(--primary); } .nav-item.active { color:var(--primary); } .nav-text { display:none; } .nav-icon { display:flex; }
+        .nav-item:hover { color:var(--primary); } .nav-item.active { color:var(--primary); }
         .navbar-lamp { position:absolute; background-color:rgba(0,123,255,0.05); border-radius:1.5rem; z-index:1; transition:all 0.4s cubic-bezier(0.23,1,0.32,1); left:0; width:100%; }
         .lamp-light { position:absolute; left:-0.4rem; top:50%; transform:translateY(-50%); width:0.25rem; height:1.5rem; background-color:var(--primary); border-radius:9999px 0 0 9999px; }
-        .lamp-light::before, .lamp-light::after { content:''; position:absolute; border-radius:9999px; background-color:rgba(0,123,255,0.2); filter:blur(10px); }
-        .lamp-light::before { width:1.5rem; height:3rem; top:-0.75rem; left:-0.5rem; } .lamp-light::after { width:1.5rem; height:2.25rem; top:-0.375rem; left:-0.25rem; }
-        #leave-plan-section {padding: 2rem 1rem;}
-        .leave-plan-header {display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem; max-width: 1000px; margin: 0 auto 2rem auto; }
-        .leave-plan-header h2 {grid-column: 2; margin: 0; text-align: center;}
-        .leave-plan-header .date-selector-container {grid-column: 1; grid-row: 1; justify-self: start; display: flex; align-items: center; gap: 0.5rem;}
-        .leave-plan-header .add-btn {grid-column: 3; grid-row: 1; justify-self: end;}
-        .date-selector-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
-        .date-selector-container label {font-weight: 600; font-size: 14px; color: rgb(var(--foreground));}
-        .leave-site-section {background-color: #f8f9fa; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 1000px;box-shadow: 0 4px 8px rgba(0,0,0,0.05);}
-        .site-header {font-size: 1.5rem; font-weight: 600; text-align: center; padding: 10px; background-color: #e9ecef; border-radius: 8px; margin-bottom: 20px;}
-        .shift-header {font-size: 1.1rem; font-weight: bold; text-align: center; background-color: #f1f3f5; padding: 8px; border-top-left-radius: 8px; border-top-right-radius: 8px;}
-        .leave-table {width: 100%; margin-top: 0; margin-bottom: 25px; border: 1px solid #dee2e6; border-top: none;}
-        .leave-table th, .leave-table td {border: 1px solid #dee2e6;}
-        .leave-table thead th {background-color: #e9ecef;}
-        .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
-        footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
-        footer small {font-size: 0.875rem;}
-        .dashboard-header {display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;}
-        .dashboard-header h1 {flex-grow: 1;}
-        .logout-btn {padding: 8px 16px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .logout-btn:hover {background-color: #c0392b;}
-
-        /* --- STYLES SPECIFIC TO THE LINKS PAGE --- */
-        .testimonials-container { padding: 4rem 1rem; text-align: center; background-color: rgb(var(--muted)); }
+        .testimonials-container { padding: 4rem 1rem; text-align: center; }
         .testimonials-header h2 { font-size: 2.25rem; font-weight: 500; margin-bottom: 1rem; }
         .testimonials-header p { color: rgb(var(--muted-foreground)); max-width: 600px; margin: 0 auto 2.5rem auto; }
         .testimonials-grid { display: flex; justify-content: center; align-items: flex-start; gap: 1.25rem; flex-wrap: wrap; }
@@ -106,8 +26,8 @@
         .link-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
         .link-list a { display: block; padding: 0.75rem 1rem; background-color: rgb(var(--muted)); border-radius: 0.5rem; text-decoration: none; color: rgb(var(--foreground)); font-weight: 500; text-align: center; transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out; }
         .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
-
-        /* --- RESPONSIVE STYLES --- */
+        footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
+        footer small {font-size: 0.875rem;}
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
@@ -115,38 +35,16 @@
             .nav-item { padding: 0.5rem; border-radius: 4px; }
             .navbar-lamp { display: none; }
             .nav-item.active { background-color: rgba(0,123,255,0.1); }
-            .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
-            .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
-            .leave-plan-header .date-selector-container { flex-direction: column; }
-            .leave-site-section { padding: 15px; }
-            .leave-table thead { display: none; }
-            .leave-table { border: none; }
-            .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
-            .leave-table tr {margin-bottom: 1rem; border: 1px solid #dee2e6;border-radius: 8px; padding: 0.5rem;}
-            .leave-table td {text-align: right; padding-left: 40%; position: relative;border: none; border-bottom: 1px solid #f1f1f1;padding-top: 0.75rem; padding-bottom: 0.75rem; white-space: normal;}
-            .leave-table tr td:last-child { border-bottom: none; }
-            .leave-table td::before {position: absolute; left: 10px; width: 35%; white-space: nowrap; text-align: left; font-weight: bold;}
-            .leave-table td:nth-of-type(1) { padding-left: 0; text-align: center; }
-            .leave-table td:nth-of-type(1)::before { content: ""; }
-            .leave-table td:nth-of-type(2)::before { content: "Name"; }
-            .leave-table td:nth-of-type(3)::before { content: "ID"; }
-            .leave-table td:nth-of-type(4)::before { content: "Date"; }
-            .leave-table td:nth-of-type(5)::before { content: "Days"; }
-            .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }
             .testimonials-grid { flex-direction: column; align-items: center; }
         }
         @media (max-width: 480px) {
-            #ot-entry-table th:nth-child(1), #ot-entry-table td:nth-child(1) {position: sticky;left: 0;z-index: 1;background-color: #f8f9fa;min-width: 150px;}
-            #ot-entry-table td:nth-child(1) {font-weight: bold;text-align: left;padding-left: 8px;}
-            #ot-entry-table th:nth-child(2), #ot-entry-table td:nth-child(2),
-            #ot-entry-table th:nth-child(3), #ot-entry-table td:nth-child(3) {position: static;}
             .link-list { flex-direction: row; flex-wrap: wrap; justify-content: center; }
             .link-list li { flex-basis: 45%; }
         }
     </style>
 </head>
 <body>
-    <div id="links-section" class="page-section active">
+    <div id="links-container">
         <div class="testimonials-container">
             <div class="testimonials-header">
                 <h2>Links For Each Site</h2>
@@ -181,7 +79,7 @@
         </div>
     </div>
     
-    <!-- === CORRECTED NAVIGATION BAR SECTION === -->
+    <!-- === NAVIGATION BAR SECTION === -->
     <nav class="navbar-container" role="navigation">
         <div class="navbar">
             <div class="navbar-lamp">
