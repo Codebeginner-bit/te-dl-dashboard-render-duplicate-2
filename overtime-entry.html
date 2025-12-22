@@ -77,10 +77,8 @@
                 <label for="ot-site-filter">Filter by:</label>
                 <select id="ot-site-filter" onchange="filterOvertimeTable()">
                     <option value="All">All Sites</option>
-                    <option value="N2">N2</option>
-                    <option value="A1">A1</option>
-                    <option value="A3">A3</option>
                 </select>
+
                 <select id="ot-shift-filter" onchange="filterOvertimeTable()">
                     <option value="All">All Shifts</option>
                     <option value="Dayshift">Dayshift</option>
@@ -147,7 +145,8 @@
                     document.getElementById("ot-entry-table-wrapper").innerHTML = `<p style="color: red;">Could not load employee data. Page cannot be displayed.</p>`;
                     return;
                 }
-
+                
+                populateSiteFilter();
                 populateMonthYearSelectors();
                 await generateOvertimeTable();
             }
@@ -162,6 +161,23 @@
                 if (response.status === 204) return null;
                 return response.json();
             }
+
+            function populateSiteFilter() {
+                const siteFilterSelect = document.getElementById('ot-site-filter');
+                if (!allEmployees || allEmployees.length === 0) return;
+                const sites = [...new Set(allEmployees.map(emp => emp.site))].filter(site => site);
+                sites.sort();
+                sites.forEach(site => {
+                    const option = document.createElement('option');
+                    option.value = site;
+                    option.textContent = site;
+                    siteFilterSelect.appendChild(option);
+                });
+            }
+
+            function populateMonthYearSelectors() {
+                // ... existing code ...
+
             
             // --- OVERTIME SCRIPT ---
             function populateMonthYearSelectors() {
