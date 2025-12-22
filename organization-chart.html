@@ -15,7 +15,8 @@
             --title-color: #0f172a;
             --photo-border: #cbd5e1;
             --bg-color: #f1f5f9;
-            --gap: 24px; 
+            --gap: 32px; /* Adjusted space between nodes */
+            --node-gap: 60px; /* Space between parent and children */
         }
 
         *, *::before, *::after {
@@ -39,8 +40,9 @@
             margin-bottom: 40px;
         }
 
+        /* --- Core Chart Layout --- */
         .org-chart {
-            display: inline-flex; 
+            display: inline-flex;
             flex-direction: column;
             align-items: center;
         }
@@ -61,13 +63,15 @@
             padding: 0 var(--gap);
             position: relative;
         }
+
+        /* --- Connector Lines --- */
         .node + ul::before {
             content: '';
             position: absolute;
             left: 50%;
             bottom: 100%;
             width: 2px;
-            height: 20px;
+            height: var(--node-gap);
             background-color: var(--connector-color);
             transform: translateX(-50%);
         }
@@ -77,15 +81,13 @@
             content: '';
             position: absolute;
             background-color: var(--connector-color);
-            top: -20px;
+            top: calc(-1 * var(--node-gap) / 2);
         }
-
 
         ul ul li::before {
             left: 50%;
             width: 2px;
-            height: 20px;
-            transform: translateX(-50%);
+            height: var(--node-gap) / 2;
         }
 
         ul ul li::after {
@@ -106,10 +108,12 @@
             left: 0;
             width: 100%;
         }
+
         li:only-child::after {
             display: none;
         }
 
+        /* --- Node Styling --- */
         .node {
             display: flex;
             flex-direction: column;
@@ -122,49 +126,48 @@
             padding: 15px;
             text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
-            position: relative; 
-            z-index: 1; 
+            position: relative;
         }
 
         .node:hover {
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-            transform: translateY(-4px);
+            box-shadow: 0 8px 12px -3px rgba(0,0,0,0.15), 0 4px 6px -4px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
         }
 
         .node .position {
             font-size: 14px;
             font-weight: 600;
             color: var(--title-color);
-            margin-bottom: 12px;
-            background-color: var(--dept-bg);
-            width: 100%;
-            padding: 4px 0;
+            margin-bottom: 8px;
+            background-color: var(--dept-color);
+            padding: 4px 12px;
             border-radius: 4px;
         }
-        
+
+        .node img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--photo-border);
+            object-fit: cover;
+            margin: 10px 0;
+        }
+
         .node .name {
             font-size: 16px;
             font-weight: bold;
             color: var(--name-color);
-            margin: 8px 0 4px 0;
-        }
-
-        .node img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--photo-border);
-            object-fit: cover;
-            background-color: #fff; 
+            margin: 5px 0;
         }
 
         .node .dept-code {
             font-size: 12px;
             color: #64748b;
-            margin-top: 8px;
+            margin-top: 4px;
             font-family: monospace;
         }
 
+        /* --- Responsive Design for Mobile --- */
         @media (max-width: 768px) {
             .org-chart ul {
                 flex-direction: column;
@@ -172,44 +175,31 @@
             }
 
             .org-chart ul ul {
-                margin-left: 20px; 
+                margin-left: 20px;
             }
 
-            .org-chart li {
-                align-items: flex-start;
-                padding: 10px 0;
-            }
-
-            .node + ul::before,
-            ul ul li::before,
-            ul ul li::after {
-                display: none;
-            }
-            
             .node {
                 display: flex;
-                flex-direction: row;
-                width: calc(100% - 20px);
+                flex-direction: row; /* Stack elements horizontally for mobile */
+                width: 100%;
                 text-align: left;
                 align-items: center;
                 padding: 10px;
             }
-
             .node img {
-                margin-right: 15px;
+                margin-right: 10px;
                 width: 50px;
                 height: 50px;
             }
-            
+
             .node-content {
-                display: flex;
-                flex-direction: column;
+                flex-grow: 1;
             }
 
             .node .position {
                 width: auto;
-                padding: 2px 8px;
                 margin-bottom: 5px;
+                padding: 2px 10px;
             }
         }
     </style>
@@ -220,109 +210,83 @@
         <ul>
             <li>
                 <div class="node">
-                    <div class="position">Manager</div>
+                    <div class="position">Project</div>
                     <div class="name">Naomi</div>
                 </div>
                 <ul>
                     <li>
                         <div class="node">
-                            <div class="position">N1</div>
-                            <div class="node-content">
-                                <div class="name">Team Lead</div>
-                            </div>
+                            <div class="site">N1</div>
                         </div>
                         <ul>
                             <li>
                                 <div class="node">
                                     <img src="ryan.jpg" alt="Ryan">
-                                    <div class="node-content">
-                                        <div class="name">Ryan</div>
-                                        <div class="dept-code">古瑞思</div>
-                                    </div>
+                                    <div class="name">Ryan</div>
+                                    <div class="dept-code">古瑞思</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
                                     <img src="allen.jpg" alt="Allen">
-                                    <div class="node-content">
-                                        <div class="name">Allen</div>
-                                        <div class="dept-code">卜阿倫</div>
-                                    </div>
+                                    <div class="name">Allen</div>
+                                    <div class="dept-code">卜阿倫</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
                                     <img src="reza.jpg" alt="Reza">
-                                    <div class="node-content">
-                                        <div class="name">Reza</div>
-                                        <div class="dept-code">白瑞紗</div>
-                                    </div>
+                                    <div class="name">Reza</div>
+                                    <div class="dept-code">白瑞紗</div>
                                 </div>
                             </li>
                         </ul>
                     </li>
                     <li>
                         <div class="node">
-                            <div class="position">N2</div>
-                            <div class="node-content">
-                                <div class="name">Team Lead</div>
-                            </div>
+                            <div class="site">N2</div>
                         </div>
                         <ul>
                             <li>
                                 <div class="node">
                                     <img src="brian.jpg" alt="Brian">
-                                    <div class="node-content">
-                                        <div class="name">Brian</div>
-                                        <div class="dept-code">布來恩</div>
-                                    </div>
+                                    <div class="name">Brian</div>
+                                    <div class="dept-code">布來恩</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
                                     <img src="kim.jpg" alt="Kim">
-                                    <div class="node-content">
-                                        <div class="name">Kim</div>
-                                        <div class="dept-code">德洛斯</div>
-                                    </div>
+                                    <div class="name">Kim</div>
+                                    <div class="dept-code">德洛斯</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
                                     <img src="ronie.jpg" alt="Ronie">
-                                    <div class="node-content">
-                                        <div class="name">Ronie</div>
-                                        <div class="dept-code">羅尼</div>
-                                    </div>
+                                    <div class="name">Ronie</div>
+                                    <div class="dept-code">羅尼</div>
                                 </div>
                             </li>
                         </ul>
                     </li>
-
                     <li>
                         <div class="node">
-                            <div class="position">A3</div>
-                            <div class="node-content">
-                                <div class="name">Team Lead</div>
-                            </div>
+                            <div class="site">A3</div>
                         </div>
                         <ul>
                             <li>
                                 <div class="node">
                                     <img src="echo.jpg" alt="Echo">
-                                    <div class="node-content">
-                                        <div class="name">Echo</div>
-                                        <div class="dept-code">蕭拉帕</div>
-                                    </div>
+                                    <div class="name">Echo</div>
+                                    <div class="dept-code">蕭拉帕</div>
                                 </div>
                             </li>
                             <li>
                                 <div class="node">
                                     <img src="armein.jpg" alt="Armein">
-                                     <div class="node-content">
-                                        <div class="name">Armein</div>
-                                        <div class="dept-code">亞曼尼</div>
-                                    </div>
+                                    <div class="name">Armein</div>
+                                    <div class="dept-code">亞曼尼</div>
                                 </div>
                             </li>
                         </ul>
