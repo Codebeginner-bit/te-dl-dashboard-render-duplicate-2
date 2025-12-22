@@ -1,657 +1,255 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-	<title>Organization Chart</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Organization Chart</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --node-bg: #fff;
+            --node-border: #94a3b8;
+            --connector-color: #94a3b8;
+            --text-color: #1e293b;
+            --title-color: #0f172a;
+            --bg-color: #f1f5f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .org-chart ul {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            position: relative;
+        }
+
+        .org-chart li {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 5px 0; 
+            position: relative;
+        }
+
+ 
+        .org-chart li::before,
+        .org-chart li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 20px;
+            border-color: var(--connector-color);
+            border-style: solid;
+            border-width: 0 0 1px 0; 
+        }
+        
+        .org-chart li::after {
+            left: 0;
+            border-left-width: 1px;
+        }
+        
+        .org-chart ul > li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 20px;
+            border-left: 1px solid var(--connector-color);
+        }
+
+        .org-chart ul > li:first-child::after { border: 0; }
+        .org-chart ul > li:last-child::before { border: 0; }
+        .org-chart ul > li:only-child { padding-top: 0; }
+        .org-chart ul > li:only-child::before,
+        .org-chart ul > li:only-child::after { display: none; }
+        
+        .org-chart > ul > li::before,
+        .org-chart > ul > li::after {
+            display: none;
+        }
+        
+        /* --- Node Styling --- */
+        .node {
+            padding: 10px 15px;
+            background-color: var(--node-bg);
+            border: 1px solid var(--node-border);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+        
+        .node .position {
+            font-weight: 600;
+            color: var(--title-color);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .node .name {
+            font-size: 14px;
+        }
+
+        .node .department-code {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .org-chart ul {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .org-chart li {
+                align-items: flex-start;
+            }
+            
+            .org-chart ul > li {
+                 padding-left: 30px;
+            }
+            
+  
+            .org-chart li::before,
+            .org-chart li::after {
+                border-width: 0 0 1px 1px;
+                left: 0;
+                top: -10px; 
+                height: 100%;
+                width: 30px;
+            }
+            
+            .org-chart li::after {
+                display: none; 
+            }
+            .org-chart ul > li:last-child::before {
+                height: 30px;
+                border-bottom-width: 0;
+            }
+
+            .node {
+                min-width: 220px;
+            }
+        }
+    </style>
 </head>
-  
-<script>
-  
-body {
-	background: #eee;
-}
-
-.content {
-	font-family: Verdana;
-	font-size: 14px;
-	position: relative;
-}
-
-.content * {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-.chart {
-	display: block;
-	clear: both;
-	margin-bottom: 30px;
-	position: relative;
-}
-
-.chart.main:before, .chart.main:after {
-	content: " ";
-	display: table;
-}
-
-.chart.main:after {
-	clear: both;
-}
-
-.chart.main {
-	*zoom: 1;
-}
-
-.chart ul {
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-
-.chart ul li {
-	position: relative;
-}
-
-.chart ul li span {
-	display: block;
-	border: 3px solid #000;
-	text-align: center;
-	overflow: hidden;
-	text-decoration: none;
-	color: black;
-	font-size: 12px;
-	box-shadow: 4px 4px 9px -4px rgba(0, 0, 0, 0.4);
-	-webkit-transition: all linear .1s;
-	-moz-transition: all linear .1s;
-	transition: all linear .1s;
-	background: #ccc;
-	padding: 4px;
-}
-
-.chart .group {
-	background: green;
-	color: #ccc;
-}
-
-.chart .board {
-	width: 70%;
-	margin: 0 auto;
-	display: block;
-	position: relative;
-}
-
-.chart .board:before {
-	content: "";
-	display: block;
-	position: absolute;
-	height: 600px;
-	width: 0px;
-	border-left: 2px solid #000;
-	margin-left: 49%;
-	top: 15px;
-}
-
-.chart ul.column--one {
-	height: 90px;
-	position: relative;
-	width: 100%;
-	display: block;
-	clear: both;
-}
-
-.chart ul.column--one li {
-	width: 30%;
-	margin: 0px auto;
-	top: 20px;
-}
-
-.chart ul.column--two {
-	position: relative;
-	width: 100%;
-	display: block;
-	height: 90px;
-	clear: both;
-}
-
-.chart ul.column--two li:first-child {
-	width: 30%;
-	float: left;
-}
-
-.chart ul.column--two li {
-	width: 30%;
-	float: right;
-}
-
-.chart ul.column--two:before {
-	content: "";
-	display: block;
-	position: relative;
-	width: 80%;
-	height: 10px;
-	border-top: 2px solid #000;
-	margin: 0 auto;
-	top: 40px;
-}
-
-.chart ul.column--three {
-	position: relative;
-	width: 100%;
-	display: block;
-	clear: both;
-}
-
-.chart ul.column--three li:first-child {
-	width: 30%;
-	float: left;
-	margin-left: 0;
-}
-
-.chart ul.column--three li {
-	width: 30%;
-	margin-left: 5%;
-	float: left;
-}
-
-.chart ul.column--three li:last-child {
-	width: 30%;
-	float: right;
-	margin-left: 0;
-}
-
-.chart ul.column--three:before {
-	content: "";
-	display: block;
-	position: relative;
-	width: 80%;
-	height: 10px;
-	border-top: 2px solid #000;
-	margin: 0 auto;
-	top: 40px;
-}
-
-.chart .departments {
-	width: 100%;
-	display: block;
-	clear: both;
-}
-
-.chart .departments:before {
-	content: "";
-	display: block;
-	width: 85%;
-	height: 22px;
-	border-top: 2px solid #000;
-	border-left: 2px solid #000;
-	border-right: 2px solid #000;
-	margin: 0 auto;
-	top: 0px;
-}
-
-.chart .department {
-	border-left: 2px solid #000;
-	width: 13.2%;
-	float: left;
-	margin: 0px 4px;
-}
-
-.chart .department:after {
-	content: "";
-	position: absolute;
-	display: block;
-	width: 10px;
-	height: 22px;
-	border-left: 2px solid #000;
-	left: 50%;
-	top: -22px;
-}
-
-.chart .department:first-child:after {
-	display: none;
-}
-
-.chart .department:last-child:after {
-	display: none;
-}
-
-.chart .department.central {
-	background: #eee;
-}
-
-.chart .department.central:after {
-	display: none;
-}
-
-.chart .department span {
-	border-left: 1px solid #000;
-}
-
-.chart .department li {
-	padding-left: 25px;
-	border-bottom: 2px solid #000;
-	height: 80px;
-}
-
-.chart .department li span {
-	background: #ccc;
-	top: 38px;
-	position: absolute;
-	z-index: 1;
-	width: 95%;
-	height: auto;
-	vertical-align: middle;
-	right: 0px;
-	line-height: 14px;
-	border: 3px solid #000;
-}
-
-.chart .department .sections {
-	margin-top: -20px;
-}
-
-/* MEDIA QUERIES */
-@media all and (max-width: 767px) {
-
-	.chart .board {
-		margin: 0px;
-		width: 100%;
-	}
-
-	.chart .departments:before {
-		border: none;
-	}
-
-	.chart .department {
-		float: none;
-		width: 100%;
-		margin-left: 0;
-		background: #eee;
-		margin-bottom: 40px;
-	}
-
-	.chart .department:before {
-		content: "";
-		display: block;
-		position: absolute;
-		width: 15px;
-		height: 60px;
-		border-left: 2px solid #000;
-		z-index: 1;
-		top: -45px;
-		left: 0%;
-		margin-left: -2px;
-	}
-
-	.chart .department:after {
-		display: none;
-	}
-
-	.chart .department:first-child:before {
-		display: none;
-	}
-
-</script>
 <body>
-	<div class="content">
-		<figure class="chart main">
-			<div class="board">
-				<ul class="column--three">
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-				</ul>
-				<ul class="column--one">
-					<li>
-						<span class="group">
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-				</ul>
-				<ul class="column--two">
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-				</ul>
-				<ul class="column--two">
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-					<li>
-						<span>
-							<strong>Position Name</strong>
-							<br>Name Surname
-							<br>AA
-							</span>
-					</li>
-				</ul>
-			</div>
-			<ul class="departments">
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department central">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>CC
-							</span>
-						</li>
-					</ul>
-				</li>
-				<li class="department">
-					<span class="group">
-						<strong>Position Name</strong>
-						<br>Name Surname
-						<br>AB
-						</span>
-					<ul class="sections">
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>AA
-							</span>
-						</li>
-						<li class="section">
-							<span>
-								<strong>Position Name</strong>
-								<br>Name Surname
-								<br>BB
-							</span>
-						</li>
-					</ul>
-				</li>
-			</ul>
-    </figure>
-	</div>
+
+    <div class="org-chart">
+  
+        <ul>
+            <li>
+                <div class="node">
+                    <div class="position">Chief Executive Officer</div>
+                    <div class="name">Name Surname</div>
+                    <div class="department-code">AA</div>
+                </div>
+                <ul>
+                    <li>
+                        <div class="node">
+                            <div class="position">Position Name</div>
+                            <div class="name">Name Surname</div>
+                            <div class="department-code">AA</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="node">
+                            <div class="position">Head of Departments</div>
+                            <div class="name">Name Surname</div>
+                            <div class="department-code">AB</div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <div class="position">Manager A</div>
+                                    <div class="name">Name Surname</div>
+                                    <div class="department-code">AB</div>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <div class="node">
+                                            <div class="position">Team Lead</div>
+                                            <div class="name">Name Surname</div>
+                                            <div class="department-code">AA</div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="node">
+                                            <div class="position">Specialist</div>
+                                            <div class="name">Name Surname</div>
+                                            <div class="department-code">BB</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <div class="position">Manager B</div>
+                                    <div class="name">Name Surname</div>
+                                    <div class="department-code">AB</div>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <div class="node">
+                                            <div class="position">Analyst</div>
+                                            <div class="name">Name Surname</div>
+                                            <div class="department-code">CC</div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="node">
+                                            <div class="position">Developer</div>
+                                            <div class="name">Name Surname</div>
+                                            <div class="department-code">AA</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <div class="position">Central Manager</div>
+                                    <div class="name">Name Surname</div>
+                                    <div class="department-code">AB</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="node">
+                            <div class="position">Position Name</div>
+                            <div class="name">Name Surname</div>
+                            <div class="department-code">AA</div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
 </body>
 </html>
