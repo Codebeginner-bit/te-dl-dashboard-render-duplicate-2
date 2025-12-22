@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<title>Organization Chart</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+  
+<script>
+  
+body {
+	background: #eee;
+}
+
+.content {
+	font-family: Verdana;
+	font-size: 14px;
+	position: relative;
+}
+
+.content * {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.chart {
+	display: block;
+	clear: both;
+	margin-bottom: 30px;
+	position: relative;
+}
+
+.chart.main:before, .chart.main:after {
+	content: " ";
+	display: table;
+}
+
+.chart.main:after {
+	clear: both;
+}
+
+.chart.main {
+	*zoom: 1;
+}
+
+.chart ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.chart ul li {
+	position: relative;
+}
+
+.chart ul li span {
+	display: block;
+	border: 3px solid #000;
+	text-align: center;
+	overflow: hidden;
+	text-decoration: none;
+	color: black;
+	font-size: 12px;
+	box-shadow: 4px 4px 9px -4px rgba(0, 0, 0, 0.4);
+	-webkit-transition: all linear .1s;
+	-moz-transition: all linear .1s;
+	transition: all linear .1s;
+	background: #ccc;
+	padding: 4px;
+}
+
+.chart .group {
+	background: green;
+	color: #ccc;
+}
+
+.chart .board {
+	width: 70%;
+	margin: 0 auto;
+	display: block;
+	position: relative;
+}
+
+.chart .board:before {
+	content: "";
+	display: block;
+	position: absolute;
+	height: 600px;
+	width: 0px;
+	border-left: 2px solid #000;
+	margin-left: 49%;
+	top: 15px;
+}
+
+.chart ul.column--one {
+	height: 90px;
+	position: relative;
+	width: 100%;
+	display: block;
+	clear: both;
+}
+
+.chart ul.column--one li {
+	width: 30%;
+	margin: 0px auto;
+	top: 20px;
+}
+
+.chart ul.column--two {
+	position: relative;
+	width: 100%;
+	display: block;
+	height: 90px;
+	clear: both;
+}
+
+.chart ul.column--two li:first-child {
+	width: 30%;
+	float: left;
+}
+
+.chart ul.column--two li {
+	width: 30%;
+	float: right;
+}
+
+.chart ul.column--two:before {
+	content: "";
+	display: block;
+	position: relative;
+	width: 80%;
+	height: 10px;
+	border-top: 2px solid #000;
+	margin: 0 auto;
+	top: 40px;
+}
+
+.chart ul.column--three {
+	position: relative;
+	width: 100%;
+	display: block;
+	clear: both;
+}
+
+.chart ul.column--three li:first-child {
+	width: 30%;
+	float: left;
+	margin-left: 0;
+}
+
+.chart ul.column--three li {
+	width: 30%;
+	margin-left: 5%;
+	float: left;
+}
+
+.chart ul.column--three li:last-child {
+	width: 30%;
+	float: right;
+	margin-left: 0;
+}
+
+.chart ul.column--three:before {
+	content: "";
+	display: block;
+	position: relative;
+	width: 80%;
+	height: 10px;
+	border-top: 2px solid #000;
+	margin: 0 auto;
+	top: 40px;
+}
+
+.chart .departments {
+	width: 100%;
+	display: block;
+	clear: both;
+}
+
+.chart .departments:before {
+	content: "";
+	display: block;
+	width: 85%;
+	height: 22px;
+	border-top: 2px solid #000;
+	border-left: 2px solid #000;
+	border-right: 2px solid #000;
+	margin: 0 auto;
+	top: 0px;
+}
+
+.chart .department {
+	border-left: 2px solid #000;
+	width: 13.2%;
+	float: left;
+	margin: 0px 4px;
+}
+
+.chart .department:after {
+	content: "";
+	position: absolute;
+	display: block;
+	width: 10px;
+	height: 22px;
+	border-left: 2px solid #000;
+	left: 50%;
+	top: -22px;
+}
+
+.chart .department:first-child:after {
+	display: none;
+}
+
+.chart .department:last-child:after {
+	display: none;
+}
+
+.chart .department.central {
+	background: #eee;
+}
+
+.chart .department.central:after {
+	display: none;
+}
+
+.chart .department span {
+	border-left: 1px solid #000;
+}
+
+.chart .department li {
+	padding-left: 25px;
+	border-bottom: 2px solid #000;
+	height: 80px;
+}
+
+.chart .department li span {
+	background: #ccc;
+	top: 38px;
+	position: absolute;
+	z-index: 1;
+	width: 95%;
+	height: auto;
+	vertical-align: middle;
+	right: 0px;
+	line-height: 14px;
+	border: 3px solid #000;
+}
+
+.chart .department .sections {
+	margin-top: -20px;
+}
+
+/* MEDIA QUERIES */
+@media all and (max-width: 767px) {
+
+	.chart .board {
+		margin: 0px;
+		width: 100%;
+	}
+
+	.chart .departments:before {
+		border: none;
+	}
+
+	.chart .department {
+		float: none;
+		width: 100%;
+		margin-left: 0;
+		background: #eee;
+		margin-bottom: 40px;
+	}
+
+	.chart .department:before {
+		content: "";
+		display: block;
+		position: absolute;
+		width: 15px;
+		height: 60px;
+		border-left: 2px solid #000;
+		z-index: 1;
+		top: -45px;
+		left: 0%;
+		margin-left: -2px;
+	}
+
+	.chart .department:after {
+		display: none;
+	}
+
+	.chart .department:first-child:before {
+		display: none;
+	}
+
+</script>
+<body>
+	<div class="content">
+		<figure class="chart main">
+			<div class="board">
+				<ul class="column--three">
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+				</ul>
+				<ul class="column--one">
+					<li>
+						<span class="group">
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+				</ul>
+				<ul class="column--two">
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+				</ul>
+				<ul class="column--two">
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+					<li>
+						<span>
+							<strong>Position Name</strong>
+							<br>Name Surname
+							<br>AA
+							</span>
+					</li>
+				</ul>
+			</div>
+			<ul class="departments">
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department central">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>CC
+							</span>
+						</li>
+					</ul>
+				</li>
+				<li class="department">
+					<span class="group">
+						<strong>Position Name</strong>
+						<br>Name Surname
+						<br>AB
+						</span>
+					<ul class="sections">
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>AA
+							</span>
+						</li>
+						<li class="section">
+							<span>
+								<strong>Position Name</strong>
+								<br>Name Surname
+								<br>BB
+							</span>
+						</li>
+					</ul>
+				</li>
+			</ul>
+    </figure>
+	</div>
+</body>
+</html>
