@@ -9,30 +9,38 @@
             --node-bg: #ffffff;
             --node-border: #94a3b8;
             --connector-color: #94a3b8;
-            --name-bg: #4CAF50;
-            --dept-bg: #BBCDE5;
+            --name-color: #333;
+            --dept-color: #f1f5f9;
             --text-color: #1e293b;
             --title-color: #0f172a;
-            --photo-border: #94a3b8;
+            --photo-border: #cbd5e1;
             --bg-color: #f1f5f9;
+            --gap: 24px; 
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: var(--text-color);
             background-color: var(--bg-color);
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
 
         h1 {
             text-align: center;
             color: var(--title-color);
             font-weight: bold;
+            margin-bottom: 40px;
         }
 
         .org-chart {
-            display: flex;
+            display: inline-flex; 
             flex-direction: column;
             align-items: center;
         }
@@ -50,71 +58,104 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
-            margin: 10px 15px;
+            padding: 0 var(--gap);
             position: relative;
         }
-
-        .org-chart ul::before, .org-chart li::before, .org-chart li::after {
+        .node + ul::before {
             content: '';
             position: absolute;
-            width: 50%;
-            border-top: 2px solid var(--connector-color);
-            top: 0;
+            left: 50%;
+            bottom: 100%;
+            width: 2px;
+            height: 20px;
+            background-color: var(--connector-color);
+            transform: translateX(-50%);
         }
 
-        .org-chart li:only-child::before, 
-        .org-chart li:only-child::after { display: none; }
+        ul ul li::before,
+        ul ul li::after {
+            content: '';
+            position: absolute;
+            background-color: var(--connector-color);
+            top: -20px;
+        }
 
-        .org-chart ul li:first-child::before { border-left-width: 0; }
-        .org-chart ul li:last-child::after { border-right-width: 0; }
 
-        .org-chart ul ul::before {
+        ul ul li::before {
             left: 50%;
-            top: 10px;
-            border-left: 2px solid var(--connector-color);
-            width: 0;
+            width: 2px;
             height: 20px;
+            transform: translateX(-50%);
+        }
+
+        ul ul li::after {
+            height: 2px;
+        }
+
+        li:first-child:not(:only-child)::after {
+            left: 50%;
+            width: 50%;
+        }
+
+        li:last-child:not(:only-child)::after {
+            right: 50%;
+            width: 50%;
+        }
+
+        li:not(:first-child):not(:last-child)::after {
+            left: 0;
+            width: 100%;
+        }
+        li:only-child::after {
+            display: none;
         }
 
         .node {
-            display: inline-block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 150px;
             background-color: var(--node-bg);
-            border: 2px solid var(--node-border);
+            border: 1px solid var(--node-border);
             border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
-            padding: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            padding: 15px;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
             position: relative; 
-            z-index: 1;
+            z-index: 1; 
         }
+
         .node:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
         }
 
         .node .position {
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 600;
             color: var(--title-color);
-            margin-bottom: 5px;
+            margin-bottom: 12px;
+            background-color: var(--dept-bg);
+            width: 100%;
+            padding: 4px 0;
+            border-radius: 4px;
         }
-
-        .node .name-box {
-            background-color: var(--name-bg);
-            color: white;
-            padding: 5px 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+        
+        .node .name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--name-color);
+            margin: 8px 0 4px 0;
         }
 
         .node img {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            border: 2px solid var(--photo-border);
+            border: 3px solid var(--photo-border);
             object-fit: cover;
+            background-color: #fff; 
         }
 
         .node .dept-code {
@@ -127,22 +168,48 @@
         @media (max-width: 768px) {
             .org-chart ul {
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-start;
             }
 
             .org-chart ul ul {
-                margin-left: 20px;
+                margin-left: 20px; 
             }
 
+            .org-chart li {
+                align-items: flex-start;
+                padding: 10px 0;
+            }
+
+            .node + ul::before,
+            ul ul li::before,
+            ul ul li::after {
+                display: none;
+            }
+            
             .node {
-                width: 100%;
+                display: flex;
+                flex-direction: row;
+                width: calc(100% - 20px);
                 text-align: left;
-                padding: 10px 20px;
+                align-items: center;
+                padding: 10px;
             }
 
             .node img {
-                float: left;
-                margin-right: 10px;
+                margin-right: 15px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .node-content {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .node .position {
+                width: auto;
+                padding: 2px 8px;
+                margin-bottom: 5px;
             }
         }
     </style>
@@ -153,86 +220,112 @@
         <ul>
             <li>
                 <div class="node">
-                    <div class="position">Naomi</div>
+                    <div class="position">Manager</div>
+                    <div class="name">Naomi</div>
                 </div>
                 <ul>
                     <li>
                         <div class="node">
                             <div class="position">N1</div>
-                            <ul>
-                                <li>
-                                    <div class="node">
-                                        <img src="ryan.jpg" alt="Ryan">
-                                        <div class="name-box">Ryan</div>
+                            <div class="node-content">
+                                <div class="name">Team Lead</div>
+                            </div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <img src="ryan.jpg" alt="Ryan">
+                                    <div class="node-content">
+                                        <div class="name">Ryan</div>
                                         <div class="dept-code">古瑞思</div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="node">
-                                        <img src="allen.jpg" alt="Allen">
-                                        <div class="name-box">Allen</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <img src="allen.jpg" alt="Allen">
+                                    <div class="node-content">
+                                        <div class="name">Allen</div>
                                         <div class="dept-code">卜阿倫</div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="node">
-                                        <img src="reza.jpg" alt="Reza">
-                                        <div class="name-box">Reza</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <img src="reza.jpg" alt="Reza">
+                                    <div class="node-content">
+                                        <div class="name">Reza</div>
                                         <div class="dept-code">白瑞紗</div>
                                     </div>
-                                </li>
-                            </ul>
-                        </div>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <div class="node">
                             <div class="position">N2</div>
-                            <ul>
-                                <li>
-                                    <div class="node">
-                                        <img src="brian.jpg" alt="Brian">
-                                        <div class="name-box">Brian</div>
+                            <div class="node-content">
+                                <div class="name">Team Lead</div>
+                            </div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <img src="brian.jpg" alt="Brian">
+                                    <div class="node-content">
+                                        <div class="name">Brian</div>
                                         <div class="dept-code">布來恩</div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="node">
-                                        <img src="kim.jpg" alt="Kim">
-                                        <div class="name-box">Kim</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <img src="kim.jpg" alt="Kim">
+                                    <div class="node-content">
+                                        <div class="name">Kim</div>
                                         <div class="dept-code">德洛斯</div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="node">
-                                        <img src="ronie.jpg" alt="Ronie">
-                                        <div class="name-box">Ronie</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <img src="ronie.jpg" alt="Ronie">
+                                    <div class="node-content">
+                                        <div class="name">Ronie</div>
                                         <div class="dept-code">羅尼</div>
                                     </div>
-                                </li>
-                            </ul>
-                        </div>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
 
                     <li>
                         <div class="node">
                             <div class="position">A3</div>
-                            <ul>
-                                <li>
-                                    <div class="node">
-                                        <img src="echo.jpg" alt="Echo">
-                                        <div class="name-box">Echo</div>
+                            <div class="node-content">
+                                <div class="name">Team Lead</div>
+                            </div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <img src="echo.jpg" alt="Echo">
+                                    <div class="node-content">
+                                        <div class="name">Echo</div>
                                         <div class="dept-code">蕭拉帕</div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="node">
-                                        <img src="armein.jpg" alt="Armein">
-                                        <div class="name-box">Armein</div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="node">
+                                    <img src="armein.jpg" alt="Armein">
+                                     <div class="node-content">
+                                        <div class="name">Armein</div>
                                         <div class="dept-code">亞曼尼</div>
                                     </div>
-                                </li>
-                            </ul>
-                        </div>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </li>
