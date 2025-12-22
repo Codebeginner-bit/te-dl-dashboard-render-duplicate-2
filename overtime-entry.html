@@ -48,6 +48,8 @@
         .ot-total-preview { font-size: 0.85em; color: var(--primary); font-weight: bold; margin-left: 8px; }
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
+        .warning-consecutive {background-color: #f8d7da !important; color: #721c24;font-weight: bold;border-color: #d9534f !important;}
+
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
@@ -230,6 +232,7 @@
                 
                 let headerHtml = '<thead><tr><th>Employee Name</th><th>Site</th><th>Shift</th>', dayRow = '<tr><th>Day</th><th></th><th></th>';
                 const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+                daysInCurrentMonth = daysInMonth;
                 const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 for (let day = 1; day <= daysInMonth; day++) { 
                     const date = new Date(year, month, day), dayOfWeek = date.getDay(), weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : ""; 
@@ -282,7 +285,33 @@
                 });
             }
 
-            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){ updateOtPreview(event.target.dataset.employeeId);}}
+            let daysInCurrentMonth = 0;
+            function checkConsecutiveWorkDays(employeeId, changedDay) {
+                const inputs = Array.from(document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`));
+                let consecutiveCount = 0;
+                for (let day = 1; day <= daysInCurrentMonth; day++) {
+                    const input = inputs.find(inp => inp.dataset.day == day);
+                    if (!input) continue;
+                    input.classList.remove('warning-consecutive');
+
+                    const value = parseFloat(input.value);
+                    const isWorkDay = !isNaN(value) && value > 0;
+
+                    if (isWorkDay) {
+                        consecutiveCount++;
+                    } else {
+                        consecutiveCount = 0;
+                    }
+                    if (consecutiveCount >= 7) {
+                        input.classList.add('warning-consecutive');
+                        if (consecutiveCount === 7 && day === changedDay) {
+                            alert("Warning: Working 7 days consecutively is not recommended.");
+                        }
+                    }
+                }
+            }
+            
+            function handleOtInputChange(event){if(event.target.classList.contains("ot-input")){ updateOtPreview(event.target.dataset.employeeId);checkConsecutiveWorkDays(event.target.dataset.employeeId, parseInt(event.target.dataset.day, 10));}}
             function calculateOtForEmployee(employeeId) { let total = 0; document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`).forEach(input => { const value = parseFloat(input.value); if (!isNaN(value)) total += value; }); return total; }
             function updateOtPreview(employeeId) { const total = calculateOtForEmployee(employeeId); const row = document.querySelector(`#ot-entry-table tr[data-ot-row-id="${employeeId}"]`); if (row) { const span = row.querySelector('.ot-total-preview'); if (span) span.textContent = ` (Total: ${total.toFixed(1)})`; } }
 
