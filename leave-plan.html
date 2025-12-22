@@ -52,21 +52,17 @@
             .nav-item { padding: 0.5rem; border-radius: 4px; }
             .navbar-lamp { display: none; }
             .nav-item.active { background-color: rgba(0,123,255,0.1); }
-            
             .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
             .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
             .leave-plan-header .date-selector-container { flex-direction: column; }
-            
             .leave-site-section { padding: 15px; }
-            
-            /* --- LEAVE TABLE MOBILE VIEW FIX --- */
             .leave-table thead { display: none; }
             .leave-table { border: none; }
             .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
             .leave-table tr {margin-bottom: 1rem; border: 1px solid #dee2e6;border-radius: 8px; padding: 0.5rem;}
             .leave-table td {display: flex;justify-content: space-between;align-items: center;text-align: right;border: none;border-bottom: 1px solid #f1f1f1;padding: 0.75rem 0.5rem;white-space: normal;}
             .leave-table tr td:last-child { border-bottom: none; }
-            .leave-table td::before {content: attr(data-label); text-align: left;font-weight: bold;padding-right: 10px; }
+            .leave-table td::before {content: attr(data-label); text-align: left;font-weight: bold;padding-right: 20px; }
             .leave-table td:nth-of-type(1) {justify-content: center; padding: 0.5rem 0; }
             .leave-table td:nth-of-type(1)::before { content: ""; } 
             .leave-table td:nth-of-type(2)::before { content: "Name"; }
