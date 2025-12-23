@@ -46,7 +46,9 @@
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         @media (max-width: 768px) {
-            body {padding: 1rem 0.5rem 80px 0.5rem; }
+            body {
+                padding: 1rem 0.5rem 80px 0.5rem;
+            }
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
             .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
             .nav-item { padding: 0.5rem; border-radius: 4px; }
@@ -55,23 +57,57 @@
             .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
             .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
             .leave-plan-header .date-selector-container { flex-direction: column; }
+            
             .leave-site-section { padding: 15px; }
             .leave-table thead { display: none; }
             .leave-table { border: none; }
-            .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
-            .leave-table tr {margin-bottom: 1rem; border: 1px solid #dee2e6;border-radius: 8px; padding: 0.5rem; box-sizing: border-box;}
-            .leave-table td {display: flex;
-                justify-content: space-between; 
-                align-items: center; 
-                text-align: left;
+
+            .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .leave-table tr {
+                margin-bottom: 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 0.5rem;
+                box-sizing: border-box;
+            }
+
+            .leave-table td {
+                display: flex;
+                justify-content: space-between; /* This is key: pushes label left, data right */
+                align-items: center;
+                text-align: right; /* Aligns the data value to the right */
                 border: none;
-                border-bottom: 1px solid #f1f1f1; 
-                padding: 0.5rem 10px; 
-                white-space: normal; 
-                overflow-x: hidden;}
-            .leave-table tr td:last-child { border-bottom: none; }
-            .leave-table td::before {position: absolute; left: 10px; width: 35%; white-space: nowrap; text-align: left; font-weight: bold;}
-            .leave-table td:nth-of-type(1) { padding-left: 0; text-align: center; }
+                border-bottom: 1px solid #f1f1f1;
+                padding: 0.75rem 0.5rem;
+                white-space: normal;
+            }
+
+            .leave-table tr td:last-child {
+                border-bottom: none;
+            }
+
+            /* FIXED: Removed absolute positioning and relied on Flexbox */
+            .leave-table td::before {
+                /* No longer absolutely positioned. It's now a flex item. */
+                content: attr(data-label); /* Replaced hardcoded content with a dynamic label */
+                font-weight: bold;
+                text-align: left;
+                margin-right: 1rem; /* Adds space between label and data */
+                flex-shrink: 0; /* Prevents the label from shrinking if data is long */
+            }
+
+            /* FIXED: Use flex properties for centering the buttons */
+            .leave-table td:nth-of-type(1) {
+                justify-content: center;
+                padding: 0.5rem 0;
+            }
+
+            /* We must use a data-label attribute in the JS for this to work */
+            /* This CSS is prepared for that change */
             .leave-table td:nth-of-type(1)::before { content: ""; }
             .leave-table td:nth-of-type(2)::before { content: "Name"; }
             .leave-table td:nth-of-type(3)::before { content: "ID"; }
