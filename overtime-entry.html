@@ -218,74 +218,87 @@
                 } catch (error) { console.error("Failed to submit overtime:", error); alert(`Submission failed: ${error.message}`); }
             };
 
-            async function generateOvertimeTable(year, month) {
-                const now = new Date(); 
-                year = (year === undefined) ? now.getFullYear() : year; 
-                month = (month === undefined) ? now.getMonth() : month;
-                currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
-                
-                let existingOtDataMap = new Map();
-                let allLeaves = [];
-                try {
-                    const [otRes, leavesRes] = await Promise.all([
-                        fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`),
-                        fetch(`${API_BASE}/leaves?month_year=${currentOtMonthYear}`)
-                    ]);
-                    if (otRes.ok) { const records = await otRes.json(); records.forEach(rec => { existingOtDataMap.set(rec.employee_id, rec.daily_data || {}); }); }
-                    if (leavesRes.ok) { allLeaves = await leavesRes.json(); }
-                } catch (e) { console.error("Could not fetch OT or leave data:", e); }
+async function generateOvertimeTable(year, month) {
+    const now = new Date();
+    year = (year === undefined) ? now.getFullYear() : year;
+    month = (month === undefined) ? now.getMonth() : month;
+    currentOtMonthYear = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-                const leaveLookup = allLeaves.reduce((acc, leave) => { 
-                    if (!acc[leave.employee_id]) acc[leave.employee_id] = []; 
-                    acc[leave.employee_id].push({ start: new Date(leave.start_date + 'T00:00:00'), end: new Date(leave.end_date + 'T00:00:00'), type: (leave.leave_type.match(/\b(\w)/g) || []).join('').toUpperCase() || 'LEAVE' }); 
-                    return acc; 
-                }, {});
-                
-                let headerHtml = '<thead><tr><th>Employee Name</th><th>Site</th><th>Shift</th>', dayRow = '<tr><th>Day</th><th></th><th></th>';
-                const daysInMonth = new Date(year, month + 1, 0).getDate(); 
-                daysInCurrentMonth = daysInMonth;
-                const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-                for (let day = 1; day <= daysInMonth; day++) { 
-                    const date = new Date(year, month, day), dayOfWeek = date.getDay(), weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : ""; 
-                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`; 
-                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`; 
-                }
-                headerHtml += "</tr>", dayRow += "</tr>";
-                
-                const groupedEmployees = allEmployees.reduce((acc, emp) => { (acc[emp.shift || 'Unassigned'] = acc[emp.shift || 'Unassigned'] || []).push(emp); return acc; }, {});
-                let bodyHtml = "<tbody>";
-                ['Dayshift', 'Nightshift', 'Unassigned'].forEach(shift => {
-                    const employeesInShift = groupedEmployees[shift] || [];
-                    if (employeesInShift.length > 0) {
-                        bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 3}">${shift}</td></tr>`;
-                        employeesInShift.sort((a,b) => a.english_name.localeCompare(b.english_name)).forEach(emp => {
-                            const otData = existingOtDataMap.get(emp.id_number) || {}; 
-                            bodyHtml += `<tr data-ot-row-id="${emp.id_number}" data-site="${emp.site || ''}" data-shift="${emp.shift || 'Unassigned'}">`; 
-                            bodyHtml += `<td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`; 
-                            bodyHtml += `<td>${emp.site || ''}</td>`; 
-                            bodyHtml += `<td>${emp.shift || 'Unassigned'}</td>`;
-                            for (let day = 1; day <= daysInMonth; day++) {
-                                const currentDate = new Date(year, month, day);
-                                const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
-                                let dayValue = otData[day] || '', cellClass = 'ot-input', isReadonly = true;
-                                if (onLeave) { dayValue = onLeave.type; cellClass += ' leave-entry'; } 
-                                else { isReadonly = !isOtTableEditable; if(isOtTableEditable) cellClass += ' ot-hours-entry'; }
-                                bodyHtml += `<td><input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${isReadonly ? 'readonly' : ''}></td>`;
-                            } 
-                            bodyHtml += "</tr>";
-                        });
+    let existingOtDataMap = new Map();
+    let allLeaves = [];
+    try {
+        const [otRes, leavesRes] = await Promise.all([
+            fetch(`${API_BASE}/overtime?month_year=${currentOtMonthYear}`),
+            fetch(`${API_BASE}/leaves?month_year=${currentOtMonthYear}`)
+        ]);
+        if (otRes.ok) { const records = await otRes.json(); records.forEach(rec => { existingOtDataMap.set(rec.employee_id, rec.daily_data || {}); }); }
+        if (leavesRes.ok) { allLeaves = await leavesRes.json(); }
+    } catch (e) { console.error("Could not fetch OT or leave data:", e); }
+
+    const leaveLookup = allLeaves.reduce((acc, leave) => {
+        if (!acc[leave.employee_id]) acc[leave.employee_id] = [];
+        acc[leave.employee_id].push({ start: new Date(leave.start_date + 'T00:00:00'), end: new Date(leave.end_date + 'T00:00:00'), type: (leave.leave_type.match(/\b(\w)/g) || []).join('').toUpperCase() || 'LEAVE' });
+        return acc;
+    }, {});
+
+    let headerHtml = '<thead><tr><th>Employee Name</th><th>Site</th><th>Shift</th>', dayRow = '<tr><th>Day</th><th></th><th></th>';
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    daysInCurrentMonth = daysInMonth;
+    const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day), dayOfWeek = date.getDay(), weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : "";
+        headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
+        dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+    }
+    headerHtml += "</tr>", dayRow += "</tr>";
+
+    const groupedEmployees = allEmployees.reduce((acc, emp) => { (acc[emp.shift || 'Unassigned'] = acc[emp.shift || 'Unassigned'] || []).push(emp); return acc; }, {});
+    let bodyHtml = "<tbody>";
+    ['Dayshift', 'Nightshift', 'Unassigned'].forEach(shift => {
+        const employeesInShift = groupedEmployees[shift] || [];
+        if (employeesInShift.length > 0) {
+            bodyHtml += `<tr class="shift-header-row"><td colspan="${daysInMonth + 3}">${shift}</td></tr>`;
+            employeesInShift.sort((a, b) => a.english_name.localeCompare(b.english_name)).forEach(emp => {
+                const otData = existingOtDataMap.get(emp.id_number) || {};
+                bodyHtml += `<tr data-ot-row-id="${emp.id_number}" data-site="${emp.site || ''}" data-shift="${emp.shift || 'Unassigned'}">`;
+                bodyHtml += `<td><span>${emp.english_name}</span><span class="ot-total-preview"></span></td>`;
+                bodyHtml += `<td>${emp.site || ''}</td>`;
+                bodyHtml += `<td>${emp.shift || 'Unassigned'}</td>`;
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentDate = new Date(year, month, day);
+                    const dayOfWeek = currentDate.getDay(); 
+                    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                    const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
+                    if (onLeave && !isWeekend) {
+                        bodyHtml += `<td class="leave-entry">${onLeave.type}</td>`;
+                    } else {
+                        const dayValue = otData[day] || '';
+                        let cellClass = 'ot-input';
+                        let isReadonly = !isOtTableEditable;
+                        if (isOtTableEditable) {
+                            cellClass += ' ot-hours-entry';
+                        }
+                        if (isWeekend) {
+                            cellClass += ' weekend-day';
+                        }
+                        bodyHtml += `<td><input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${isReadonly ? 'readonly' : ''}></td>`;
                     }
-                });
-                bodyHtml += "</tbody>"; 
-                document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
-                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { updateOtPreview(input.dataset.employeeId); });
-                document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
-                
-                const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]'); 
-                if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
-                isOtTableEditable = false; 
-                filterOvertimeTable();
-            }
+                }
+
+                bodyHtml += "</tr>";
+            });
+        }
+    });
+    bodyHtml += "</tbody>";
+    document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
+    document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { updateOtPreview(input.dataset.employeeId); });
+    document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
+    const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]');
+    if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
+    isOtTableEditable = false;
+    filterOvertimeTable();
+}
+
 
             window.filterOvertimeTable = function() {
                 const siteFilter = document.getElementById('ot-site-filter').value, shiftFilter = document.getElementById('ot-shift-filter').value;
