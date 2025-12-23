@@ -46,131 +46,39 @@
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         @media (max-width: 768px) {
-            body {
-                padding: 1rem 0.5rem 80px 0.5rem; /* Standard padding for mobile */
-            }
-
-            /* Navbar Fixes */
-            .navbar-container {
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                transform: translateY(0);
-                width: 100%;
-                border-radius: 0;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(10px);
-                border-top: 1px solid rgb(var(--border));
-            }
-
-            .navbar {
-                flex-direction: row;
-                justify-content: space-around;
-                width: 100%;
-                padding: 0.25rem 0;
-                gap: 0;
-                border-radius: 0;
-            }
-
-            .nav-item {
-                padding: 0.5rem;
-                border-radius: 4px;
-            }
-
-            .navbar-lamp {
-                display: none;
-            }
-
-            .nav-item.active {
-                background-color: rgba(0, 123, 255, 0.1);
-            }
-
-            /* Adjust Header in Leave Plan Box */
-            .leave-plan-header {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .leave-plan-header h2,
-            .leave-plan-header .date-selector-container,
-            .leave-plan-header .add-btn {
-                grid-column: 1;
-                grid-row: auto;
-                justify-self: center;
-            }
-
-            .leave-plan-header .date-selector-container {
-                flex-direction: column; /* Stack date filters vertically */
-            }
-
-            .leave-site-section {
-                padding: 15px;
-            }
-
-            /* --- LEAVE TABLE MOBILE STYLING --- */
-            .leave-table thead {
-                display: none;
-            }
-
-            .leave-table {
-                border: none;
-            }
-
-            .leave-table,
-            .leave-table tbody,
-            .leave-table tr,
-            .leave-table td {
-                display: block;
-                width: 100%; /* Ensure each row spans the screen width */
-            }
-
-            .leave-table tr {
-                margin-bottom: 1rem;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                padding: 0.5rem;
-                box-sizing: border-box; /* Ensure padding is inside width */
-            }
-
-            .leave-table td {
-                display: flex;
-                justify-content: space-between; /* Align label and data on one row */
-                align-items: center; /* Vertically center text */
-                text-align: left; /* Align text to the left for consistency */
-                border: none;
-                border-bottom: 1px solid #f1f1f1; /* Soft separator */
-                padding: 0.5rem 10px; /* Add spacing around text */
-                white-space: normal; /* Allow line wrapping for long data */
-                overflow-x: hidden; /* Prevent unexpected overflow */
-            }
-
-            /* Add extra spacing to the right to avoid squeezing data against the border */
-            .leave-table td:nth-of-type(1) {
-                justify-content: center; /* Center the Action buttons */
-                padding: 0.75rem; /* Add some space */
-            }
-
-            /* Adjust spacing on the right and set box-sizing to prevent container overflow */
-            .leave-table td::before {
-                content: attr(data-label); /* Dynamically fetch the label */
+            body {padding: 1rem 0.5rem 80px 0.5rem; }
+            .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
+            .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
+            .nav-item { padding: 0.5rem; border-radius: 4px; }
+            .navbar-lamp { display: none; }
+            .nav-item.active { background-color: rgba(0,123,255,0.1); }
+            .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
+            .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
+            .leave-plan-header .date-selector-container { flex-direction: column; }
+            .leave-site-section { padding: 15px; }
+            .leave-table thead { display: none; }
+            .leave-table { border: none; }
+            .leave-table, .leave-table tbody, .leave-table tr, .leave-table td {display: block; width: 100%;}
+            .leave-table tr {margin-bottom: 1rem; border: 1px solid #dee2e6;border-radius: 8px; padding: 0.5rem; box-sizing: border-box;}
+            .leave-table td {display: flex;
+                justify-content: space-between; 
+                align-items: center; 
                 text-align: left;
-                font-weight: bold;
-                margin-right: 10px; /* Space between label and data */
-                flex-shrink: 0; /* Prevent the label from shrinking */
-            }
-
-            /* Avoid the box from overlapping the container */
-            .leave-table tr {
-                padding: 0.5rem 8px; /* Adjust left & right padding */
-            }
-
-            /* Ensure the data text does not touch the edge of the table container */
-            .leave-table td:not(:nth-of-type(1)) {
-                padding-right: 15px; /* Add extra right padding */
-            }
+                border: none;
+                border-bottom: 1px solid #f1f1f1; 
+                padding: 0.5rem 10px; 
+                white-space: normal; 
+                overflow-x: hidden;}
+            .leave-table tr td:last-child { border-bottom: none; }
+            .leave-table td::before {position: absolute; left: 10px; width: 35%; white-space: nowrap; text-align: left; font-weight: bold;}
+            .leave-table td:nth-of-type(1) { padding-left: 0; text-align: center; }
+            .leave-table td:nth-of-type(1)::before { content: ""; }
+            .leave-table td:nth-of-type(2)::before { content: "Name"; }
+            .leave-table td:nth-of-type(3)::before { content: "ID"; }
+            .leave-table td:nth-of-type(4)::before { content: "Date"; }
+            .leave-table td:nth-of-type(5)::before { content: "Days"; }
+            .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }
         }
-
     </style>
 </head>
 <body>
