@@ -270,7 +270,7 @@ async function generateOvertimeTable(year, month) {
                     const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                     const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
                     if (onLeave && !isWeekend) {
-                        bodyHtml += `<td class="leave-entry">${onLeave.type}</td>`;
+                         bodyHtml += `<td class="leave-entry" style="background-color: #e0f7fa; font-weight: bold; text-align: center;">${onLeave.type}</td>`;
                     } else {
                         const dayValue = otData[day] || '';
                         let cellClass = 'ot-input';
