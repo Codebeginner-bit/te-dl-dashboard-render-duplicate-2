@@ -58,6 +58,7 @@
             border-radius: 12px;
             padding: 24px;
             box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05);
+            position: relative;
         }
 
         .project-section h2 {
@@ -66,6 +67,7 @@
             padding-bottom: 15px;
             border-bottom: 1px solid rgb(var(--border));
             font-size: 1.5em;
+            padding-right: 120px; 
         }
 
         .chart-container {
@@ -79,6 +81,8 @@
             flex-direction: column;
             align-items: center;
             min-width: 100%; 
+            transform-origin: top center;
+            transition: transform 0.3s ease; 
         }
         
         .org-chart ul {
@@ -96,7 +100,6 @@
             position: relative;
         }
 
-        /* --- Connector Lines --- */
         .node + ul { margin-top: var(--node-gap); }
         .node::after {
             content: '';
@@ -170,6 +173,38 @@
         .node .name{ font-size: 16px; font-weight: bold; color: var(--name-color); margin: 5px 0; }
         .node .dl-position{ font-size: 16px; font-weight: bold; color: var(--name-color); margin: 5px 0; }
         .node .dept-code { font-size: 12px; color: #64748b; margin-top: 4px; font-family: monospace; }
+        .chart-controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--node-border);
+            background-color: var(--node-bg);
+            color: var(--name-color);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .zoom-btn:hover {
+            background-color: var(--dept-color);
+            transform: scale(1.1);
+        }
+        .zoom-btn:active {
+            transform: scale(1.0);
+        }
+
         .navbar-container { position:fixed; top:50%; right:1.5rem; transform:translateY(-50%); z-index:50; }
         .navbar { position:relative; display:flex; flex-direction:column; align-items:center; gap:0.75rem; background-color:rgba(255,255,255,0.75); border:1px solid rgb(var(--border)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:0.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
         .nav-item { position:relative; cursor:pointer; font-weight:600; padding:0.75rem; border-radius:9999px; color:rgba(0,0,0,0.8); text-decoration:none; transition:color 0.3s ease; z-index:10; display:flex; align-items:center; justify-content:center; }
@@ -178,10 +213,16 @@
         .lamp-light { position:absolute; left:-0.4rem; top:50%; transform:translateY(-50%); width:0.25rem; height:1.5rem; background-color:var(--primary); border-radius:9999px 0 0 9999px; }
         
         footer { text-align: center; padding: 20px; color: #64748b; background-color: var(--bg-color); }
-            @media (max-width: 768px) {
+        
+        @media (max-width: 768px) {
             main.content-wrapper { padding: 20px 10px 80px 10px; }
             .project-section { padding: 16px; }
-            .project-section h2 { font-size: 1.25em; }
+            .project-section h2 { font-size: 1.25em; padding-right: 0; }
+            .chart-controls {
+                position: static;
+                margin-bottom: 15px;
+                justify-content: flex-start;
+            }
             .org-chart ul ul { margin-left: 20px; padding-left: 10px; border-left: 2px solid var(--connector-color); }
             .node + ul, .node::after, li::before, li::after { display: none; }
             .org-chart ul { flex-direction: column; align-items: flex-start; }
@@ -208,6 +249,11 @@
             <!-- === PROJECT 1 === -->
             <section class="project-section">
                 <h2>EDT Test Engineering Organization Chart (DL) - NAOMI</h2>
+                <div class="chart-controls">
+                    <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
+                    <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
+                    <button class="zoom-btn" title="Reset Zoom" data-action="reset">⟲</button>
+                </div>
                 <div class="chart-container">
                     <div class="org-chart">
                         <ul>
@@ -251,6 +297,11 @@
             <!-- === PROJECT 2  === -->
             <section class="project-section">
                 <h2>EDT Test Engineering Organization Chart (DL) - ROSA </h2>
+                <div class="chart-controls">
+                    <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
+                    <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
+                    <button class="zoom-btn" title="Reset Zoom" data-action="reset">⟲</button>
+                </div>
                 <div class="chart-container">
                     <div class="org-chart">
                         <ul>
@@ -289,6 +340,11 @@
             <!-- === PROJECT 3 === -->
            <section class="project-section">
                 <h2>EDT Test Engineering Organization Chart (DL) - KILO </h2>
+                <div class="chart-controls">
+                    <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
+                    <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
+                    <button class="zoom-btn" title="Reset Zoom" data-action="reset">⟲</button>
+                </div>
                 <div class="chart-container">
                     <div class="org-chart">
                         <ul>
@@ -308,7 +364,7 @@
                                             <li><div class="node"><div class="dl-position">DL</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Rustom"><div class="name">Rustom</div><div class="dept-code">Rustom(Chinese Name)</div></div></li>
                                             <li><div class="node"><div class="dl-position">DL</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Jayvee"><div class="name">Jayvee</div><div class="dept-code">Jayvee(Chinese Name)</div></div></li>
                                             <li><div class="node"><div class="dl-position">DL</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Rommel"><div class="name">Rommel</div><div class="dept-code">Rommel(Chinese Name)</div></div></li>
-                                            <li><div class="node"><div class="dl-position">DL</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Mohammad"><div class="name">Mohammad</div><div class="dept-code">模漢德</div></li>
+                                            <li><div class="node"><div class="dl-position">DL</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Mohammad"><div class="name">Mohammad</div><div class="dept-code">模漢德</div></div></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -351,6 +407,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // --- NAVBAR SCRIPT ---
             const lamp = document.querySelector(".navbar-lamp");
             const navbar = document.querySelector(".navbar");
             const navItems = document.querySelectorAll(".nav-item");
@@ -365,9 +422,7 @@
             }
 
             navItems.forEach(item => {
-                item.addEventListener("mouseover", () => {
-                    moveLamp(item);
-                });
+                item.addEventListener("mouseover", () => moveLamp(item));
             });
 
             const activeItem = document.querySelector(".nav-item.active");
@@ -375,8 +430,45 @@
                 moveLamp(activeItem);
             }
 
+            // --- ZOOM CONTROLS ---
+            const zoomStep = 0.1;
+            const minZoom = 0.4;
+            const maxZoom = 1.5;
+            const defaultZoom = 1.0;
+
+            document.querySelectorAll('.chart-controls').forEach(controls => {
+                const projectSection = controls.closest('.project-section');
+                const orgChart = projectSection.querySelector('.org-chart');
+                
+                if (!orgChart) return;
+
+                orgChart.dataset.scale = defaultZoom;
+                orgChart.style.transform = `scale(${defaultZoom})`;
+
+                controls.addEventListener('click', (event) => {
+                    const button = event.target.closest('.zoom-btn');
+                    if (!button) return;
+
+                    const action = button.dataset.action;
+                    let currentScale = parseFloat(orgChart.dataset.scale);
+
+                    if (action === 'zoom-in') {
+                        currentScale += zoomStep;
+                    } else if (action === 'zoom-out') {
+                        currentScale -= zoomStep;
+                    } else if (action === 'reset') {
+                        currentScale = defaultZoom;
+                    }
+
+                    currentScale = Math.max(minZoom, Math.min(maxZoom, currentScale));
+                    currentScale = Math.round(currentScale * 100) / 100;
+                    orgChart.style.transform = `scale(${currentScale})`;
+                    orgChart.dataset.scale = currentScale;
+                });
+            });
         });
     </script>
 
 </body>
 </html>
+y
