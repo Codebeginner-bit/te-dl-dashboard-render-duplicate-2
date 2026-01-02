@@ -88,14 +88,41 @@
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         @media (max-width: 768px) {
-            body {
-                padding: 1rem 0.5rem 80px 0.5rem;
+            body {padding: 1rem 0.5rem 80px 0.5rem; }
+            .navbar-container {
+                display: flex;
+                position: fixed;
+                top: auto; bottom: 0; left: 0; right: 0;
+                transform: translateY(0); width: 100%;
+                border-radius: 0; 
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px); 
+                border-top: 1px solid rgb(var(--border));
+                justify-content: space-around;
             }
-            .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
-            .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
-            .nav-item { padding: 0.5rem; border-radius: 4px; }
-            .navbar-lamp { display: none; }
+            #menu-toggle { display: none; }
+            .navbar {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                width: 100%;
+                height: auto;
+                padding: 0.25rem 0;
+                gap: 0;
+            }
+            .nav-item {
+                position: relative; 
+                opacity: 1;
+                transform: none;
+                pointer-events: auto;
+                background-color: transparent;
+                box-shadow: none;
+                border-radius: 4px;
+                padding: 0.5rem;
+                width: auto; height: auto;
+            }
             .nav-item.active { background-color: rgba(0,123,255,0.1); }
+        }
             .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
             .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
             .leave-plan-header .date-selector-container { flex-direction: column; }
