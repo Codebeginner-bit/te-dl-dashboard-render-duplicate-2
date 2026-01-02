@@ -16,7 +16,7 @@
         table th { background-color: #f6f6f6; color: #333; font-weight: 600; }
         .controls-container { display: flex; flex-direction: column; gap: 15px; margin: 20px auto; max-width: 95%; }
         .search-container, .filter-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .filter-container { justify-content: flex-start; 
+        .filter-container { justify-content: flex-start; }
         button, .search-container input, .filter-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
         button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
@@ -72,7 +72,6 @@
         </div>
         <p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
-        
         <div class="controls-container">
             <div class="filter-container">
                 <label for="table-site-filter">Filter by:</label>
@@ -114,7 +113,6 @@
         </div>
     </div>
 
-    <!-- Modal for Employee Editing -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Add Employee</h2>
@@ -128,7 +126,6 @@
                 <option value="Dayshift">Dayshift</option>
                 <option value="Nightshift">Nightshift</option>
             </select>
-            <!-- MODIFIED: Changed input for Project -->
             <input type="text" id="modalProject" placeholder="Enter Project">
             <button class="save-btn" onclick="saveRow()">Save</button>
             <button class="cancel-btn" onclick="closeModal()">Cancel</button>
@@ -248,10 +245,14 @@
                         allEmployees.forEach(emp => {
                             const row = document.createElement("tr");
                             const employeeId = emp.id_number;
+                            
+
                             row.setAttribute("data-id", employeeId);
                             row.setAttribute("data-site", emp.site || "");
                             row.setAttribute("data-project", emp.project || ""); 
+
                             const currentMonthOtTotal = otMap.get(employeeId) || 0;
+                            
                             row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
                                             `<td>${emp.site || ""}</td><td>${emp.department || ""}</td><td>${employeeId || ""}</td><td>${emp.chinese_name || ""}</td><td>${emp.dormitory || ""}</td>`+
                                             `<td>${emp.english_name || ""}</td><td>${emp.shift || ""}</td><td>${emp.project || ""}</td><td class="ot-total-cell">${parseFloat(currentMonthOtTotal).toFixed(1)}</td>`;
@@ -308,12 +309,14 @@
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; filterDataTable(); }; // Also resets filter
+
             window.filterDataTable = function() {
                 const siteFilter = document.getElementById('table-site-filter').value;
                 const projectFilter = document.getElementById('table-project-filter').value;
                 document.querySelectorAll('#overtimeTable tbody tr').forEach(row => {
                     const rowSite = row.dataset.site;
                     const rowProject = row.dataset.project;
+
                     const siteMatch = (siteFilter === 'All' || rowSite === siteFilter);
                     const projectMatch = (projectFilter === 'All' || rowProject === projectFilter);
                     const searchInput = document.getElementById("searchInput").value.toLowerCase();
