@@ -59,15 +59,11 @@
             .navbar { position: relative; width: 56px; height: 56px; }
             .nav-item {
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
                 background-color: #fff;
                 border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                display: flex; align-items: center; justify-content: center;
                 cursor: pointer;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
@@ -78,32 +74,29 @@
             .nav-item.active { color: var(--primary); }
             .nav-item:not(:first-child) {
                 opacity: 0;
-                transform: scale(0.5);
+                transform: translateY(0) scale(0.5); /* Start at the same position but scaled down */
                 pointer-events: none;
             }
             .nav-item:first-child { z-index: 10; }
 
-            /* Expanded state is now controlled by ".is-expanded" class */
-            .navbar-container.is-expanded .nav-item {
-                opacity: 1;
-                transform: scale(1);
-                pointer-events: auto;
-            }
-            .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(68px); }
-            .navbar-container.is-expanded .nav-item:nth-child(3) { transform: translateY(136px); }
-            .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(204px); }
-            .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(272px); }
+            /* Expanded state is controlled by ".is-expanded" class */
+            .navbar-container.is-expanded .nav-item { opacity: 1; pointer-events: auto; }
+            .navbar-container.is-expanded .nav-item:nth-child(1) { transform: scale(1); } /* Ensure main button is scaled correctly */
+            .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(68px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(3) { transform: translateY(136px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(204px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(272px) scale(1); }
 
             /* Lamp styling */
             .navbar-lamp {
                 position: absolute;
+                top: 0; left: 0; /* Position lamp at the start */
                 background-color: rgba(0,123,255,0.05);
                 border-radius: 50%;
                 z-index: 0;
-                transition: transform 0.4s cubic-bezier(0.23,1,0.32,1); /* Changed to transform */
+                transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
                 pointer-events: none;
-                width: 56px;
-                height: 56px;
+                width: 56px; height: 56px;
             }
             .lamp-light { position:absolute; left:-0.4rem; top:50%; transform:translateY(-50%); width:0.25rem; height:1.5rem; background-color:var(--primary); border-radius:9999px 0 0 9999px; }
         }
@@ -122,7 +115,6 @@
             .node { flex-direction: row; width: 100%; max-width: 350px; text-align: left; align-items: center; padding: 10px; }
             .node img { margin: 0 15px 0 0; width: 50px; height: 50px; }
             .node .site { margin-bottom: 5px; }
-
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%; }
             .navbar { display: flex; flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border)); }
             .nav-item { position: relative; text-decoration:none; padding: 0.5rem; border-radius: 4px; color: #374151; }
@@ -136,8 +128,10 @@
     
     <main class="content-wrapper">
         <div class="charts-area">
+            
             <section class="project-section">
                 <h2>EDT Test Engineering Organization Chart (DL) - NAOMI</h2>
+                <!-- Chart controls and container... -->
                 <div class="chart-controls">
                     <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
                     <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
@@ -145,8 +139,52 @@
                 </div>
                 <div class="chart-container">
                     <div class="org-chart">
-                        <!-- Chart HTML remains the same -->
-                        <ul><li><div class="node"><div class="site">Supervisor</div><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Sir Larry"><div class="name">Larry Sebastian</div></div><ul><li><div class="node"><div class="site">N2</div></div><ul><li><div class="group-label">Spartans</div><ul><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20brian.png" alt="Brian"><div class="name">Brian</div><div class="dept-code">布來恩</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Kim.png" alt="Kim"><div class="name">Kim</div><div class="dept-code">德洛斯</div></div></li></ul></li><li><div class="group-label">DL</div><ul><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ronie.png" alt="Ronie"><div class="name">Ronie</div><div class="dept-code">羅尼</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Luis.png" alt="Luis"><div class="name">Luis</div><div class="dept-code">方路一</div></div></li></ul></li></ul></li><li><div class="node"><div class="site">A3</div></div><ul><li><div class="group-label">Spartans</div><ul><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ryan.png" alt="Ryan"><div class="name">Ryan</div><div class="dept-code">古瑞思</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Allen.png" alt="Allen"><div class="name">Allen</div><div class="dept-code">卜阿倫</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Madam%20Reza.png" alt="Reza"><div class="name">Reza</div><div class="dept-code">白瑞紗</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Echo.png" alt="Echo"><div class="name">Echo</div><div class="dept-code">蕭拉帕</div></div></li><li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Armein.png" alt="Armein"><div class="name">Armein</div><div class="dept-code">亞曼尼</div></div></li></ul></li></ul></li></ul></li></ul>
+                        <!-- Chart HTML structure... -->
+                        <ul>
+                            <li>
+                                <div class="node">
+                                    <div class="site">Supervisor</div>
+                                    <img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Sir Larry">
+                                    <div class="name">Larry Sebastian</div>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <div class="node"><div class="site">N2</div></div>
+                                        <ul>
+                                            <li>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20brian.png" alt="Brian"><div class="name">Brian</div><div class="dept-code">布來恩</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Kim.png" alt="Kim"><div class="name">Kim</div><div class="dept-code">德洛斯</div></div></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <div class="group-label">DL</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ronie.png" alt="Ronie"><div class="name">Ronie</div><div class="dept-code">羅尼</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Luis.png" alt="Luis"><div class="name">Luis</div><div class="dept-code">方路一</div></div></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <div class="node"><div class="site">A3</div></div>
+                                        <ul>
+                                            <li>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ryan.png" alt="Ryan"><div class="name">Ryan</div><div class="dept-code">古瑞思</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Allen.png" alt="Allen"><div class="name">Allen</div><div class="dept-code">卜阿倫</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Madam%20Reza.png" alt="Reza"><div class="name">Reza</div><div class="dept-code">白瑞紗</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Echo.png" alt="Echo"><div class="name">Echo</div><div class="dept-code">蕭拉帕</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Armein.png" alt="Armein"><div class="name">Armein</div><div class="dept-code">亞曼尼</div></div></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -197,62 +235,64 @@
         // --- OPTIMIZED CLICK-BASED NAVIGATION BAR LOGIC ---
         document.addEventListener("DOMContentLoaded", () => {
             const navbarContainer = document.querySelector(".navbar-container");
-            const lamp = document.querySelector(".navbar-lamp");
-            const navItems = document.querySelectorAll(".nav-item");
-            const activeItem = document.querySelector(".nav-item.active");
+            if (!navbarContainer) return; // Exit if the navbar isn't on the page
+
+            const lamp = navbarContainer.querySelector(".navbar-lamp");
+            const navItems = navbarContainer.querySelectorAll(".nav-item");
+            const activeItem = navbarContainer.querySelector(".nav-item.active");
             const firstItem = navItems.length > 0 ? navItems[0] : null;
 
             let isMenuExpanded = false;
 
             function moveLamp(element) {
-                if (!element || !lamp) return;
-                const isMobile = window.innerWidth <= 768;
-                if (isMobile) return; 
+                if (!element || !lamp || window.innerWidth <= 768) return;
 
-                // The lamp's position is now relative to its parent, the .navbar div
-                lamp.style.transform = `translateY(${element.offsetTop}px)`;
+                // getBoundingClientRect is the most reliable way to get position
+                const targetRect = element.getBoundingClientRect();
+                const containerRect = navbarContainer.getBoundingClientRect();
+                
+                // Calculate the top position relative to the container
+                const topOffset = targetRect.top - containerRect.top;
+                
+                lamp.style.transform = `translateY(${topOffset}px)`;
             }
             
-            function toggleMenu(expand) {
+            function setMenuState(expand) {
                 isMenuExpanded = expand;
                 navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
                 if (isMenuExpanded) {
-                    moveLamp(activeItem); // On open, move to the active item
+                    // When opening, lamp moves to the currently active page's icon
+                    moveLamp(activeItem);
                 } else {
-                    moveLamp(firstItem); // On close, move back to the trigger
+                    // When closing, lamp moves back to the main trigger icon
+                    moveLamp(firstItem);
                 }
             }
 
-            if (navbarContainer && firstItem) {
+            if (firstItem) {
                 // Set initial lamp position
                 setTimeout(() => moveLamp(firstItem), 100);
 
-                // --- CLICK HANDLERS ---
+                // --- EVENT LISTENERS ---
 
-                // 1. Toggle menu when the trigger (first) icon is clicked
+                // 1. CLICK: Toggle menu when the trigger icon is clicked
                 firstItem.addEventListener('click', (e) => {
-                    // This is the main trigger, so we prevent it from navigating
-                    e.preventDefault(); 
-                    toggleMenu(!isMenuExpanded);
-                });
-
-                // 2. Add listeners to other items to close menu before navigating
-                navItems.forEach((item, index) => {
-                    if (index > 0) { // Skip the first item (the trigger)
-                        item.addEventListener('click', () => {
-                            toggleMenu(false); // Close menu instantly
-                        });
+                    // If the first item is also the active one, let it navigate.
+                    // Otherwise, its primary job is to open the menu.
+                    if (firstItem !== activeItem) {
+                        e.preventDefault(); 
                     }
+                    setMenuState(!isMenuExpanded);
                 });
 
-                // 3. Close menu if user clicks anywhere outside of it
+                // 2. CLICK: Close menu if user clicks anywhere outside of it
                 document.addEventListener('click', (e) => {
                     if (isMenuExpanded && !navbarContainer.contains(e.target)) {
-                        toggleMenu(false);
+                        setMenuState(false);
                     }
                 });
-                
-                // --- HOVER HANDLER for lamp movement while menu is open ---
+
+                // 3. MOUSEOVER: Move the lamp while the menu is open
                 navItems.forEach(item => {
                     item.addEventListener("mouseover", () => {
                         if (isMenuExpanded) {
@@ -260,13 +300,15 @@
                         }
                     });
                 });
+                
+                // 4. MOUSELEAVE: Snap lamp back to the active item
                 navbarContainer.addEventListener("mouseleave", () => {
                      if (isMenuExpanded) {
-                        moveLamp(activeItem); // Snap back to active item on mouse leave
+                        moveLamp(activeItem);
                      }
                 });
 
-                // Adjust on resize
+                // 5. RESIZE: Recalculate lamp position
                 window.addEventListener("resize", () => {
                     if (isMenuExpanded && activeItem) {
                         moveLamp(activeItem);
