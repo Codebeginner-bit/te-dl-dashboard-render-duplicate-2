@@ -100,7 +100,7 @@
             position: relative;
         }
         
-        .node + ul, .group-label + ul { margin-top: var(--node-gap); }
+        .node + ul { margin-top: var(--node-gap); }
 
         .node::after {
             content: '';
@@ -112,7 +112,6 @@
             background-color: var(--connector-color);
             transform: translateX(-50%);
         }
-
         .group-label {
             padding: 4px 12px;
             font-size: 13px;
@@ -123,12 +122,11 @@
             border-radius: 6px;
             display: inline-block;
             position: relative;
-            margin-top: calc(var(--node-gap) / 2);
         }
-        .group-label::before {
+        .group-label::after {
             content: '';
             position: absolute;
-            bottom: 100%;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
             width: 2px;
@@ -138,9 +136,10 @@
         .group-label + ul {
             margin-top: calc(var(--node-gap) / 2);
         }
-
+        /* --- END MODIFIED SECTION --- */
 
         ul ul > li > .node::after { display: none; }
+
         li::before {
             content: '';
             position: absolute;
@@ -165,7 +164,7 @@
         li:only-child { padding: 0; }
         li:only-child::before, li:only-child::after { display: none; }
         .org-chart > ul > li::before, .org-chart > ul > li::after { display: none; }
-        li > .group-label::before, li > .group-label::after { display: none; }
+        li > .group-label { margin-top: calc(var(--node-gap) / -2); }
 
         .node {
             display: flex;
@@ -260,7 +259,6 @@
             .node { flex-direction: row; width: 100%; max-width: 350px; text-align: left; align-items: center; padding: 10px; }
             .node img { margin: 0 15px 0 0; width: 50px; height: 50px; }
             .node .site { margin-bottom: 5px; }
-
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%; }
             .navbar { flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border)); }
             .nav-item { padding: 0.5rem; border-radius: 4px; }
@@ -277,7 +275,7 @@
             
             <!-- === PROJECT 1: NAOMI === -->
             <section class="project-section">
-                <h2>EDT Test Engineering Organization Chart (DL) - NAOMI</h2>
+                <h2>EDT Test Engineering Organization Chart - NAOMI</h2>
                 <div class="chart-controls">
                     <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
                     <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
@@ -294,32 +292,37 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <div class="node">
-                                            <div class="site">N2</div>
-                                        </div>
+                                        <div class="node"><div class="site">N2</div></div>
                                         <ul>
                                             <li>
-                                                <div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20brian.png" alt="Brian"><div class="name">Brian</div><div class="dept-code">布來恩</div></div>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20brian.png" alt="Brian"><div class="name">Brian</div><div class="dept-code">布來恩</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Kim.png" alt="Kim"><div class="name">Kim</div><div class="dept-code">德洛斯</div></div></li>
+                                                </ul>
+                                            </li>
+                                            <li>
                                                 <div class="group-label">DL</div>
                                                 <ul>
                                                     <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ronie.png" alt="Ronie"><div class="name">Ronie</div><div class="dept-code">羅尼</div></div></li>
                                                     <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Luis.png" alt="Luis"><div class="name">Luis</div><div class="dept-code">方路一</div></div></li>
                                                 </ul>
                                             </li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Kim.png" alt="Kim"><div class="name">Kim</div><div class="dept-code">德洛斯</div></div></li>
                                         </ul>
                                     </li>
                                     <li>
-                                        <div class="node">
-                                            <div class="site">A3</div>
-                                        </div>
-                                        <div class="group-label">Spartans</div>
+                                        <div class="node"><div class="site">A3</div></div>
                                         <ul>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ryan.png" alt="Ryan"><div class="name">Ryan</div><div class="dept-code">古瑞思</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Allen.png" alt="Allen"><div class="name">Allen</div><div class="dept-code">卜阿倫</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Madam%20Reza.png" alt="Reza"><div class="name">Reza</div><div class="dept-code">白瑞紗</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Echo.png" alt="Echo"><div class="name">Echo</div><div class="dept-code">蕭拉帕</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Armein.png" alt="Armein"><div class="name">Armein</div><div class="dept-code">亞曼尼</div></div></li>
+                                            <li>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Ryan.png" alt="Ryan"><div class="name">Ryan</div><div class="dept-code">古瑞思</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Allen.png" alt="Allen"><div class="name">Allen</div><div class="dept-code">卜阿倫</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Madam%20Reza.png" alt="Reza"><div class="name">Reza</div><div class="dept-code">白瑞紗</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Echo.png" alt="Echo"><div class="name">Echo</div><div class="dept-code">蕭拉帕</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/Sir%20Armein.png" alt="Armein"><div class="name">Armein</div><div class="dept-code">亞曼尼</div></div></li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -329,9 +332,9 @@
                 </div>
             </section>
 
-            <!-- === PROJECT 2: ROSA === -->
+            <!-- === PROJECT 2: ROSA  === -->
             <section class="project-section">
-                <h2>EDT Test Engineering Organization Chart (DL) - ROSA </h2>
+                <h2>EDT Test Engineering Organization Chart - ROSA </h2>
                 <div class="chart-controls">
                     <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
                     <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
@@ -348,13 +351,18 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <div class="node">
-                                            <div class="site">A1</div>
-                                        </div>
-                                        <div class="group-label">Spartans</div>
+                                        <div class="node"><div class="site">A1</div></div>
                                         <ul>
                                             <li>
-                                                <div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Mighty John"><div class="name">Mighty John</div><div class="dept-code">麥提</div></div>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Mighty John"><div class="name">Mighty John</div><div class="dept-code">麥提</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Charlo"><div class="name">Charlo</div><div class="dept-code">伊雪洛</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="John Lloyd"><div class="name">John Lloyd</div><div class="dept-code">羅得</div></div></li>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="July"><div class="name">July</div><div class="dept-code">傑里</div></div></li>
+                                                </ul>
+                                            </li>
+                                            <li>
                                                 <div class="group-label">DL</div>
                                                 <ul>
                                                     <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="John Paul"><div class="name">John Paul</div><div class="dept-code">江保羅</div></div></li>
@@ -366,9 +374,6 @@
                                                     <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Reymar"><div class="name">Reymar</div><div class="dept-code">雷麥</div></div></li>
                                                 </ul>
                                             </li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Charlo"><div class="name">Charlo</div><div class="dept-code">伊雪洛</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="John Lloyd"><div class="name">John Lloyd</div><div class="dept-code">羅得</div></div></li>
-                                            <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="July"><div class="name">July</div><div class="dept-code">傑里</div></div></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -380,7 +385,7 @@
 
             <!-- === PROJECT 3: KILO  === -->
            <section class="project-section">
-                <h2>EDT Test Engineering Organization Chart (DL) - KILO </h2>
+                <h2>EDT Test Engineering Organization Chart - KILO </h2>
                 <div class="chart-controls">
                     <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
                     <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
@@ -397,13 +402,15 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <div class="node">
-                                            <div class="site">Hsin Ann</div>
-                                        </div>
-                                        <div class="group-label">Spartans</div>
+                                        <div class="node"><div class="site">Hsin Ann</div></div>
                                         <ul>
                                             <li>
-                                                <div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="April"><div class="name">April</div><div class="dept-code">April</div></div>
+                                                <div class="group-label">Spartans</div>
+                                                <ul>
+                                                    <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="April"><div class="name">April</div><div class="dept-code">April</div></div></li>
+                                                </ul>
+                                            </li>
+                                            <li>
                                                 <div class="group-label">DL</div>
                                                 <ul>
                                                     <li><div class="node"><img src="https://raw.githubusercontent.com/Codebeginner-bit/te-dl-dashboard-render-duplicate-2/main/pictures/picture.jpg" alt="Rustom"><div class="name">Rustom</div><div class="dept-code">Rustom</div></div></li>
