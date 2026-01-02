@@ -25,7 +25,10 @@
         main.content-wrapper { flex-grow: 1; display: flex; justify-content: center; padding: 40px; width: 100%; }
         .charts-area { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 40px; }
         .project-section { background-color: var(--node-bg); border: 1px solid rgb(var(--border)); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05); position: relative; }
-        .project-section h2 { color: var(--title-color); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgb(var(--border)); font-size: 1.5em; padding-right: 120px; }
+        
+        /* MODIFIED: Changed padding to accommodate controls on the left */
+        .project-section h2 { color: var(--title-color); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgb(var(--border)); font-size: 1.5em; padding-left: 120px; }
+        
         .chart-container { overflow-x: auto; padding: 20px 0; width: 100%; }
         .org-chart { display: inline-flex; flex-direction: column; align-items: center; min-width: 100%; transform-origin: top center; transition: transform 0.3s ease; }
         .org-chart ul { display: flex; justify-content: center; list-style-type: none; position: relative; }
@@ -47,7 +50,10 @@
         .node img { width: 60px; height: 60px; border-radius: 50%; margin: 8px 0; object-fit: cover; }
         .node .name{ font-size: 15px; font-weight: bold; color: var(--name-color); margin: 4px 0; }
         .node .dept-code { font-size: 11px; color: #64748b; margin-top: 2px; }
-        .chart-controls { position: absolute; top: 24px; right: 24px; display: flex; gap: 8px; z-index: 10; }
+        
+        /* MODIFIED: Position chart controls to the top-left */
+        .chart-controls { position: absolute; top: 24px; left: 24px; display: flex; gap: 8px; z-index: 10; }
+        
         .zoom-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--node-border); background-color: var(--node-bg); color: var(--name-color); font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s, transform 0.2s; }
         .zoom-btn:hover { background-color: var(--dept-color); transform: scale(1.1); }
         .zoom-btn:active { transform: scale(1.0); }
@@ -57,44 +63,61 @@
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 50%; right: 1.5rem; transform: translateY(-50%); z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
+            
+            /* NEW: Styles for the menu trigger button */
+            #menu-toggle {
+                position: relative;
+                width: 56px; height: 56px;
+                border-radius: 50%;
+                border: none;
+                background-color: #fff;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                cursor: pointer;
+                z-index: 100;
+                display: flex; align-items: center; justify-content: center;
+            }
+            #menu-toggle .icon {
+                position: absolute;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+            }
+            #menu-toggle .icon-menu { opacity: 1; transform: rotate(0deg) scale(1); }
+            #menu-toggle .icon-close { opacity: 0; transform: rotate(-45deg) scale(0); }
+
+            .navbar-container.is-expanded #menu-toggle .icon-menu { opacity: 0; transform: rotate(45deg) scale(0); }
+            .navbar-container.is-expanded #menu-toggle .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
+            
+            /* Styles for the expanding menu items */
             .nav-item {
                 position: absolute; top: 0; left: 0;
                 width: 100%; height: 100%;
                 background-color: #fff;
                 border-radius: 50%;
                 display: flex; align-items: center; justify-content: center;
-                cursor: pointer;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
                 text-decoration: none;
-                color: #374151; /* Default icon color */
-            }
-            .nav-item:hover { color: var(--primary); } /* Highlight on hover */
-            .nav-item.active { color: var(--primary); } /* Highlight if it's the active page */
-
-            .nav-item:not(:first-child) {
+                color: #374151;
                 opacity: 0;
                 transform: translateY(0) scale(0.5);
                 pointer-events: none;
             }
-            .nav-item:first-child { z-index: 10; }
+            .nav-item:hover { color: var(--primary); }
+            .nav-item.active { color: var(--primary); }
 
-            /* Expanded state is controlled by ".is-expanded" class */
+            /* Expanded state for menu items */
             .navbar-container.is-expanded .nav-item { opacity: 1; pointer-events: auto; }
-            .navbar-container.is-expanded .nav-item:nth-child(1) { transform: scale(1) rotate(45deg); } /* Optional: Rotate trigger icon on open */
-            .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(68px) scale(1); }
-            .navbar-container.is-expanded .nav-item:nth-child(3) { transform: translateY(136px) scale(1); }
-            .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(204px) scale(1); }
-            .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(272px) scale(1); }
-
-            /* LAMP REMOVED */
+            .navbar-container.is-expanded .nav-item:nth-child(1) { transform: translateY(68px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(136px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(3) { transform: translateY(204px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(272px) scale(1); }
+            .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(340px) scale(1); }
         }
         
-        /* MOBILE NAVIGATION BAR STYLES */
+        /* MOBILE STYLES */
         @media (max-width: 768px) {
             main.content-wrapper { padding: 20px 10px 80px 10px; }
             .project-section { padding: 16px; }
-            .project-section h2 { font-size: 1.25em; padding-right: 0; text-align: center; }
+            .project-section h2 { font-size: 1.25em; padding-left: 0; text-align: center; } /* Adjusted padding */
             .chart-controls { position: static; margin-bottom: 15px; justify-content: center; }
             .org-chart ul, .org-chart li { flex-direction: column; align-items: flex-start; padding: 0; }
             .org-chart ul ul { margin-left: 20px; padding-left: 10px; border-left: 2px solid var(--connector-color); }
@@ -104,17 +127,17 @@
             .node { flex-direction: row; width: 100%; max-width: 350px; text-align: left; align-items: center; padding: 10px; }
             .node img { margin: 0 15px 0 0; width: 50px; height: 50px; }
             .node .site { margin-bottom: 5px; }
+
             .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%; }
             .navbar { display: flex; flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border)); }
             .nav-item { position: relative; text-decoration:none; padding: 0.5rem; border-radius: 4px; color: #374151; }
-            .navbar-lamp { display: none; }
             .nav-item.active { background-color: rgba(0,123,255,0.1); color: var(--primary); }
             footer { padding-bottom: 20px; }
         }
-    </style>
 </head>
 <body>
-    
+
+    <button id="menu-toggle" aria-label="Toggle Menu">
     <main class="content-wrapper">
         <div class="charts-area">
             <section class="project-section">
@@ -218,24 +241,29 @@
         });
 
         // --- NAVIGATION BAR LOGIC ---
-       document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", () => {
             const navbarContainer = document.querySelector(".navbar-container");
             if (!navbarContainer) return;
 
-            const firstItem = navbarContainer.querySelector(".nav-item:first-child");
+            const menuToggle = document.getElementById("menu-toggle");
             let isMenuExpanded = false;
 
-            if (firstItem) {
-                firstItem.addEventListener('click', (event) => {
-                    event.preventDefault();
+            if (menuToggle) {
+                // 1. Listen for clicks on the toggle button
+                menuToggle.addEventListener('click', () => {
                     isMenuExpanded = !isMenuExpanded;
                     navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
                 });
 
+                // 2. Listen for clicks on the whole document
                 document.addEventListener('click', (event) => {
-                    if (isMenuExpanded && !navbarContainer.contains(event.target)) {
-                        isMenuExpanded = false;
-                        navbarContainer.classList.remove('is-expanded');
+                    // If the menu is expanded AND the click was NOT on the toggle button
+                    if (isMenuExpanded && !menuToggle.contains(event.target)) {
+                        // If the click was also NOT on one of the nav items, close the menu
+                        if (!navbarContainer.querySelector(".navbar").contains(event.target)) {
+                            isMenuExpanded = false;
+                            navbarContainer.classList.remove('is-expanded');
+                        }
                     }
                 });
             }
