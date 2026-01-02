@@ -71,11 +71,22 @@
         <p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
         
+        <div class="filter-container" style="display: flex; gap: 10px; align-items: left;">
+                <label for="table-site-filter">Filter by:</label>
+                <select id="table-site-filter" onchange="filterDataTable()">
+                    <option value="All">All Sites</option>
+                </select>
+
+                <select id="table-project-filter" onchange="filterDataTable()">
+                    <option value="All">All Project</option>
+                </select>
+            </div>
+        
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search by Name or Site"><button onclick="searchTable()">Search</button><button onclick="resetSearch()">Reset</button><button class="add-btn" onclick="showModalForEdit()">Add Member</button>
         </div>
         <div class="overtime-table-container">
-            <table id="overtimeTable"><thead><tr><th>Actions</th><th>Site</th><th>Department</th><th>Employee ID</th><th>Chinese Name</th><th>Dormitory</th><th>English Name</th><th>Shift</th><th>Plan/Actual</th><th>Total Overtime (Current Month)</th></tr></thead><tbody></tbody></table>
+            <table id="overtimeTable"><thead><tr><th>Actions</th><th>Site</th><th>Department</th><th>Employee ID</th><th>Chinese Name</th><th>Dormitory</th><th>English Name</th><th>Shift</th><th>Project</th><th>Total Overtime (Current Month)</th></tr></thead><tbody></tbody></table>
         </div>
     </div>
 
@@ -242,6 +253,18 @@
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; };
+            
+            window.filterDataTable = function() {
+            const siteFilter = document.getElementById('table-site-filter').value;
+            const projectFilter = document.getElementById('table-project-filter').value;
+            document.querySelectorAll('#overtimeTable tbody tr').forEach(row => {
+            const rowSite = row.dataset.site;
+            const rowProject = row.dataset.project;
+            const siteMatch = (siteFilter === 'All' || rowSite === siteFilter);
+            const projectMatch = (projectFilter === 'All' || rowProject === projectFilter);
+            row.style.display = (siteMatch && projectMatch) ? '' : 'none';
+            });
+            }
 
             // --- NAVIGATION LOGIC ---
             function moveLamp(element) {
