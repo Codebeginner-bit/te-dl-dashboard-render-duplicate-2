@@ -22,6 +22,7 @@
         .link-list a:hover { background-color: #e2e8f0; transform: translateY(-1px); }
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
+         @media (min-width: 769px) {
          .navbar-container { 
                 position: fixed; 
                 top: 1.5rem; 
@@ -67,7 +68,6 @@
             }
             .nav-item:hover { color: var(--primary); }
             .nav-item.active { color: var(--primary); }
-
             .navbar-container.is-expanded .nav-item { opacity: 1; pointer-events: auto; }
             .navbar-container.is-expanded .nav-item:nth-child(1) { transform: translateY(68px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(136px) scale(1); }
