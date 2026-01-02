@@ -23,7 +23,24 @@
         .modal-content button { color:white; } .modal-content button.save-btn { background-color:#2ecc71; } .modal-content button.cancel-btn { background-color:#e74c3c; }
         .modal-content .date-inputs { display: flex; gap: 10px; } .modal-content .date-inputs input { flex: 1; }
         .modal-content .hidden-field { display: none; }
-        .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
+        #leave-plan-section {padding: 2rem 1rem;}
+        .leave-plan-header {display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem; max-width: 1000px; margin: 0 auto 2rem auto; }
+        .leave-plan-header h2 {grid-column: 2; margin: 0; text-align: center;}
+        .leave-plan-header .date-selector-container {grid-column: 1; grid-row: 1; justify-self: start; display: flex; align-items: center; gap: 0.5rem;}
+        .leave-plan-header .add-btn {grid-column: 3; grid-row: 1; justify-self: end;}
+        .date-selector-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
+        .date-selector-container label {font-weight: 600; font-size: 14px; color: rgb(var(--foreground));}
+        .leave-site-section {background-color: #f8f9fa; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 1000px;box-shadow: 0 4px 8px rgba(0,0,0,0.05);}
+        .site-header {font-size: 1.5rem; font-weight: 600; text-align: center; padding: 10px; background-color: #e9ecef; border-radius: 8px; margin-bottom: 20px;}
+        .shift-header {font-size: 1.1rem; font-weight: bold; text-align: center; background-color: #f1f3f5; padding: 8px; border-top-left-radius: 8px; border-top-right-radius: 8px;}
+        .leave-table {width: 100%; margin-top: 0; margin-bottom: 25px; border: 1px solid #dee2e6; border-top: none; border-collapse: collapse;}
+        .leave-table th, .leave-table td {border: 1px solid #dee2e6; padding: 12px 8px; text-align: center; font-size: 14px; white-space: nowrap;}
+        .leave-table thead th {background-color: #e9ecef;}
+        .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
+        footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
+        footer small {font-size: 0.875rem;}
+         @media (min-width: 769px) {
+            .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
             
             #menu-toggle {
@@ -71,22 +88,7 @@
             .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(272px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(340px) scale(1); }
         }
-        #leave-plan-section {padding: 2rem 1rem;}
-        .leave-plan-header {display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem; max-width: 1000px; margin: 0 auto 2rem auto; }
-        .leave-plan-header h2 {grid-column: 2; margin: 0; text-align: center;}
-        .leave-plan-header .date-selector-container {grid-column: 1; grid-row: 1; justify-self: start; display: flex; align-items: center; gap: 0.5rem;}
-        .leave-plan-header .add-btn {grid-column: 3; grid-row: 1; justify-self: end;}
-        .date-selector-container select {padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; cursor: pointer;}
-        .date-selector-container label {font-weight: 600; font-size: 14px; color: rgb(var(--foreground));}
-        .leave-site-section {background-color: #f8f9fa; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 1000px;box-shadow: 0 4px 8px rgba(0,0,0,0.05);}
-        .site-header {font-size: 1.5rem; font-weight: 600; text-align: center; padding: 10px; background-color: #e9ecef; border-radius: 8px; margin-bottom: 20px;}
-        .shift-header {font-size: 1.1rem; font-weight: bold; text-align: center; background-color: #f1f3f5; padding: 8px; border-top-left-radius: 8px; border-top-right-radius: 8px;}
-        .leave-table {width: 100%; margin-top: 0; margin-bottom: 25px; border: 1px solid #dee2e6; border-top: none; border-collapse: collapse;}
-        .leave-table th, .leave-table td {border: 1px solid #dee2e6; padding: 12px 8px; text-align: center; font-size: 14px; white-space: nowrap;}
-        .leave-table thead th {background-color: #e9ecef;}
-        .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
-        footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
-        footer small {font-size: 0.875rem;}
+             
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
             .navbar-container {
