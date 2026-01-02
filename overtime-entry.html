@@ -44,8 +44,8 @@
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         .warning-consecutive {background-color: #f8d7da !important; color: #721c24;font-weight: bold;border-color: #d9534f !important;}
-         .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
-            .navbar { position: relative; width: 56px; height: 56px; }
+        .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
+        .navbar { position: relative; width: 56px; height: 56px; }
             
             #menu-toggle {
                 position: relative;
@@ -94,11 +94,38 @@
         }
 
         @media (max-width: 768px) {
-            body {padding: 1rem 0.5rem 80px 0.5rem; }
-            .navbar-container { top: auto; bottom: 0; left: 0; right: 0;transform: translateY(0); width: 100%;border-radius: 0; background: rgba(255, 255, 255, 0.98);backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border));}
-            .navbar {flex-direction: row; justify-content: space-around;width: 100%; padding: 0.25rem 0; gap: 0; border-radius: 0;}
-            .nav-item { padding: 0.5rem; border-radius: 4px; }
-            .navbar-lamp { display: none; }
+                .navbar-container {
+                display: flex;
+                position: fixed;
+                top: auto; bottom: 0; left: 0; right: 0;
+                transform: translateY(0); width: 100%;
+                border-radius: 0; 
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px); 
+                border-top: 1px solid rgb(var(--border));
+                justify-content: space-around;
+            }
+            #menu-toggle { display: none; }
+            .navbar {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                width: 100%;
+                height: auto;
+                padding: 0.25rem 0;
+                gap: 0;
+            }
+            .nav-item {
+                position: relative; 
+                opacity: 1;
+                transform: none;
+                pointer-events: auto;
+                background-color: transparent;
+                box-shadow: none;
+                border-radius: 4px;
+                padding: 0.5rem;
+                width: auto; height: auto;
+            }
             .nav-item.active { background-color: rgba(0,123,255,0.1); }
         }
         @media (max-width: 480px) {
