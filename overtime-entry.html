@@ -10,13 +10,14 @@
         .hidden { display: none !important; }
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; background-color: rgb(var(--background)); color: rgb(var(--foreground)); line-height: 1.5; margin: 0; padding: 1rem; }
         h1, h2 { text-align: center; } p { text-align: center; font-size: 1rem; font-style: italic; }
-        button, .date-selector-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
+        button, .date-selector-container select, .filter-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
         button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
         button.edit-btn { background-color: #3498db; color: white; }
         button.del-btn { background-color: #e74c3c; color: white; }
         button.add-btn { background-color: #2ecc71; color: white; }
         button.info-btn { background-color: #17a2b8; color: white; }
+        button.filter-action-btn { background-color: #f0f0f0; }
         button:not(:disabled):hover { opacity: 0.85; }
         #ot-entry-controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap; }
         #ot-entry-controls select, #ot-entry-controls label { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; background-color: #fff; }
@@ -156,7 +157,6 @@
                 <select id="ot-site-filter" onchange="filterOvertimeTable()">
                     <option value="All">All Sites</option>
                 </select>
-
                 <select id="ot-shift-filter" onchange="filterOvertimeTable()">
                     <option value="All">All Shifts</option>
                     <option value="Dayshift">Dayshift</option>
@@ -164,8 +164,16 @@
                     <option value="Unassigned">Unassigned</option>
                 </select>
             </div>
+            <div class="filter-container" style="display: flex; gap: 10px; align-items: center;">
+                <label for="day-start-filter">Day Range:</label>
+                <select id="day-start-filter"></select>
+                <span>to</span>
+                <select id="day-end-filter"></select>
+                <button class="filter-action-btn" onclick="applyDayFilter()">Filter Days</button>
+                <button class="filter-action-btn" onclick="resetDayFilter()">Reset Days</button>
+            </div>
             <button onclick="toggleOtTableEdit(this)">Edit</button>
-            <button id="apply-ot-btn" class="info-btn hidden" onclick="applyStandardOvertime()">Apply Weekday (Month) Overtime</button>
+            <button id="apply-ot-btn" class="info-btn hidden" onclick="applyStandardOvertime()">Apply Weekdays OT</button> 
             <button id="submit-ot-btn" class="add-btn hidden" onclick="submitOvertime()">Submit OT</button>
         </div>
         <div class="ot-entry-table-container" id="ot-entry-table-wrapper"><p>Loading overtime data...</p></div>
@@ -224,13 +232,11 @@
                 }
             }
             
-            // --- GLOBAL VARIABLES & CONSTANTS ---
             const API_BASE = "/api";
             let allEmployees = [];
             let currentOtMonthYear = '', isOtTableEditable = false;
             let daysInCurrentMonth = 0;
 
-            // --- INITIALIZATION ---
             async function initializeOtPage() {
                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
@@ -246,7 +252,6 @@
                 await generateOvertimeTable();
             }
 
-            // --- API HELPER ---
             async function handleApiResponse(response) {
                 if (!response.ok) {
                     let errorMessage = `Request failed: ${response.status}`;
@@ -257,7 +262,6 @@
                 return response.json();
             }
 
-            // --- UI & DATA FUNCTIONS ---
             function populateSiteFilter() {
                 const siteFilterSelect = document.getElementById('ot-site-filter');
                 if (!allEmployees || allEmployees.length === 0) return;
@@ -282,22 +286,28 @@
                 const updateTable = () => { const selectedYear = parseInt(yearSelect.value, 10), selectedMonth = parseInt(monthSelect.value, 10); generateOvertimeTable(selectedYear, selectedMonth); };
                 yearSelect.addEventListener('change', updateTable); monthSelect.addEventListener('change', updateTable);
             }
+            
+            function populateDayFilters(daysInMonth) {
+                const startSelect = document.getElementById('day-start-filter');
+                const endSelect = document.getElementById('day-end-filter');
+                startSelect.innerHTML = '';
+                endSelect.innerHTML = '';
 
+                for (let i = 1; i <= daysInMonth; i++) {
+                    startSelect.add(new Option(i, i));
+                    endSelect.add(new Option(i, i));
+                }
+                startSelect.value = 1;
+                endSelect.value = daysInMonth;
+            }
+            
             window.toggleOtTableEdit = function(button) { 
                 const applyBtn = document.getElementById('apply-ot-btn');
                 const submitBtn = document.getElementById('submit-ot-btn');
-                
                 isOtTableEditable = !isOtTableEditable; 
-                
-                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { 
-                    if (!input.classList.contains('leave-entry')) { 
-                        input.readOnly = !isOtTableEditable; 
-                    } 
-                }); 
-                
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { if (!input.classList.contains('leave-entry')) { input.readOnly = !isOtTableEditable; } }); 
                 button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
                 button.classList.toggle('del-btn', isOtTableEditable); 
-                
                 if (isOtTableEditable) {
                     applyBtn.classList.remove('hidden');
                     submitBtn.classList.remove('hidden');
@@ -307,41 +317,23 @@
                 }
             };
 
-
             window.applyStandardOvertime = function() {
-                if (!isOtTableEditable) {
-                    alert("Please click the 'Edit' button first to enable table editing.");
-                    return;
-                }
-
-                if (!confirm("This will apply 2.5 hours of OT to all visible employees on WEEKDAYS for the selected month. Existing weekday OT will be overwritten. Do you want to continue?")) {
-                    return;
-                }
-
+                if (!isOtTableEditable) { alert("Please click the 'Edit' button first to enable table editing."); return; }
+                if (!confirm("This will apply 2.5 hours of OT to all visible employees on WEEKDAYS for the selected month. Existing weekday OT will be overwritten. Do you want to continue?")) { return; }
                 const [year, month] = currentOtMonthYear.split('-').map(Number);
                 const monthIndex = month - 1; 
-                
                 const visibleRows = document.querySelectorAll('#ot-entry-table tbody tr[data-ot-row-id]');
-
                 visibleRows.forEach(row => {
-                    if (row.style.display === 'none') {
-                        return; 
-                    }
-
+                    if (row.style.display === 'none') { return; }
                     const inputs = row.querySelectorAll('.ot-input');
                     inputs.forEach(input => {
                         const day = parseInt(input.dataset.day, 10);
                         const date = new Date(year, monthIndex, day);
                         const dayOfWeek = date.getDay(); 
-                        
-                        if (dayOfWeek > 0 && dayOfWeek < 6) {
-                            input.value = '2.5';
-                        }
+                        if (dayOfWeek > 0 && dayOfWeek < 6) { input.value = '2.5'; }
                     });
-
                     updateOtPreview(row.dataset.otRowId);
                 });
-
                 alert("Weekday overtime has been applied to all visible employees.");
             }
 
@@ -356,9 +348,7 @@
                     const total_ot = calculateOtForEmployee(employeeId);
                     payload.push({ employee_id: employeeId, month_year: currentOtMonthYear, daily_data, total_ot });
                 });
-                
                 if (payload.length === 0) { return alert("No overtime data to submit."); }
-
                 try {
                     const response = await fetch(`${API_BASE}/overtime`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     await handleApiResponse(response);
@@ -396,8 +386,8 @@
                 const dayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 for (let day = 1; day <= daysInMonth; day++) {
                     const date = new Date(year, month, day), dayOfWeek = date.getDay(), weekendClass = (dayOfWeek === 0 || dayOfWeek === 6) ? ' class="weekend-header"' : "";
-                    headerHtml += `<th${weekendClass}>${month + 1}/${day}</th>`;
-                    dayRow += `<th${weekendClass}>${dayHeaders[dayOfWeek]}</th>`;
+                    headerHtml += `<th${weekendClass} data-day-col="${day}">${month + 1}/${day}</th>`;
+                    dayRow += `<th${weekendClass} data-day-col="${day}">${dayHeaders[dayOfWeek]}</th>`;
                 }
                 headerHtml += "</tr>", dayRow += "</tr>";
 
@@ -418,36 +408,66 @@
                                 const dayOfWeek = currentDate.getDay(); 
                                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
                                 const onLeave = (leaveLookup[emp.id_number] || []).find(l => currentDate >= l.start && currentDate <= l.end);
+                                bodyHtml += `<td data-day-col="${day}">`;
                                 if (onLeave && !isWeekend) {
-                                    bodyHtml += `<td class="leave-entry" style="background-color: #e0f7fa; font-weight: bold; text-align: center;">${onLeave.type}</td>`;
+                                    bodyHtml += `<span class="leave-entry">${onLeave.type}</span>`;
                                 } else {
                                     const dayValue = otData[day] || '';
                                     let cellClass = 'ot-input';
-                                    let isReadonly = !isOtTableEditable;
-                                    if (isOtTableEditable) {
-                                        cellClass += ' ot-hours-entry';
-                                    }
-                                    if (isWeekend) {
-                                        cellClass += ' weekend-day';
-                                    }
-                                    bodyHtml += `<td><input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${isReadonly ? 'readonly' : ''}></td>`;
+                                    if (isOtTableEditable) cellClass += ' ot-hours-entry';
+                                    if (isWeekend) cellClass += ' weekend-day';
+                                    bodyHtml += `<input type="text" class="${cellClass}" value="${dayValue}" data-employee-id="${emp.id_number}" data-day="${day}" ${!isOtTableEditable ? 'readonly' : ''}>`;
                                 }
+                                bodyHtml += `</td>`;
                             }
-
                             bodyHtml += "</tr>";
                         });
                     }
                 });
                 bodyHtml += "</tbody>";
                 document.getElementById("ot-entry-table-wrapper").innerHTML = `<table id="ot-entry-table">${headerHtml}${dayRow}${bodyHtml}</table>`;
-                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { updateOtPreview(input.dataset.employeeId); });
+                document.querySelectorAll('#ot-entry-table tr[data-ot-row-id]').forEach(row => { updateOtPreview(row.dataset.otRowId); });
                 document.getElementById("ot-entry-table").addEventListener("input", handleOtInputChange);
                 const editButton = document.querySelector('#ot-entry-controls button[onclick="toggleOtTableEdit(this)"]');
                 if (editButton) { editButton.textContent = 'Edit'; editButton.classList.remove('del-btn'); }
                 isOtTableEditable = false;
+                
+                populateDayFilters(daysInMonth);
+                resetDayFilter(); 
                 filterOvertimeTable();
             }
 
+            window.applyDayFilter = function() {
+                const startDay = parseInt(document.getElementById('day-start-filter').value, 10);
+                const endDay = parseInt(document.getElementById('day-end-filter').value, 10);
+
+                if (startDay > endDay) {
+                    alert("Start day cannot be after end day.");
+                    return;
+                }
+                
+                const table = document.getElementById('ot-entry-table');
+                if (!table) return;
+
+                for (let day = 1; day <= daysInCurrentMonth; day++) {
+                    const shouldShow = (day >= startDay && day <= endDay);
+                    const cells = table.querySelectorAll(`[data-day-col="${day}"]`);
+                    cells.forEach(cell => {
+                        cell.style.display = shouldShow ? '' : 'none';
+                    });
+                }
+            }
+
+            window.resetDayFilter = function() {
+                populateDayFilters(daysInCurrentMonth); 
+                const table = document.getElementById('ot-entry-table');
+                if (!table) return;
+                
+                const allDayCells = table.querySelectorAll('[data-day-col]');
+                allDayCells.forEach(cell => {
+                    cell.style.display = ''; 
+                });
+            }
 
             window.filterOvertimeTable = function() {
                 const siteFilter = document.getElementById('ot-site-filter').value, shiftFilter = document.getElementById('ot-shift-filter').value;
@@ -461,21 +481,19 @@
             function checkConsecutiveWorkDays(employeeId, changedDay) {
                 const [year, month] = currentOtMonthYear.split('-').map(Number);
                 const monthIndex = month - 1; 
-
-                const inputs = Array.from(document.querySelectorAll(`#ot-entry-table .ot-input[data-employee-id="${employeeId}"]`));
+                const inputs = Array.from(document.querySelectorAll(`#ot-entry-table input[data-employee-id="${employeeId}"]`));
                 let consecutiveCount = 0;
-
                 for (let day = 1; day <= daysInCurrentMonth; day++) {
                     const input = inputs.find(inp => inp.dataset.day == day);
-                    if (!input) continue;
-                    input.classList.remove('warning-consecutive');
+                    const cell = document.querySelector(`tr[data-ot-row-id="${employeeId}"] td[data-day-col="${day}"]`);
                     
+                    if (cell) cell.classList.remove('warning-consecutive');
                     const date = new Date(year, monthIndex, day);
                     const dayOfWeek = date.getDay(); 
                     
-                    const value = parseFloat(input.value);
+                    const value = input ? parseFloat(input.value) : NaN;
                     const hasOT = !isNaN(value) && value > 0;
-                    const isOnLeave = input.classList.contains('leave-entry');
+                    const isOnLeave = cell && cell.querySelector('.leave-entry');
                     const isWeekday = dayOfWeek > 0 && dayOfWeek < 6;
 
                     let isConsideredWorkDay = false;
@@ -488,9 +506,9 @@
                     else { consecutiveCount = 0; }
 
                     if (consecutiveCount >= 7) {
-                        input.classList.add('warning-consecutive');
+                        if (cell) cell.classList.add('warning-consecutive');
                         if (consecutiveCount === 7 && day === changedDay) {
-                            alert("Warning: 7 consecutive work days detected.");
+                            alert(`Warning for ${document.querySelector(`tr[data-ot-row-id="${employeeId}"] td:first-child span`).textContent.trim()}: 7 consecutive work days detected.`);
                         }
                     }
                 }
@@ -505,11 +523,12 @@
                 const dayOfWeek = date.getDay();
                 if (dayOfWeek !== 0 && dayOfWeek !== 6) return;
 
-                let otherWeekendDay, otherWeekendInput;
+                let otherWeekendDay;
                 if (dayOfWeek === 0) { otherWeekendDay = day - 1; } 
                 else { otherWeekendDay = day + 1; }
+                if (otherWeekendDay < 1) return;
 
-                otherWeekendInput = document.querySelector(`.ot-input[data-employee-id="${employeeId}"][data-day="${otherWeekendDay}"]`);
+                const otherWeekendInput = document.querySelector(`.ot-input[data-employee-id="${employeeId}"][data-day="${otherWeekendDay}"]`);
                 if (otherWeekendInput) {
                     const otherValue = parseFloat(otherWeekendInput.value);
                     const hasOtherOT = !isNaN(otherValue) && otherValue > 0;
@@ -518,9 +537,12 @@
                     const hasCurrentOT = !isNaN(currentValue) && currentValue > 0;
 
                     if (hasOtherOT && hasCurrentOT) {
-                        alert("Warning: Working on both Saturday and Sunday of the same week is not recommended.");
-                        changedInput.classList.add('warning-consecutive');
-                        otherWeekendInput.classList.add('warning-consecutive');
+                        alert(`Warning for ${document.querySelector(`tr[data-ot-row-id="${employeeId}"] td:first-child span`).textContent.trim()}: Working on both Saturday and Sunday is not recommended.`);
+                        changedInput.closest('td').classList.add('warning-consecutive');
+                        otherWeekendInput.closest('td').classList.add('warning-consecutive');
+                    } else {
+                         changedInput.closest('td').classList.remove('warning-consecutive');
+                         otherWeekendInput.closest('td').classList.remove('warning-consecutive');
                     }
                 }
             }
@@ -534,4 +556,3 @@
     </script>
 </body>
 </html>
-
