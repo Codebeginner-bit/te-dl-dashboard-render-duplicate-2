@@ -44,6 +44,7 @@
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         .warning-consecutive {background-color: #f8d7da !important; color: #721c24;font-weight: bold;border-color: #d9534f !important;}
+        
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
@@ -164,8 +165,8 @@
                 </select>
             </div>
             <button onclick="toggleOtTableEdit(this)">Edit</button>
-            <button class="info-btn" onclick="applyStandardOvertime()">Apply Weekday (Month) Overtime</button>
-            <button class="add-btn" onclick="submitOvertime()">Submit OT</button>
+            <button id="apply-ot-btn" class="info-btn hidden" onclick="applyStandardOvertime()">Apply Weekday (Month) Overtime</button>
+            <button id="submit-ot-btn" class="add-btn hidden" onclick="submitOvertime()">Submit OT</button>
         </div>
         <div class="ot-entry-table-container" id="ot-entry-table-wrapper"><p>Loading overtime data...</p></div>
     </div>
@@ -229,19 +230,8 @@
             let currentOtMonthYear = '', isOtTableEditable = false;
             let daysInCurrentMonth = 0;
 
-            // --- ELEMENT REFERENCES ---
-            const lamp = document.querySelector(".navbar-lamp");
-            const navbar = document.querySelector(".navbar");
-            const navItems = document.querySelectorAll(".nav-item");
-
             // --- INITIALIZATION ---
             async function initializeOtPage() {
-                const activeNavItem = document.querySelector(".nav-item.active");
-                if (activeNavItem) {
-                    setTimeout(() => moveLamp(activeNavItem), 50);
-                }
-                window.addEventListener("resize", () => moveLamp(document.querySelector(".nav-item.active")));
-
                 try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     allEmployees = await handleApiResponse(empResponse);
@@ -294,10 +284,27 @@
             }
 
             window.toggleOtTableEdit = function(button) { 
+                const applyBtn = document.getElementById('apply-ot-btn');
+                const submitBtn = document.getElementById('submit-ot-btn');
+                
                 isOtTableEditable = !isOtTableEditable; 
-                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { if (!input.classList.contains('leave-entry')) { input.readOnly = !isOtTableEditable; } }); 
+                
+                document.querySelectorAll('#ot-entry-table .ot-input').forEach(input => { 
+                    if (!input.classList.contains('leave-entry')) { 
+                        input.readOnly = !isOtTableEditable; 
+                    } 
+                }); 
+                
                 button.textContent = isOtTableEditable ? 'Lock Table' : 'Edit'; 
                 button.classList.toggle('del-btn', isOtTableEditable); 
+                
+                if (isOtTableEditable) {
+                    applyBtn.classList.remove('hidden');
+                    submitBtn.classList.remove('hidden');
+                } else {
+                    applyBtn.classList.add('hidden');
+                    submitBtn.classList.add('hidden');
+                }
             };
 
 
@@ -526,5 +533,5 @@
         });
     </script>
 </body>
-
 </html>
+
