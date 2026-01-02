@@ -128,10 +128,8 @@
     
     <main class="content-wrapper">
         <div class="charts-area">
-            
             <section class="project-section">
                 <h2>EDT Test Engineering Organization Chart (DL) - NAOMI</h2>
-                <!-- Chart controls and container... -->
                 <div class="chart-controls">
                     <button class="zoom-btn" title="Zoom In" data-action="zoom-in">+</button>
                     <button class="zoom-btn" title="Zoom Out" data-action="zoom-out">-</button>
@@ -139,7 +137,6 @@
                 </div>
                 <div class="chart-container">
                     <div class="org-chart">
-                        <!-- Chart HTML structure... -->
                         <ul>
                             <li>
                                 <div class="node">
@@ -232,10 +229,10 @@
             });
         });
 
-        // --- OPTIMIZED CLICK-BASED NAVIGATION BAR LOGIC ---
+        // --- NAVIGATION BAR LOGIC ---
         document.addEventListener("DOMContentLoaded", () => {
             const navbarContainer = document.querySelector(".navbar-container");
-            if (!navbarContainer) return; // Exit if the navbar isn't on the page
+            if (!navbarContainer) return; 
 
             const lamp = navbarContainer.querySelector(".navbar-lamp");
             const navItems = navbarContainer.querySelectorAll(".nav-item");
@@ -246,12 +243,8 @@
 
             function moveLamp(element) {
                 if (!element || !lamp || window.innerWidth <= 768) return;
-
-                // getBoundingClientRect is the most reliable way to get position
                 const targetRect = element.getBoundingClientRect();
                 const containerRect = navbarContainer.getBoundingClientRect();
-                
-                // Calculate the top position relative to the container
                 const topOffset = targetRect.top - containerRect.top;
                 
                 lamp.style.transform = `translateY(${topOffset}px)`;
@@ -261,10 +254,8 @@
                 isMenuExpanded = expand;
                 navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
                 if (isMenuExpanded) {
-                    // When opening, lamp moves to the currently active page's icon
                     moveLamp(activeItem);
                 } else {
-                    // When closing, lamp moves back to the main trigger icon
                     moveLamp(firstItem);
                 }
             }
@@ -274,41 +265,33 @@
                 setTimeout(() => moveLamp(firstItem), 100);
 
                 // --- EVENT LISTENERS ---
-
-                // 1. CLICK: Toggle menu when the trigger icon is clicked
                 firstItem.addEventListener('click', (e) => {
-                    // If the first item is also the active one, let it navigate.
-                    // Otherwise, its primary job is to open the menu.
                     if (firstItem !== activeItem) {
                         e.preventDefault(); 
                     }
                     setMenuState(!isMenuExpanded);
                 });
 
-                // 2. CLICK: Close menu if user clicks anywhere outside of it
                 document.addEventListener('click', (e) => {
                     if (isMenuExpanded && !navbarContainer.contains(e.target)) {
                         setMenuState(false);
                     }
                 });
 
-                // 3. MOUSEOVER: Move the lamp while the menu is open
                 navItems.forEach(item => {
                     item.addEventListener("mouseover", () => {
                         if (isMenuExpanded) {
-                           moveLamp(item); // Follow mouse only when expanded
+                           moveLamp(item); 
                         }
                     });
                 });
-                
-                // 4. MOUSELEAVE: Snap lamp back to the active item
+
                 navbarContainer.addEventListener("mouseleave", () => {
                      if (isMenuExpanded) {
                         moveLamp(activeItem);
                      }
                 });
 
-                // 5. RESIZE: Recalculate lamp position
                 window.addEventListener("resize", () => {
                     if (isMenuExpanded && activeItem) {
                         moveLamp(activeItem);
