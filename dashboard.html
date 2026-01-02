@@ -14,9 +14,24 @@
         table { width: 100%; border-collapse: collapse; }
         table th, table td { padding: 12px 8px; border: 1px solid #ddd; text-align: center; font-size: 14px; white-space: nowrap; }
         table th { background-color: #f6f6f6; color: #333; font-weight: 600; }
-        .controls-container { display: flex; flex-direction: column; gap: 15px; margin: 20px auto; max-width: 95%; }
-        .search-container, .filter-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .filter-container { justify-content: flex-start; 
+        .controls-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            margin: 20px auto;
+            max-width: 95%;
+        }
+
+        .search-container, .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
         button, .search-container input, .filter-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
         button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
@@ -72,7 +87,6 @@
         </div>
         <p>One Team, One Goal</p>
         <div id="pioneer-marquee-root"></div>
-        
         <div class="controls-container">
             <div class="filter-container">
                 <label for="table-site-filter">Filter by:</label>
@@ -134,7 +148,7 @@
         </div>
     </div>
 
-    <!-- === NAVIGATION BAR SECTION === -->
+    <!-- === NAVIGATION BAR SECTION ===-->
     <nav class="navbar-container" role="navigation"><div class="navbar"><div class="navbar-lamp"><div class="lamp-light"></div></div>
         <a href="/dashboard.html" class="nav-item active">
             <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
@@ -156,6 +170,8 @@
     <footer> <small>© TE Filipino Workers 2025</small> </footer>
 
     <script>
+        // No changes are needed in the JavaScript section for this layout update.
+        // The existing script will work perfectly with the new CSS.
         if (!localStorage.getItem('authToken')) {
             window.location.href = '/index.html';
         }
@@ -211,6 +227,7 @@
                 
                 const uniqueSites = [...new Set(employees.map(emp => emp.site).filter(Boolean))];
                 const uniqueProjects = [...new Set(employees.map(emp => emp.project).filter(Boolean))];
+
                 siteFilter.innerHTML = '<option value="All">All Sites</option>';
                 projectFilter.innerHTML = '<option value="All">All Projects</option>';
 
@@ -247,11 +264,13 @@
                         allEmployees.forEach(emp => {
                             const row = document.createElement("tr");
                             const employeeId = emp.id_number;
+                            
                             row.setAttribute("data-id", employeeId);
                             row.setAttribute("data-site", emp.site || "");
-                            row.setAttribute("data-project", emp.project || ""); 
+                            row.setAttribute("data-project", emp.project || "");
 
                             const currentMonthOtTotal = otMap.get(employeeId) || 0;
+                            
                             row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
                                             `<td>${emp.site || ""}</td><td>${emp.department || ""}</td><td>${employeeId || ""}</td><td>${emp.chinese_name || ""}</td><td>${emp.dormitory || ""}</td>`+
                                             `<td>${emp.english_name || ""}</td><td>${emp.shift || ""}</td><td>${emp.project || ""}</td><td class="ot-total-cell">${parseFloat(currentMonthOtTotal).toFixed(1)}</td>`;
@@ -264,7 +283,7 @@
             };
 
             window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalProject").value=n[8].textContent||""}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
-            
+
             window.saveRow = async function() {
                 const employeeData = {
                     site: document.getElementById("modalSite").value,
@@ -274,7 +293,7 @@
                     dormitory: document.getElementById("modalDorm").value || null,
                     english_name: document.getElementById("modalEngName").value,
                     shift: document.getElementById("modalShift").value,
-                    project: document.getElementById("modalProject").value || null 
+                    project: document.getElementById("modalProject").value || null
                 };
                 try {
                     let response, url = `${API_BASE}/employees`, method = 'POST';
@@ -307,8 +326,8 @@
             
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
-            window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; filterDataTable(); }; // Also resets filter
-
+            window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; filterDataTable(); };
+            
             window.filterDataTable = function() {
                 const siteFilter = document.getElementById('table-site-filter').value;
                 const projectFilter = document.getElementById('table-project-filter').value;
@@ -318,6 +337,7 @@
 
                     const siteMatch = (siteFilter === 'All' || rowSite === siteFilter);
                     const projectMatch = (projectFilter === 'All' || rowProject === projectFilter);
+
                     const searchInput = document.getElementById("searchInput").value.toLowerCase();
                     const searchMatch = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(searchInput));
 
