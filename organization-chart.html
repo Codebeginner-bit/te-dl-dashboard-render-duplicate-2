@@ -52,14 +52,11 @@
         .zoom-btn:hover { background-color: var(--dept-color); transform: scale(1.1); }
         .zoom-btn:active { transform: scale(1.0); }
         footer { text-align: center; padding: 20px; color: #64748b; background-color: var(--bg-color); }
-        
-        /* --- OPTIMIZED FLUID NAVIGATION BAR STYLES (DESKTOP) --- */
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 50%; right: 1.5rem; transform: translateY(-50%); z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
             .nav-item {
-                position: absolute;
-                top: 0; left: 0;
+                position: absolute; top: 0; left: 0;
                 width: 100%; height: 100%;
                 background-color: #fff;
                 border-radius: 50%;
@@ -74,23 +71,20 @@
             .nav-item.active { color: var(--primary); }
             .nav-item:not(:first-child) {
                 opacity: 0;
-                transform: translateY(0) scale(0.5); /* Start at the same position but scaled down */
+                transform: translateY(0) scale(0.5);
                 pointer-events: none;
             }
             .nav-item:first-child { z-index: 10; }
 
-            /* Expanded state is controlled by ".is-expanded" class */
             .navbar-container.is-expanded .nav-item { opacity: 1; pointer-events: auto; }
-            .navbar-container.is-expanded .nav-item:nth-child(1) { transform: scale(1); } /* Ensure main button is scaled correctly */
+            .navbar-container.is-expanded .nav-item:nth-child(1) { transform: scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(68px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(3) { transform: translateY(136px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(204px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(272px) scale(1); }
 
-            /* Lamp styling */
             .navbar-lamp {
-                position: absolute;
-                top: 0; left: 0; /* Position lamp at the start */
+                position: absolute; top: 0; left: 0;
                 background-color: rgba(0,123,255,0.05);
                 border-radius: 50%;
                 z-index: 0;
@@ -209,7 +203,7 @@
             </a>
         </div>
     </nav>
-
+    
     <footer> 
         <small>© TE Filipino Workers 2025</small> 
     </footer>
@@ -232,7 +226,7 @@
         // --- NAVIGATION BAR LOGIC ---
         document.addEventListener("DOMContentLoaded", () => {
             const navbarContainer = document.querySelector(".navbar-container");
-            if (!navbarContainer) return; 
+            if (!navbarContainer) return;
 
             const lamp = navbarContainer.querySelector(".navbar-lamp");
             const navItems = navbarContainer.querySelectorAll(".nav-item");
@@ -243,16 +237,15 @@
 
             function moveLamp(element) {
                 if (!element || !lamp || window.innerWidth <= 768) return;
-                const targetRect = element.getBoundingClientRect();
-                const containerRect = navbarContainer.getBoundingClientRect();
-                const topOffset = targetRect.top - containerRect.top;
-                
+                const topOffset = element.offsetTop;
                 lamp.style.transform = `translateY(${topOffset}px)`;
             }
             
             function setMenuState(expand) {
+                if (isMenuExpanded === expand) return; 
                 isMenuExpanded = expand;
                 navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
+                
                 if (isMenuExpanded) {
                     moveLamp(activeItem);
                 } else {
@@ -261,13 +254,12 @@
             }
 
             if (firstItem) {
-                // Set initial lamp position
                 setTimeout(() => moveLamp(firstItem), 100);
 
                 // --- EVENT LISTENERS ---
                 firstItem.addEventListener('click', (e) => {
                     if (firstItem !== activeItem) {
-                        e.preventDefault(); 
+                        e.preventDefault();
                     }
                     setMenuState(!isMenuExpanded);
                 });
@@ -293,7 +285,7 @@
                 });
 
                 window.addEventListener("resize", () => {
-                    if (isMenuExpanded && activeItem) {
+                    if (isMenuDENRExpanded && activeItem) {
                         moveLamp(activeItem);
                     } else if (firstItem) {
                         moveLamp(firstItem);
