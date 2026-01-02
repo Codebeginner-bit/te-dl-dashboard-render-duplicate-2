@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TE Dashboard - Leave Plan</title>
-    
-    <style>
+   <style>
         :root { --background: 255 255 255; --foreground: 0 0 0; --muted: 241 245 249; --muted-foreground: 100 116 139; --border: 226 232 240; --primary: #007bff; --gap: 2rem; --duration: 120s; }
         .hidden { display: none !important; }
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; background-color: rgb(var(--background)); color: rgb(var(--foreground)); line-height: 1.5; margin: 0; padding: 1rem; }
@@ -39,7 +38,7 @@
         .leave-table tr:nth-child(even) {background-color: #f8f9fa;}
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
-         @media (min-width: 769px) {
+        @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
             
@@ -113,7 +112,7 @@
                 gap: 0;
             }
             .nav-item {
-                position: relative; 
+                position: relative;
                 opacity: 1;
                 transform: none;
                 pointer-events: auto;
@@ -122,9 +121,10 @@
                 border-radius: 4px;
                 padding: 0.5rem;
                 width: auto; height: auto;
+                color: #374151;
+                text-decoration: none;
             }
-            .nav-item.active { background-color: rgba(0,123,255,0.1); }
-        }
+            .nav-item.active { background-color: rgba(0,123,255,0.1); color: var(--primary); }
             .leave-plan-header {grid-template-columns: 1fr; gap: 1rem;}
             .leave-plan-header h2, .leave-plan-header .date-selector-container, .leave-plan-header .add-btn {grid-column: 1; grid-row: auto; justify-self: center;}
             .leave-plan-header .date-selector-container { flex-direction: column; }
@@ -180,7 +180,8 @@
             .leave-table td:nth-of-type(5)::before { content: "Days"; }
             .leave-table td:nth-of-type(6)::before { content: "Leave Type"; }
         }
-    </style>
+    </style>    
+
 </head>
 <body>
     <div id="leave-plan-section">
