@@ -25,10 +25,7 @@
         main.content-wrapper { flex-grow: 1; display: flex; justify-content: center; padding: 40px; width: 100%; }
         .charts-area { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 40px; }
         .project-section { background-color: var(--node-bg); border: 1px solid rgb(var(--border)); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05); position: relative; }
-        
-        /* --- MODIFIED: Returned padding-right for the title --- */
         .project-section h2 { color: var(--title-color); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgb(var(--border)); font-size: 1.5em; padding-right: 120px; }
-        
         .chart-container { overflow-x: auto; padding: 20px 0; width: 100%; }
         .org-chart { display: inline-flex; flex-direction: column; align-items: center; min-width: 100%; transform-origin: top center; transition: transform 0.3s ease; }
         .org-chart ul { display: flex; justify-content: center; list-style-type: none; position: relative; }
@@ -50,18 +47,13 @@
         .node img { width: 60px; height: 60px; border-radius: 50%; margin: 8px 0; object-fit: cover; }
         .node .name{ font-size: 15px; font-weight: bold; color: var(--name-color); margin: 4px 0; }
         .node .dept-code { font-size: 11px; color: #64748b; margin-top: 2px; }
-        
-        /* --- MODIFIED: Returned chart controls to top-right --- */
         .chart-controls { position: absolute; top: 24px; right: 24px; display: flex; gap: 8px; z-index: 10; }
-        
         .zoom-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--node-border); background-color: var(--node-bg); color: var(--name-color); font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background-color 0.2s, transform 0.2s; }
         .zoom-btn:hover { background-color: var(--dept-color); transform: scale(1.1); }
         .zoom-btn:active { transform: scale(1.0); }
         footer { text-align: center; padding: 20px; color: #64748b; background-color: var(--bg-color); }
         
-        /* --- FINAL FLUID NAVIGATION BAR STYLES (DESKTOP) --- */
         @media (min-width: 769px) {
-            /* --- MODIFIED: Moved navbar container to top-left --- */
             .navbar-container { 
                 position: fixed; 
                 top: 1.5rem; 
@@ -116,11 +108,10 @@
             .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(340px) scale(1); }
         }
         
-        /* MOBILE STYLES */
         @media (max-width: 768px) {
             main.content-wrapper { padding: 20px 10px 80px 10px; }
             .project-section { padding: 16px; }
-            .project-section h2 { font-size: 1.25em; padding-right: 0; text-align: center; } /* Adjusted padding */
+            .project-section h2 { font-size: 1.25em; padding-right: 0; text-align: center; } 
             .chart-controls { position: static; margin-bottom: 15px; justify-content: center; }
             .org-chart ul, .org-chart li { flex-direction: column; align-items: flex-start; padding: 0; }
             .org-chart ul ul { margin-left: 20px; padding-left: 10px; border-left: 2px solid var(--connector-color); }
@@ -346,8 +337,8 @@
                 chart.style.transform = `scale(${currentZoom})`;
             });
         });
-
-        // --- FINALIZED FLUID NAVIGATION LOGIC ---
+        
+        // Navigation Bar
         document.addEventListener("DOMContentLoaded", () => {
             const navbarContainer = document.querySelector(".navbar-container");
             if (!navbarContainer) return;
@@ -356,15 +347,12 @@
             let isMenuExpanded = false;
 
             if (menuToggle) {
-                // 1. Listen for clicks on the toggle button
                 menuToggle.addEventListener('click', () => {
                     isMenuExpanded = !isMenuExpanded;
                     navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
                 });
 
-                // 2. Listen for clicks on the whole document
                 document.addEventListener('click', (event) => {
-                    // Check if the menu is expanded and if the click was outside the entire navbar container
                     if (isMenuExpanded && !navbarContainer.contains(event.target)) {
                         isMenuExpanded = false;
                         navbarContainer.classList.remove('is-expanded');
