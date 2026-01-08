@@ -41,7 +41,7 @@
         .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
-        #weekend-schedule-container { padding: 1rem; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+        #upcoming-schedule-container { padding: 1rem; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
         .schedule-day-group { margin-bottom: 2.5rem; }
         .schedule-day-group > h3 { text-align: left; font-size: 1.5rem; margin-bottom: 1.5rem; color: #333; }
         .schedule-cards-wrapper { 
@@ -61,18 +61,17 @@
         .shift-group:last-child { margin-bottom: 0; }
         .shift-label { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #f1f1f1; }
         .edit-remark-btn { font-size: 12px; padding: 4px 10px; }
-
         .shift-details-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.75rem;
         }
         .shift-details-table th, .shift-details-table td {
-            padding: 10px 6px; 
+            padding: 10px 6px;
             text-align: left;
             font-size: 14px;
             vertical-align: middle;
-            border: none; 
+            border: none;
         }
         .shift-details-table th {
             font-weight: 600;
@@ -82,7 +81,6 @@
         .shift-details-table .name-col { width: 30%; }
         .shift-details-table .remark-col { width: 50%; }
         .shift-details-table .action-col { width: 20%; text-align: center; }
-
         .shift-details-table .remark-cell {
             font-style: italic;
             color: #0056b3;
@@ -162,7 +160,7 @@
                 <tbody></tbody>
             </table>
         </div>
-        <div id="weekend-schedule-container"></div>
+        <div id="upcoming-schedule-container"></div>
     </div>
 
     <div class="modal" id="modal">
@@ -230,7 +228,7 @@
             async function initializeDashboard() {
                 renderMarqueeSection();
                 await fetchTableData();
-                await renderWeekendSchedule();
+                await renderUpcomingSchedule(); 
             }
         
             if(logoutButton) {
@@ -352,11 +350,11 @@
                     alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");
                     closeModal();
                     await fetchTableData();
-                    await renderWeekendSchedule();
+                    await renderUpcomingSchedule(); 
                 } catch (error) { console.error("Save error:", error.message); alert(`An unexpected error occurred: ${error.message}`); }
             };
 
-            window.deleteRow = async function(button) { const row = button.closest("tr"); const employeeId = row.getAttribute("data-id"); if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) { try { const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" }); await handleApiResponse(response); row.remove(); await renderWeekendSchedule(); alert("Employee deleted successfully."); } catch (error) { console.error("Delete error:", error.message); alert(`An error occurred during deletion: ${error.message}`); } } };
+            window.deleteRow = async function(button) { const row = button.closest("tr"); const employeeId = row.getAttribute("data-id"); if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) { try { const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" }); await handleApiResponse(response); row.remove(); await renderUpcomingSchedule(); alert("Employee deleted successfully."); } catch (error) { console.error("Delete error:", error.message); alert(`An error occurred during deletion: ${error.message}`); } } };
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; filterDataTable(); };
@@ -392,7 +390,7 @@
                     const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedEmployeeData) });
                     await handleApiResponse(response);
                     employee.remarks = newRemark;
-                    await renderWeekendSchedule();
+                    await renderUpcomingSchedule(); 
                     closeRemarkModal();
                     return true;
                 } catch (error) { console.error("Failed to update remark:", error); alert("Failed to update remark: " + error.message); return false; }
@@ -408,51 +406,54 @@
                 if(await updateEmployeeRemark(employeeId, null)) { alert("Remark deleted successfully."); }
             }
             
-            /* --- WEEKEND SCHEDULE LOGIC --- */
-            async function renderWeekendSchedule() {
+            async function renderUpcomingSchedule() {
+                const scheduleDays = 14; 
+                const upcomingDates = [];
                 const today = new Date();
-                const dayOfWeek = today.getDay();
-                const nextSaturday = new Date(today);
-                nextSaturday.setDate(today.getDate() + (6 - dayOfWeek + 7) % 7);
-                const nextSunday = new Date(nextSaturday);
-                nextSunday.setDate(nextSunday.getDate() + 1);
+                today.setHours(0, 0, 0, 0); 
+
+                for (let i = 0; i < scheduleDays; i++) {
+                    const futureDate = new Date(today);
+                    futureDate.setDate(today.getDate() + i);
+                    upcomingDates.push(futureDate);
+                }
 
                 const getMonthYear = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                
-                const satMonthYear = getMonthYear(nextSaturday);
-                const sunMonthYear = getMonthYear(nextSunday);
-                const monthsToFetch = [...new Set([satMonthYear, sunMonthYear])];
+                const monthsToFetch = [...new Set(upcomingDates.map(d => getMonthYear(d)))];
                 const otDataByMonth = {};
 
                 try {
                     const responses = await Promise.all(monthsToFetch.map(my => fetch(`${API_BASE}/overtime?month_year=${my}`)));
                     for (let i = 0; i < responses.length; i++) {
-                        if (responses[i].ok) { const data = await responses[i].json(); otDataByMonth[monthsToFetch[i]] = data || []; }
+                        if (responses[i].ok) {
+                            const data = await responses[i].json();
+                            otDataByMonth[monthsToFetch[i]] = data || [];
+                        }
                     }
-                } catch (error) { console.error("Failed to fetch weekend OT data:", error); return; }
+                } catch (error) { console.error("Failed to fetch OT data for schedule:", error); return; }
 
-                const weekendWorkers = [];
+                const scheduledWorkers = [];
                 allEmployees.forEach(employee => {
-                    const satData = (otDataByMonth[satMonthYear] || []).find(rec => rec.employee_id === employee.id_number);
-                    if (satData && satData.daily_data && satData.daily_data[nextSaturday.getDate()] > 0) {
-                        weekendWorkers.push({ employee, date: nextSaturday });
-                    }
-                    const sunData = (otDataByMonth[sunMonthYear] || []).find(rec => rec.employee_id === employee.id_number);
-                    if (sunData && sunData.daily_data && sunData.daily_data[nextSunday.getDate()] > 0) {
-                        weekendWorkers.push({ employee, date: nextSunday });
-                    }
+                    upcomingDates.forEach(date => {
+                        const monthYear = getMonthYear(date);
+                        const dayOfMonth = date.getDate();
+                        const otForMonth = (otDataByMonth[monthYear] || []).find(rec => rec.employee_id === employee.id_number);
+
+                        if (otForMonth && otForMonth.daily_data && otForMonth.daily_data[dayOfMonth] >= 8) {
+                            scheduledWorkers.push({ employee, date });
+                        }
+                    });
                 });
 
-                const container = document.getElementById('weekend-schedule-container');
-                container.innerHTML = `<h2>Upcoming Weekend OT Schedule</h2>`;
+                const container = document.getElementById('upcoming-schedule-container');
+                container.innerHTML = `<h2>Upcoming Overtime Schedule</h2>`;
 
-                if (weekendWorkers.length === 0) {
-                    container.innerHTML += '<p>No overtime scheduled for the upcoming weekend.</p>';
+                if (scheduledWorkers.length === 0) {
+                    container.innerHTML += `<p>No significant overtime (>= 8 hours) scheduled in the next ${scheduleDays} days.</p>`;
                     return;
                 }
                 
-                // Group by Day -> Site -> Shift
-                const scheduleByDay = weekendWorkers.reduce((acc, item) => {
+                const scheduleByDay = scheduledWorkers.reduce((acc, item) => {
                     const { employee, date } = item;
                     const dayString = `${date.toLocaleString('en-US', { weekday: 'long' })}, ${date.getMonth() + 1}-${date.getDate()}`;
                     const site = employee.site || 'Unassigned';
@@ -466,7 +467,7 @@
                     return acc;
                 }, {});
 
-                const sortedDays = Object.keys(scheduleByDay).sort((a,b) => new Date(a).getDay() - new Date(b).getDay() + (new Date(a).getDay() === 0 ? 7 : 0) - (new Date(b).getDay() === 0 ? 7 : 0) );
+                const sortedDays = Object.keys(scheduleByDay).sort((a, b) => new Date(a) - new Date(b));
 
                 for(const dayString of sortedDays) {
                     let dayHtml = `<div class="schedule-day-group"><h3>${dayString}</h3><div class="schedule-cards-wrapper">`;
@@ -513,7 +514,7 @@
             initializeDashboard();
         });
     </script>
-
+    
     <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -522,7 +523,9 @@
     <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>\
     
+</body>
+</html>
 </body>
 </html>
