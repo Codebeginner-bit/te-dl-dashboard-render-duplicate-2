@@ -19,7 +19,7 @@
         button, .search-container input, .filter-container select { padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
         button { transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
         button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
-        button.edit-btn { background-color: #3498db; color: white; }
+        button.edit-btn, button.edit-remark-btn { background-color: #3498db; color: white; }
         button.del-btn { background-color: #e74c3c; color: white; }
         .search-container button { background-color: #f0f0f0; }
         button.add-btn { background-color: #2ecc71; color: white; }
@@ -27,7 +27,7 @@
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
         .modal-content { background-color:white; padding:25px; border-radius:10px; width:90%; max-width:450px; text-align:left; box-shadow:0 4px 15px rgba(0,0,0,0.3); }
         .modal-content h2 { text-align:center; margin-top:0; }
-        .modal-content input, .modal-content select, .modal-content button { margin:8px 0; width:100%; padding:12px; font-size:1rem; border:1px solid rgb(var(--border)); border-radius:4px; box-sizing:border-box; }
+        .modal-content input, .modal-content select, .modal-content textarea, .modal-content button { margin:8px 0; width:100%; padding:12px; font-size:1rem; border:1px solid rgb(var(--border)); border-radius:4px; box-sizing:border-box; }
         .modal-content button { color:white; } .modal-content button.save-btn { background-color:#2ecc71; } .modal-content button.cancel-btn { background-color:#e74c3c; }
         .marquee-container { position:relative; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-top:4rem; margin-bottom:4rem; }
         .testimonial-card { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; border-radius: 0.75rem; border: 1px solid rgb(var(--border)); background-color: rgba(var(--muted), 0.4); padding: 2rem 1.5rem; text-align: center; width: 300px; flex-shrink: 0; }
@@ -41,48 +41,29 @@
         .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
+        #weekend-schedule-container { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; margin-top: 3rem; padding: 1rem; }
+        .schedule-card { background-color: white; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); width: 350px; flex-shrink: 0; }
+        .schedule-card h3 { background-color: #007bff; color: white; padding: 12px; margin: 0; border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 1.25rem; }
+        .schedule-card-body { padding: 15px; }
+        .date-group { margin-bottom: 15px; }
+        .date-group h4 { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid #eee; font-size: 1.1rem; }
+        .shift-group { margin-bottom: 10px; }
+        .shift-label { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .name-list { list-style: none; padding-left: 15px; margin: 0; }
+        .name-list li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; color: #555; }
+        .edit-remark-btn { font-size: 12px; padding: 2px 8px; margin-left: 10px; }
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
-            
-            #menu-toggle {
-                position: relative;
-                width: 56px; height: 56px;
-                border-radius: 50%;
-                border: none;
-                background-color: #fff;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                cursor: pointer;
-                z-index: 100;
-                display: flex; align-items: center; justify-content: center;
-            }
-            #menu-toggle .icon {
-                position: absolute;
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
-            }
+            #menu-toggle { position: relative; width: 56px; height: 56px; border-radius: 50%; border: none; background-color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; }
+            #menu-toggle .icon { position: absolute; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s; }
             #menu-toggle .icon-menu { opacity: 1; transform: rotate(0deg) scale(1); }
             #menu-toggle .icon-close { opacity: 0; transform: rotate(-45deg) scale(0); }
-
             .navbar-container.is-expanded #menu-toggle .icon-menu { opacity: 0; transform: rotate(45deg) scale(0); }
             .navbar-container.is-expanded #menu-toggle .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
-            
-            .nav-item {
-                position: absolute; top: 0; left: 0;
-                width: 100%; height: 100%;
-                background-color: #fff;
-                border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
-                text-decoration: none;
-                color: #374151;
-                opacity: 0;
-                transform: translateY(0) scale(0.5);
-                pointer-events: none;
-            }
+            .nav-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s; text-decoration: none; color: #374151; opacity: 0; transform: translateY(0) scale(0.5); pointer-events: none; }
             .nav-item:hover { color: var(--primary); }
             .nav-item.active { color: var(--primary); }
-
             .navbar-container.is-expanded .nav-item { opacity: 1; pointer-events: auto; }
             .navbar-container.is-expanded .nav-item:nth-child(1) { transform: translateY(68px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(2) { transform: translateY(136px) scale(1); }
@@ -90,7 +71,6 @@
             .navbar-container.is-expanded .nav-item:nth-child(4) { transform: translateY(272px) scale(1); }
             .navbar-container.is-expanded .nav-item:nth-child(5) { transform: translateY(340px) scale(1); }
         }
-
         footer {width: 100%; text-align: center; padding: 2rem 1rem; margin-top: 4rem; color: rgb(var(--muted-foreground));}
         footer small {font-size: 0.875rem;}
         .dashboard-header {display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;}
@@ -99,38 +79,10 @@
         .logout-btn:hover {background-color: #c0392b;}
         @media (max-width: 768px) {
             body {padding: 1rem 0.5rem 80px 0.5rem; }
-            .navbar-container {
-                display: flex;
-                position: fixed;
-                top: auto; bottom: 0; left: 0; right: 0;
-                transform: translateY(0); width: 100%;
-                border-radius: 0; 
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(10px); 
-                border-top: 1px solid rgb(var(--border));
-                justify-content: space-around;
-            }
+            .navbar-container { display: flex; position: fixed; top: auto; bottom: 0; left: 0; right: 0; transform: translateY(0); width: 100%; border-radius: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border-top: 1px solid rgb(var(--border)); justify-content: space-around; }
             #menu-toggle { display: none; }
-            .navbar {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-around;
-                width: 100%;
-                height: auto;
-                padding: 0.25rem 0;
-                gap: 0;
-            }
-            .nav-item {
-                position: relative; 
-                opacity: 1;
-                transform: none;
-                pointer-events: auto;
-                background-color: transparent;
-                box-shadow: none;
-                border-radius: 4px;
-                padding: 0.5rem;
-                width: auto; height: auto;
-            }
+            .navbar { display: flex; flex-direction: row; justify-content: space-around; width: 100%; height: auto; padding: 0.25rem 0; gap: 0; }
+            .nav-item { position: relative; opacity: 1; transform: none; pointer-events: auto; background-color: transparent; box-shadow: none; border-radius: 4px; padding: 0.5rem; width: auto; height: auto; }
             .nav-item.active { background-color: rgba(0,123,255,0.1); }
         }
     </style>
@@ -159,11 +111,14 @@
         <div class="overtime-table-container">
             <table id="overtimeTable">
                 <thead>
-                    <tr><th>Actions</th><th>Site</th><th>Department</th><th>Employee ID</th><th>Chinese Name</th><th>Dormitory</th><th>English Name</th><th>Shift</th><th>Project</th><th>Total Overtime (Current Month)</th></tr>
+                    <tr>
+                        <th>Actions</th> <th>Site</th> <th>Department</th> <th>Employee ID</th> <th>Chinese Name</th> <th>Dormitory</th> <th>English Name</th> <th>Shift</th> <th>Project</th> <th>Total Overtime (Current Month)</th>
+                    </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
+        <div id="weekend-schedule-container"></div>
     </div>
 
     <div class="modal" id="modal">
@@ -177,33 +132,33 @@
             <input type="text" id="modalEngName" placeholder="Enter English Name" required>
             <select id="modalShift"><option value="Dayshift">Dayshift</option><option value="Nightshift">Nightshift</option></select>
             <input type="text" id="modalProject" placeholder="Enter Project">
+            <textarea id="modalRemarks" placeholder="Enter support details or other remarks..." rows="3"></textarea>
             <button class="save-btn" onclick="saveRow()">Save</button>
             <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- MODIFIED: New modal specifically for editing remarks -->
+    <div class="modal" id="remark-modal">
+        <div class="modal-content">
+            <h2 id="remark-modal-title">Edit Remark</h2>
+            <input type="hidden" id="remark-modal-employee-id">
+            <textarea id="remark-modal-textarea" placeholder="Enter support details..." rows="4"></textarea>
+            <button class="save-btn" onclick="saveRemark()">Save Remark</button>
+            <button class="del-btn" onclick="deleteRemark()">Delete Remark</button>
+            <button class="cancel-btn" onclick="closeRemarkModal()">Cancel</button>
         </div>
     </div>
 
     <!-- === NAVIGATION BAR SECTION ===-->
      <nav class="navbar-container" role="navigation">
-        <button id="menu-toggle" aria-label="Toggle Menu">
-            <span class="icon icon-menu"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></span>
-            <span class="icon icon-close"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></span>
-        </button>
+        <button id="menu-toggle" aria-label="Toggle Menu"><span class="icon icon-menu"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></span><span class="icon icon-close"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></span></button>
         <div class="navbar">
-            <a href="/dashboard.html" class="nav-item active">
-                <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
-            </a>
-            <a href="/overtime-entry.html" class="nav-item">
-                 <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
-            </a>
-            <a href="/leave-plan.html" class="nav-item">
-                <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></span>
-            </a>
-            <a href="/links.html" class="nav-item">
-                <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></span>
-            </a>
-             <a href="/organization-chart.html" class="nav-item">
-                <span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6"></path><rect x="6" y="12" width="4" height="6" rx="1"></rect><rect x="14" y="12" width="4" height="6" rx="1"></rect><path d="M12 21v-3"></path><path d="M6 15H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2"></path><path d="M18 15h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-2"></path></svg></span>
-            </a>
+            <a href="/dashboard.html" class="nav-item active"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span></a>
+            <a href="/overtime-entry.html" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span></a>
+            <a href="/leave-plan.html" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></span></a>
+            <a href="/links.html" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></span></a>
+             <a href="/organization-chart.html" class="nav-item"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6"></path><rect x="6" y="12" width="4" height="6" rx="1"></rect><rect x="14" y="12" width="4" height="6" rx="1"></rect><path d="M12 21v-3"></path><path d="M6 15H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2"></path><path d="M18 15h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-2"></path></svg></span></a>
         </div>
     </nav>
 
@@ -215,27 +170,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            
             const navbarContainer = document.querySelector(".navbar-container");
             if (navbarContainer) {
                 const menuToggle = document.getElementById("menu-toggle");
                 let isMenuExpanded = false;
-
                 if (menuToggle) {
-                    menuToggle.addEventListener('click', () => {
-                        isMenuExpanded = !isMenuExpanded;
-                        navbarContainer.classList.toggle('is-expanded', isMenuExpanded);
-                    });
-
-                    document.addEventListener('click', (event) => {
-                        if (isMenuExpanded && !navbarContainer.contains(event.target)) {
-                            isMenuExpanded = false;
-                            navbarContainer.classList.remove('is-expanded');
-                        }
-                    });
+                    menuToggle.addEventListener('click', () => { isMenuExpanded = !isMenuExpanded; navbarContainer.classList.toggle('is-expanded', isMenuExpanded); });
+                    document.addEventListener('click', (event) => { if (isMenuExpanded && !navbarContainer.contains(event.target)) { isMenuExpanded = false; navbarContainer.classList.remove('is-expanded'); } });
                 }
             }
 
-            // --- DASHBOARD-SPECIFIC LOGIC ---
             const API_BASE = "/api"; 
             let allEmployees = []; 
             let isAddingNew = false, editingRow = null; 
@@ -244,13 +189,11 @@
             async function initializeDashboard() {
                 renderMarqueeSection();
                 await fetchTableData();
+                await renderWeekendSchedule();
             }
         
             if(logoutButton) {
-                logoutButton.addEventListener('click', () => {
-                    localStorage.removeItem('authToken'); 
-                    window.location.href = '/index.html'; 
-                });
+                logoutButton.addEventListener('click', () => { localStorage.removeItem('authToken'); window.location.href = '/index.html'; });
             }
         
             const pioneerData = [
@@ -263,11 +206,7 @@
             function renderMarqueeSection(){const c=document.getElementById("pioneer-marquee-root");if(!c)return;let e="";const t=Math.max(4,Math.ceil(12/pioneerData.length));for(let o=0;o<t;o++)e+=pioneerData.map(c=>`<div class="testimonial-card"><img src="${c.logo}" alt="Member picture"><h3>${c.name}</h3><p>${c.quote}</p></div>`).join("");c.innerHTML=`<div class="marquee-container"><div class="marquee-track-wrapper"><div class="marquee-track">${e}</div></div><div class="fade-overlay left"></div><div class="fade-overlay right"></div></div>`}
             
             async function handleApiResponse(response) {
-                if (!response.ok) {
-                    let errorMessage = `Request failed: ${response.status}`;
-                    try { const errData = await response.json(); errorMessage = errData.error || JSON.stringify(errData); } catch (e) {}
-                    throw new Error(errorMessage);
-                }
+                if (!response.ok) { let errorMessage = `Request failed: ${response.status}`; try { const errData = await response.json(); errorMessage = errData.error || JSON.stringify(errData); } catch (e) {} throw new Error(errorMessage); }
                 if (response.status === 204) return null;
                 return response.json();
             }
@@ -275,38 +214,24 @@
             function populateFilterDropdowns(employees) {
                 const siteFilter = document.getElementById('table-site-filter');
                 const projectFilter = document.getElementById('table-project-filter');
-                
                 const uniqueSites = [...new Set(employees.map(emp => emp.site).filter(Boolean))];
                 const uniqueProjects = [...new Set(employees.map(emp => emp.project).filter(Boolean))];
-
                 siteFilter.innerHTML = '<option value="All">All Sites</option>';
                 projectFilter.innerHTML = '<option value="All">All Projects</option>';
-
-                uniqueSites.sort().forEach(site => {
-                    const option = new Option(site, site);
-                    siteFilter.add(option);
-                });
-
-                uniqueProjects.sort().forEach(project => {
-                    const option = new Option(project, project);
-                    projectFilter.add(option);
-                });
+                uniqueSites.sort().forEach(site => { siteFilter.add(new Option(site, site)); });
+                uniqueProjects.sort().forEach(project => { projectFilter.add(new Option(project, project)); });
             }
 
             window.fetchTableData = async function() {
                  try {
                     const empResponse = await fetch(`${API_BASE}/employees`);
                     allEmployees = await handleApiResponse(empResponse);
-                    
                     const now = new Date();
                     const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
                     const otMap = new Map();
                     try {
                         const otResponse = await fetch(`${API_BASE}/overtime?month_year=${currentMonthYear}`);
-                        if (otResponse.ok) {
-                            const otRecords = await otResponse.json();
-                            otRecords.forEach(rec => { otMap.set(rec.employee_id, rec.total_ot || 0); });
-                        }
+                        if (otResponse.ok) { const otRecords = await otResponse.json(); otRecords.forEach(rec => { otMap.set(rec.employee_id, rec.total_ot || 0); }); }
                     } catch (otError) { console.error("Error fetching current month's overtime data:", otError); }
                     
                     const tableBody = document.querySelector("#overtimeTable tbody");
@@ -314,26 +239,52 @@
                         tableBody.innerHTML = "";
                         allEmployees.forEach(emp => {
                             const row = document.createElement("tr");
-                            const employeeId = emp.id_number;
-                            
-                            row.setAttribute("data-id", employeeId);
+                            row.setAttribute("data-id", emp.id_number);
                             row.setAttribute("data-site", emp.site || "");
                             row.setAttribute("data-project", emp.project || "");
-
-                            const currentMonthOtTotal = otMap.get(employeeId) || 0;
-                            
+                            const currentMonthOtTotal = otMap.get(emp.id_number) || 0;
                             row.innerHTML = `<td><button class="edit-btn" onclick="showModalForEdit(this)">Edit</button> <button class="del-btn" onclick="deleteRow(this)">Delete</button></td>` +
-                                            `<td>${emp.site || ""}</td><td>${emp.department || ""}</td><td>${employeeId || ""}</td><td>${emp.chinese_name || ""}</td><td>${emp.dormitory || ""}</td>`+
+                                            `<td>${emp.site || ""}</td><td>${emp.department || ""}</td><td>${emp.id_number || ""}</td><td>${emp.chinese_name || ""}</td><td>${emp.dormitory || ""}</td>`+
                                             `<td>${emp.english_name || ""}</td><td>${emp.shift || ""}</td><td>${emp.project || ""}</td><td class="ot-total-cell">${parseFloat(currentMonthOtTotal).toFixed(1)}</td>`;
                             tableBody.appendChild(row);
                         });
-
                         populateFilterDropdowns(allEmployees);
                     }
                 } catch (error) { console.error("Failed to build dashboard table:", error.message); alert(`Could not load dashboard data: ${error.message}`); }
             };
 
-            window.showModalForEdit=function(e=null){const t=document.getElementById("modal"),o=document.getElementById("modalTitle"),d=document.getElementById("modalId");if(e){isAddingNew=!1,o.textContent="Edit Employee",d.readOnly=!0,d.style.backgroundColor="#f0f0f0",editingRow=e.closest("tr");const n=editingRow.cells;document.getElementById("modalSite").value=n[1].textContent,document.getElementById("modalDept").value=n[2].textContent,d.value=n[3].textContent,document.getElementById("modalChineseName").value=n[4].textContent||"",document.getElementById("modalDorm").value=n[5].textContent||"",document.getElementById("modalEngName").value=n[6].textContent,document.getElementById("modalShift").value=n[7].textContent,document.getElementById("modalProject").value=n[8].textContent||""}else isAddingNew=!0,o.textContent="Add New Employee",document.querySelectorAll("#modal input, #modal select").forEach(e=>e.value=""),d.readOnly=!1,d.style.backgroundColor="",editingRow=null;t.style.display="flex"};
+            window.showModalForEdit = function(e = null) {
+                const modal = document.getElementById("modal");
+                const modalTitle = document.getElementById("modalTitle");
+                const modalId = document.getElementById("modalId");
+                if (e) {
+                    isAddingNew = false;
+                    modalTitle.textContent = "Edit Employee";
+                    modalId.readOnly = true;
+                    modalId.style.backgroundColor = "#f0f0f0";
+                    editingRow = e.closest("tr");
+                    const employeeIdToEdit = editingRow.getAttribute("data-id");
+                    const employee = allEmployees.find(emp => emp.id_number === employeeIdToEdit);
+                    if (!employee) { alert("Could not find employee data."); return; }
+                    document.getElementById("modalSite").value = employee.site || "";
+                    document.getElementById("modalDept").value = employee.department || "";
+                    modalId.value = employee.id_number || "";
+                    document.getElementById("modalChineseName").value = employee.chinese_name || "";
+                    document.getElementById("modalDorm").value = employee.dormitory || "";
+                    document.getElementById("modalEngName").value = employee.english_name || "";
+                    document.getElementById("modalShift").value = employee.shift || "Dayshift";
+                    document.getElementById("modalProject").value = employee.project || "";
+                    document.getElementById("modalRemarks").value = employee.remarks || "";
+                } else {
+                    isAddingNew = true;
+                    modalTitle.textContent = "Add New Employee";
+                    document.querySelectorAll("#modal input, #modal select, #modal textarea").forEach(el => el.value = "");
+                    modalId.readOnly = false;
+                    modalId.style.backgroundColor = "";
+                    editingRow = null;
+                }
+                modal.style.display = "flex";
+            };
 
             window.saveRow = async function() {
                 const employeeData = {
@@ -344,7 +295,8 @@
                     dormitory: document.getElementById("modalDorm").value || null,
                     english_name: document.getElementById("modalEngName").value,
                     shift: document.getElementById("modalShift").value,
-                    project: document.getElementById("modalProject").value || null
+                    project: document.getElementById("modalProject").value || null,
+                    remarks: document.getElementById("modalRemarks").value || null
                 };
                 try {
                     let response, url = `${API_BASE}/employees`, method = 'POST';
@@ -359,41 +311,131 @@
                     alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");
                     closeModal();
                     await fetchTableData();
+                    await renderWeekendSchedule();
                 } catch (error) { console.error("Save error:", error.message); alert(`An unexpected error occurred: ${error.message}`); }
             };
 
-            window.deleteRow = async function(button) {
-                const row = button.closest("tr");
-                const employeeId = row.getAttribute("data-id");
-                if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) {
-                    try {
-                        const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" });
-                        await handleApiResponse(response);
-                        row.remove();
-                        alert("Employee deleted successfully.");
-                    } catch (error) { console.error("Delete error:", error.message); alert(`An error occurred during deletion: ${error.message}`); }
-                }
-            };
-            
+            window.deleteRow = async function(button) { const row = button.closest("tr"); const employeeId = row.getAttribute("data-id"); if (confirm(`Are you sure you want to delete the employee with ID: ${employeeId}?`)) { try { const response = await fetch(`${API_BASE}/employees?id=${employeeId}`, { method: "DELETE" }); await handleApiResponse(response); row.remove(); await renderWeekendSchedule(); alert("Employee deleted successfully."); } catch (error) { console.error("Delete error:", error.message); alert(`An error occurred during deletion: ${error.message}`); } } };
             window.closeModal=()=>document.getElementById("modal").style.display="none";
             window.searchTable = () => { const input = document.getElementById("searchInput").value.toLowerCase(); document.querySelectorAll("#overtimeTable tbody tr").forEach(row => { const isVisible = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(input)); row.style.display = isVisible ? "" : "none"; }); };
             window.resetSearch = () => { document.querySelectorAll("#overtimeTable tbody tr").forEach(row => row.style.display = ""); document.getElementById("searchInput").value = ""; filterDataTable(); };
-            
             window.filterDataTable = function() {
                 const siteFilter = document.getElementById('table-site-filter').value;
                 const projectFilter = document.getElementById('table-project-filter').value;
                 document.querySelectorAll('#overtimeTable tbody tr').forEach(row => {
                     const rowSite = row.dataset.site;
                     const rowProject = row.dataset.project;
-
                     const siteMatch = (siteFilter === 'All' || rowSite === siteFilter);
                     const projectMatch = (projectFilter === 'All' || rowProject === projectFilter);
-
                     const searchInput = document.getElementById("searchInput").value.toLowerCase();
                     const searchMatch = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(searchInput));
-
                     row.style.display = (siteMatch && projectMatch && searchMatch) ? '' : 'none';
                 });
+            }
+            
+            /* --- MODIFIED: New functions for Remark Modal --- */
+            window.showRemarkModal = function(employeeId) {
+                const employee = allEmployees.find(emp => emp.id_number === employeeId);
+                if (!employee) return;
+                
+                document.getElementById('remark-modal-title').textContent = `Edit Remark for ${employee.english_name}`;
+                document.getElementById('remark-modal-employee-id').value = employeeId;
+                document.getElementById('remark-modal-textarea').value = employee.remarks || '';
+                document.getElementById('remark-modal').style.display = 'flex';
+            }
+            window.closeRemarkModal = function() {
+                document.getElementById('remark-modal').style.display = 'none';
+            }
+            async function updateEmployeeRemark(employeeId, newRemark) {
+                const employee = allEmployees.find(emp => emp.id_number === employeeId);
+                if (!employee) return;
+
+                // Create a copy and update the remark
+                const updatedEmployee = { ...employee, remarks: newRemark };
+
+                try {
+                    const url = `${API_BASE}/employees?id=${employeeId}`;
+                    const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedEmployee) });
+                    await handleApiResponse(response);
+                    
+                    // Update the local cache
+                    employee.remarks = newRemark;
+                    
+                    await renderWeekendSchedule(); // Refresh the schedule to show changes
+                    closeRemarkModal();
+                    return true;
+                } catch (error) {
+                    console.error("Failed to update remark:", error);
+                    alert("Failed to update remark: " + error.message);
+                    return false;
+                }
+            }
+            window.saveRemark = async function() {
+                const employeeId = document.getElementById('remark-modal-employee-id').value;
+                const newRemark = document.getElementById('remark-modal-textarea').value;
+                if(await updateEmployeeRemark(employeeId, newRemark)) {
+                    alert("Remark saved successfully.");
+                }
+            }
+            window.deleteRemark = async function() {
+                if (!confirm("Are you sure you want to delete this remark?")) return;
+                const employeeId = document.getElementById('remark-modal-employee-id').value;
+                if(await updateEmployeeRemark(employeeId, null)) {
+                    alert("Remark deleted successfully.");
+                }
+            }
+            
+            async function renderWeekendSchedule() {
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const nextSaturday = new Date(today);
+                nextSaturday.setDate(today.getDate() + (6 - dayOfWeek + 7) % 7);
+                const nextSunday = new Date(nextSaturday);
+                nextSunday.setDate(nextSunday.getDate() + 1);
+                const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')}-${date.toLocaleString('default', { month: 'short' })}`;
+                const formatForAPI = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                const datesToFetch = [formatForAPI(nextSaturday), formatForAPI(nextSunday)];
+                const weekendOtData = [];
+                try {
+                    const responses = await Promise.all(datesToFetch.map(date => fetch(`${API_BASE}/overtime?date=${date}`)));
+                    for (const res of responses) { if (res.ok) { const data = await res.json(); if (data && data.length > 0) { weekendOtData.push(...data); } } }
+                } catch (error) { console.error("Failed to fetch weekend OT data:", error); return; }
+                if (weekendOtData.length === 0) { document.getElementById('weekend-schedule-container').innerHTML = '<h2>Upcoming Weekend OT Schedule</h2><p>No overtime scheduled for the upcoming weekend.</p>'; return; }
+                
+                const schedule = weekendOtData.reduce((acc, ot) => {
+                    const employee = allEmployees.find(e => e.id_number === ot.employee_id);
+                    if (!employee) return acc;
+                    const otDate = formatDate(new Date(ot.date + 'T00:00:00'));
+                    const site = employee.site || 'Unassigned';
+                    const shift = employee.shift || 'Unassigned';
+                    if (!acc[site]) acc[site] = {};
+                    if (!acc[site][otDate]) acc[site][otDate] = {};
+                    if (!acc[site][otDate][shift]) acc[site][otDate][shift] = [];
+                    acc[site][otDate][shift].push({ id: employee.id_number, name: employee.english_name, remark: employee.remarks || '' });
+                    return acc;
+                }, {});
+
+                let html = '<h2>Upcoming Weekend OT Schedule</h2>';
+                for (const site in schedule) {
+                    html += `<div class="schedule-card"><h3>${site}</h3><div class="schedule-card-body">`;
+                    const sortedDates = Object.keys(schedule[site]).sort((a,b) => new Date(a + ' ' + today.getFullYear()) - new Date(b + ' ' + today.getFullYear()));
+                    for (const date of sortedDates) {
+                        html += `<div class="date-group"><h4>${date}</h4>`;
+                        for (const shift in schedule[site][date]) {
+                            html += `<div class="shift-group"><div class="shift-label">${shift}</div><ul class="name-list">`;
+                            schedule[site][date][shift].forEach(person => {
+                                /* MODIFIED: Added edit button and conditional remark */
+                                const remarkText = person.remark ? `(${person.remark})` : '';
+                                html += `<li><span>${person.name} ${remarkText}</span> <button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></li>`;
+                            });
+                            html += `</ul></div>`;
+                        }
+                        html += `</div>`;
+                    }
+                    html += `</div></div>`;
+                }
+
+                document.getElementById('weekend-schedule-container').innerHTML = html;
             }
             
             initializeDashboard();
@@ -409,5 +451,6 @@
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
+    
 </body>
 </html>
