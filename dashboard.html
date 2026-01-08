@@ -41,17 +41,20 @@
         .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
-        #weekend-schedule-container { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; margin-top: 3rem; padding: 1rem; }
-        .schedule-card { background-color: white; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); width: 350px; flex-shrink: 0; }
-        .schedule-card h3 { background-color: #007bff; color: white; padding: 12px; margin: 0; border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 1.25rem; }
+        #weekend-schedule-container { padding: 1rem; margin-top: 2rem; }
+        .schedule-day-group { margin-bottom: 2.5rem; }
+        .schedule-day-group > h3 { text-align: left; font-size: 1.5rem; margin-bottom: 1.5rem; color: #333; }
+        .schedule-cards-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: flex-start; }
+        .schedule-card { background-color: white; border: 1px solid #e9ecef; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 320px; flex-shrink: 0; }
+        .schedule-card-header { background-color: #6c757d; color: white; padding: 10px 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; font-size: 1.2rem; font-weight: 600; }
         .schedule-card-body { padding: 15px; }
-        .date-group { margin-bottom: 15px; }
-        .date-group h4 { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid #eee; font-size: 1.1rem; }
-        .shift-group { margin-bottom: 10px; }
-        .shift-label { font-weight: bold; color: #333; margin-bottom: 5px; }
-        .name-list { list-style: none; padding-left: 15px; margin: 0; }
-        .name-list li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; color: #555; }
-        .edit-remark-btn { font-size: 12px; padding: 2px 8px; margin-left: 10px; }
+        .shift-group { margin-bottom: 1rem; }
+        .shift-label { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #f1f1f1; }
+        .name-list { list-style: none; padding: 0; margin: 0; }
+        .name-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; color: #555; border-bottom: 1px solid #f9f9f9; }
+        .name-list li:last-child { border-bottom: none; }
+        .edit-remark-btn { font-size: 12px; padding: 4px 10px; }
+
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
             .navbar { position: relative; width: 56px; height: 56px; }
@@ -331,19 +334,15 @@
                 });
             }
             
-            /* --- REMARK MODAL FUNCTIONS --- */
             window.showRemarkModal = function(employeeId) {
                 const employee = allEmployees.find(emp => emp.id_number === employeeId);
                 if (!employee) return;
-                
                 document.getElementById('remark-modal-title').textContent = `Edit Remark for ${employee.english_name}`;
                 document.getElementById('remark-modal-employee-id').value = employeeId;
                 document.getElementById('remark-modal-textarea').value = employee.remarks || '';
                 document.getElementById('remark-modal').style.display = 'flex';
             }
-            window.closeRemarkModal = function() {
-                document.getElementById('remark-modal').style.display = 'none';
-            }
+            window.closeRemarkModal = function() { document.getElementById('remark-modal').style.display = 'none'; }
             async function updateEmployeeRemark(employeeId, newRemark) {
                 const employee = allEmployees.find(emp => emp.id_number === employeeId);
                 if (!employee) return false;
@@ -356,11 +355,7 @@
                     await renderWeekendSchedule();
                     closeRemarkModal();
                     return true;
-                } catch (error) {
-                    console.error("Failed to update remark:", error);
-                    alert("Failed to update remark: " + error.message);
-                    return false;
-                }
+                } catch (error) { console.error("Failed to update remark:", error); alert("Failed to update remark: " + error.message); return false; }
             }
             window.saveRemark = async function() {
                 const employeeId = document.getElementById('remark-modal-employee-id').value;
@@ -373,7 +368,7 @@
                 if(await updateEmployeeRemark(employeeId, null)) { alert("Remark deleted successfully."); }
             }
             
-            /* --- CORRECTED WEEKEND SCHEDULE LOGIC --- */
+            /* --- WEEKEND SCHEDULE LOGIC --- */
             async function renderWeekendSchedule() {
                 const today = new Date();
                 const dayOfWeek = today.getDay();
@@ -382,26 +377,19 @@
                 const nextSunday = new Date(nextSaturday);
                 nextSunday.setDate(nextSunday.getDate() + 1);
 
-                const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')}-${date.toLocaleString('default', { month: 'short' })}`;
+                const getMonthYear = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 
-                const satMonthYear = `${nextSaturday.getFullYear()}-${String(nextSaturday.getMonth() + 1).padStart(2, '0')}`;
-                const sunMonthYear = `${nextSunday.getFullYear()}-${String(nextSunday.getMonth() + 1).padStart(2, '0')}`;
-                
+                const satMonthYear = getMonthYear(nextSaturday);
+                const sunMonthYear = getMonthYear(nextSunday);
                 const monthsToFetch = [...new Set([satMonthYear, sunMonthYear])];
                 const otDataByMonth = {};
 
                 try {
                     const responses = await Promise.all(monthsToFetch.map(my => fetch(`${API_BASE}/overtime?month_year=${my}`)));
                     for (let i = 0; i < responses.length; i++) {
-                        if (responses[i].ok) {
-                            const data = await responses[i].json();
-                            otDataByMonth[monthsToFetch[i]] = data || [];
-                        }
+                        if (responses[i].ok) { const data = await responses[i].json(); otDataByMonth[monthsToFetch[i]] = data || []; }
                     }
-                } catch (error) {
-                    console.error("Failed to fetch weekend OT data:", error);
-                    return;
-                }
+                } catch (error) { console.error("Failed to fetch weekend OT data:", error); return; }
 
                 const weekendWorkers = [];
                 allEmployees.forEach(employee => {
@@ -415,58 +403,56 @@
                     }
                 });
 
+                const container = document.getElementById('weekend-schedule-container');
+                container.innerHTML = `<h2>Upcoming Weekend OT Schedule</h2>`;
+
                 if (weekendWorkers.length === 0) {
-                    document.getElementById('weekend-schedule-container').innerHTML = '<h2>Upcoming Weekend OT Schedule</h2><p>No overtime scheduled for the upcoming weekend.</p>';
+                    container.innerHTML += '<p>No overtime scheduled for the upcoming weekend.</p>';
                     return;
                 }
                 
-                const schedule = weekendWorkers.reduce((acc, item) => {
+                const scheduleByDay = weekendWorkers.reduce((acc, item) => {
                     const { employee, date } = item;
-                    const otDate = formatDate(date);
+                    const dayString = `${date.toLocaleString('en-US', { weekday: 'long' })}, ${date.getMonth() + 1}-${date.getDate()}`;
                     const site = employee.site || 'Unassigned';
                     const shift = employee.shift || 'Unassigned';
-                    if (!acc[site]) acc[site] = {};
-                    if (!acc[site][otDate]) acc[site][otDate] = {};
-                    if (!acc[site][otDate][shift]) acc[site][otDate][shift] = [];
-                    acc[site][otDate][shift].push({ id: employee.id_number, name: employee.english_name, remark: employee.remarks || '' });
+
+                    if (!acc[dayString]) acc[dayString] = {};
+                    if (!acc[dayString][site]) acc[dayString][site] = {};
+                    if (!acc[dayString][site][shift]) acc[dayString][site][shift] = [];
+                    
+                    acc[dayString][site][shift].push({ id: employee.id_number, name: employee.english_name, remark: employee.remarks || '' });
                     return acc;
                 }, {});
 
-                let html = '<h2>Upcoming Weekend OT Schedule</h2>';
-                for (const site in schedule) {
-                    html += `<div class="schedule-card"><h3>${site}</h3><div class="schedule-card-body">`;
-                    const sortedDates = Object.keys(schedule[site]).sort((a,b) => new Date(a + ' ' + today.getFullYear()) - new Date(b + ' ' + today.getFullYear()));
-                    for (const date of sortedDates) {
-                        html += `<div class="date-group"><h4>${date}</h4>`;
-                        for (const shift in schedule[site][date]) {
-                            html += `<div class="shift-group"><div class="shift-label">${shift}</div><ul class="name-list">`;
-                            schedule[site][date][shift].forEach(person => {
-                                const remarkText = person.remark ? `(${person.remark})` : '';
-                                html += `<li><span>${person.name} ${remarkText}</span> <button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></li>`;
-                            });
-                            html += `</ul></div>`;
-                        }
-                        html += `</div>`;
-                    }
-                    html += `</div></div>`;
-                }
+                const sortedDays = Object.keys(scheduleByDay).sort((a,b) => new Date(a).getDay() - new Date(b).getDay() + (new Date(a).getDay() === 0 ? 7 : 0) - (new Date(b).getDay() === 0 ? 7 : 0) );
 
-                document.getElementById('weekend-schedule-container').innerHTML = html;
+                for(const dayString of sortedDays) {
+                    let dayHtml = `<div class="schedule-day-group"><h3>${dayString}</h3><div class="schedule-cards-wrapper">`;
+                    const sites = scheduleByDay[dayString];
+                    for (const site in sites) {
+                        dayHtml += `<div class="schedule-card"><div class="schedule-card-header">${site}</div><div class="schedule-card-body">`;
+                        const shifts = sites[site];
+                        const shiftOrder = ['Dayshift', 'Nightshift'];
+                        shiftOrder.forEach(shift => {
+                            if (shifts[shift]) {
+                                dayHtml += `<div class="shift-group"><div class="shift-label">${shift}</div><ul class="name-list">`;
+                                shifts[shift].forEach(person => {
+                                    const remarkText = person.remark ? `(${person.remark})` : '';
+                                    dayHtml += `<li><span>${person.name} ${remarkText}</span> <button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></li>`;
+                                });
+                                dayHtml += `</ul></div>`;
+                            }
+                        });
+                        dayHtml += `</div></div>`;
+                    }
+                    dayHtml += `</div></div>`;
+                    container.innerHTML += dayHtml;
+                }
             }
             
             initializeDashboard();
         });
     </script>
-
-    <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-
-    <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
-
 </body>
 </html>
