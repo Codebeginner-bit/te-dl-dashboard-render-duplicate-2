@@ -138,7 +138,6 @@
         </div>
     </div>
     
-    <!-- MODIFIED: New modal specifically for editing remarks -->
     <div class="modal" id="remark-modal">
         <div class="modal-content">
             <h2 id="remark-modal-title">Edit Remark</h2>
@@ -150,8 +149,7 @@
         </div>
     </div>
 
-    <!-- === NAVIGATION BAR SECTION ===-->
-     <nav class="navbar-container" role="navigation">
+    <nav class="navbar-container" role="navigation">
         <button id="menu-toggle" aria-label="Toggle Menu"><span class="icon icon-menu"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></span><span class="icon icon-close"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></span></button>
         <div class="navbar">
             <a href="/dashboard.html" class="nav-item active"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span></a>
@@ -333,7 +331,6 @@
                 });
             }
             
-            /* --- MODIFIED: New functions for Remark Modal --- */
             window.showRemarkModal = function(employeeId) {
                 const employee = allEmployees.find(emp => emp.id_number === employeeId);
                 if (!employee) return;
@@ -348,20 +345,14 @@
             }
             async function updateEmployeeRemark(employeeId, newRemark) {
                 const employee = allEmployees.find(emp => emp.id_number === employeeId);
-                if (!employee) return;
-
-                // Create a copy and update the remark
-                const updatedEmployee = { ...employee, remarks: newRemark };
-
+                if (!employee) return false;
+                const updatedEmployeeData = { ...employee, remarks: newRemark };
                 try {
                     const url = `${API_BASE}/employees?id=${employeeId}`;
-                    const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedEmployee) });
+                    const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedEmployeeData) });
                     await handleApiResponse(response);
-                    
-                    // Update the local cache
                     employee.remarks = newRemark;
-                    
-                    await renderWeekendSchedule(); // Refresh the schedule to show changes
+                    await renderWeekendSchedule();
                     closeRemarkModal();
                     return true;
                 } catch (error) {
@@ -373,18 +364,15 @@
             window.saveRemark = async function() {
                 const employeeId = document.getElementById('remark-modal-employee-id').value;
                 const newRemark = document.getElementById('remark-modal-textarea').value;
-                if(await updateEmployeeRemark(employeeId, newRemark)) {
-                    alert("Remark saved successfully.");
-                }
+                if(await updateEmployeeRemark(employeeId, newRemark)) { alert("Remark saved successfully."); }
             }
             window.deleteRemark = async function() {
                 if (!confirm("Are you sure you want to delete this remark?")) return;
                 const employeeId = document.getElementById('remark-modal-employee-id').value;
-                if(await updateEmployeeRemark(employeeId, null)) {
-                    alert("Remark deleted successfully.");
-                }
+                if(await updateEmployeeRemark(employeeId, null)) { alert("Remark deleted successfully."); }
             }
             
+            /* --- CORRECTED WEEKEND SCHEDULE LOGIC --- */
             async function renderWeekendSchedule() {
                 const today = new Date();
                 const dayOfWeek = today.getDay();
@@ -392,20 +380,48 @@
                 nextSaturday.setDate(today.getDate() + (6 - dayOfWeek + 7) % 7);
                 const nextSunday = new Date(nextSaturday);
                 nextSunday.setDate(nextSunday.getDate() + 1);
+
                 const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')}-${date.toLocaleString('default', { month: 'short' })}`;
-                const formatForAPI = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                const datesToFetch = [formatForAPI(nextSaturday), formatForAPI(nextSunday)];
-                const weekendOtData = [];
-                try {
-                    const responses = await Promise.all(datesToFetch.map(date => fetch(`${API_BASE}/overtime?date=${date}`)));
-                    for (const res of responses) { if (res.ok) { const data = await res.json(); if (data && data.length > 0) { weekendOtData.push(...data); } } }
-                } catch (error) { console.error("Failed to fetch weekend OT data:", error); return; }
-                if (weekendOtData.length === 0) { document.getElementById('weekend-schedule-container').innerHTML = '<h2>Upcoming Weekend OT Schedule</h2><p>No overtime scheduled for the upcoming weekend.</p>'; return; }
                 
-                const schedule = weekendOtData.reduce((acc, ot) => {
-                    const employee = allEmployees.find(e => e.id_number === ot.employee_id);
-                    if (!employee) return acc;
-                    const otDate = formatDate(new Date(ot.date + 'T00:00:00'));
+                const satMonthYear = `${nextSaturday.getFullYear()}-${String(nextSaturday.getMonth() + 1).padStart(2, '0')}`;
+                const sunMonthYear = `${nextSunday.getFullYear()}-${String(nextSunday.getMonth() + 1).padStart(2, '0')}`;
+                
+                const monthsToFetch = [...new Set([satMonthYear, sunMonthYear])];
+                const otDataByMonth = {};
+
+                try {
+                    const responses = await Promise.all(monthsToFetch.map(my => fetch(`${API_BASE}/overtime?month_year=${my}`)));
+                    for (let i = 0; i < responses.length; i++) {
+                        if (responses[i].ok) {
+                            const data = await responses[i].json();
+                            otDataByMonth[monthsToFetch[i]] = data || [];
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch weekend OT data:", error);
+                    return;
+                }
+
+                const weekendWorkers = [];
+                allEmployees.forEach(employee => {
+                    const satData = (otDataByMonth[satMonthYear] || []).find(rec => rec.employee_id === employee.id_number);
+                    if (satData && satData.daily_data && satData.daily_data[nextSaturday.getDate()] > 0) {
+                        weekendWorkers.push({ employee, date: nextSaturday });
+                    }
+                    const sunData = (otDataByMonth[sunMonthYear] || []).find(rec => rec.employee_id === employee.id_number);
+                    if (sunData && sunData.daily_data && sunData.daily_data[nextSunday.getDate()] > 0) {
+                        weekendWorkers.push({ employee, date: nextSunday });
+                    }
+                });
+
+                if (weekendWorkers.length === 0) {
+                    document.getElementById('weekend-schedule-container').innerHTML = '<h2>Upcoming Weekend OT Schedule</h2><p>No overtime scheduled for the upcoming weekend.</p>';
+                    return;
+                }
+                
+                const schedule = weekendWorkers.reduce((acc, item) => {
+                    const { employee, date } = item;
+                    const otDate = formatDate(date);
                     const site = employee.site || 'Unassigned';
                     const shift = employee.shift || 'Unassigned';
                     if (!acc[site]) acc[site] = {};
@@ -424,7 +440,6 @@
                         for (const shift in schedule[site][date]) {
                             html += `<div class="shift-group"><div class="shift-label">${shift}</div><ul class="name-list">`;
                             schedule[site][date][shift].forEach(person => {
-                                /* MODIFIED: Added edit button and conditional remark */
                                 const remarkText = person.remark ? `(${person.remark})` : '';
                                 html += `<li><span>${person.name} ${remarkText}</span> <button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></li>`;
                             });
