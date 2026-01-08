@@ -459,10 +459,10 @@
                 });
                 
                 const container = document.getElementById('upcoming-schedule-container');
-                container.innerHTML = `<h2>Upcoming Overtime Schedule</h2>`;
+                container.innerHTML = `<h2>Upcoming Off Day Overtime Schedule</h2>`;
 
                 if (scheduledWorkers.length === 0) {
-                    container.innerHTML += `<p>No overtime scheduled yet in the next ${scheduleDays} days.</p>`;
+                    container.innerHTML += `<p>No off day overtime scheduled yet in the next ${scheduleDays} days.</p>`;
                     return;
                 }
 
