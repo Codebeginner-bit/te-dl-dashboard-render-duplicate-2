@@ -50,10 +50,43 @@
         .schedule-card-body { padding: 15px; }
         .shift-group { margin-bottom: 1rem; }
         .shift-label { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #f1f1f1; }
-        .name-list { list-style: none; padding: 0; margin: 0; }
-        .name-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; color: #555; border-bottom: 1px solid #f9f9f9; }
-        .name-list li:last-child { border-bottom: none; }
         .edit-remark-btn { font-size: 12px; padding: 4px 10px; }
+        .shift-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+        }
+        .shift-details-table th, .shift-details-table td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f5;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        .shift-details-table th {
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8f9fa;
+            font-size: 13px;
+        }
+        .shift-details-table td:last-child {
+            text-align: center;
+        }
+        .shift-details-table .remark-cell {
+            font-style: italic;
+            color: #0056b3;
+            font-weight: 500;
+            word-break: break-word; 
+        }
+        .shift-details-table .remark-cell:not(:empty) {
+            background-color: #e7f5ff;
+            border-radius: 4px;
+            padding: 6px;
+        }
+        .shift-details-table tr:last-child td {
+            border-bottom: none;
+        }
+
 
         @media (min-width: 769px) {
             .navbar-container { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 50; }
@@ -436,12 +469,27 @@
                         const shiftOrder = ['Dayshift', 'Nightshift'];
                         shiftOrder.forEach(shift => {
                             if (shifts[shift]) {
-                                dayHtml += `<div class="shift-group"><div class="shift-label">${shift}</div><ul class="name-list">`;
+                                dayHtml += `<div class="shift-group">
+                                                <div class="shift-label">${shift}</div>
+                                                <table class="shift-details-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Remark</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>`;
                                 shifts[shift].forEach(person => {
-                                    const remarkText = person.remark ? `(${person.remark})` : '';
-                                    dayHtml += `<li><span>${person.name} ${remarkText}</span> <button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></li>`;
+                                    dayHtml += `<tr>
+                                                    <td>${person.name}</td>
+                                                    <td class="remark-cell">${person.remark || ''}</td>
+                                                    <td><button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></td>
+                                                </tr>`;
                                 });
-                                dayHtml += `</ul></div>`;
+                                dayHtml += `    </tbody>
+                                            </table>
+                                           </div>`;
                             }
                         });
                         dayHtml += `</div></div>`;
@@ -454,5 +502,16 @@
             initializeDashboard();
         });
     </script>
+
+    <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <script>
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
 </body>
 </html>
