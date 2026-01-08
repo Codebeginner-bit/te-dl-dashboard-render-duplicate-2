@@ -41,37 +41,48 @@
         .fade-overlay { pointer-events: none; position: absolute; top: 0; bottom: 0; width: 15%; }
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
-        #weekend-schedule-container { padding: 1rem; margin-top: 2rem; }
+        #weekend-schedule-container { padding: 1rem; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
         .schedule-day-group { margin-bottom: 2.5rem; }
         .schedule-day-group > h3 { text-align: left; font-size: 1.5rem; margin-bottom: 1.5rem; color: #333; }
-        .schedule-cards-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: flex-start; }
-        .schedule-card { background-color: white; border: 1px solid #e9ecef; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 320px; flex-shrink: 0; }
+        .schedule-cards-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.5rem; 
+        }
+        .schedule-card { 
+            background-color: white; 
+            border: 1px solid #e9ecef; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+        }
         .schedule-card-header { background-color: #6c757d; color: white; padding: 10px 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; font-size: 1.2rem; font-weight: 600; }
         .schedule-card-body { padding: 15px; }
         .shift-group { margin-bottom: 1rem; }
+        .shift-group:last-child { margin-bottom: 0; }
         .shift-label { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid #f1f1f1; }
         .edit-remark-btn { font-size: 12px; padding: 4px 10px; }
+
         .shift-details-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.75rem;
         }
         .shift-details-table th, .shift-details-table td {
-            padding: 8px 6px;
+            padding: 10px 6px; 
             text-align: left;
-            border-bottom: 1px solid #f1f3f5;
             font-size: 14px;
             vertical-align: middle;
+            border: none; 
         }
         .shift-details-table th {
             font-weight: 600;
             color: #495057;
-            background-color: #f8f9fa;
             font-size: 13px;
         }
-        .shift-details-table td:last-child {
-            text-align: center;
-        }
+        .shift-details-table .name-col { width: 30%; }
+        .shift-details-table .remark-col { width: 50%; }
+        .shift-details-table .action-col { width: 20%; text-align: center; }
+
         .shift-details-table .remark-cell {
             font-style: italic;
             color: #0056b3;
@@ -81,10 +92,7 @@
         .shift-details-table .remark-cell:not(:empty) {
             background-color: #e7f5ff;
             border-radius: 4px;
-            padding: 6px;
-        }
-        .shift-details-table tr:last-child td {
-            border-bottom: none;
+            padding: 8px;
         }
 
 
@@ -444,6 +452,7 @@
                     return;
                 }
                 
+                // Group by Day -> Site -> Shift
                 const scheduleByDay = weekendWorkers.reduce((acc, item) => {
                     const { employee, date } = item;
                     const dayString = `${date.toLocaleString('en-US', { weekday: 'long' })}, ${date.getMonth() + 1}-${date.getDate()}`;
@@ -463,10 +472,13 @@
                 for(const dayString of sortedDays) {
                     let dayHtml = `<div class="schedule-day-group"><h3>${dayString}</h3><div class="schedule-cards-wrapper">`;
                     const sites = scheduleByDay[dayString];
-                    for (const site in sites) {
+                    const sortedSites = Object.keys(sites).sort();
+
+                    for (const site of sortedSites) {
                         dayHtml += `<div class="schedule-card"><div class="schedule-card-header">${site}</div><div class="schedule-card-body">`;
                         const shifts = sites[site];
                         const shiftOrder = ['Dayshift', 'Nightshift'];
+                        
                         shiftOrder.forEach(shift => {
                             if (shifts[shift]) {
                                 dayHtml += `<div class="shift-group">
@@ -474,17 +486,17 @@
                                                 <table class="shift-details-table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th>Remark</th>
-                                                            <th>Action</th>
+                                                            <th class="name-col">Name</th>
+                                                            <th class="remark-col">Remark</th>
+                                                            <th class="action-col">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>`;
                                 shifts[shift].forEach(person => {
                                     dayHtml += `<tr>
-                                                    <td>${person.name}</td>
-                                                    <td class="remark-cell">${person.remark || ''}</td>
-                                                    <td><button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></td>
+                                                    <td class="name-col">${person.name}</td>
+                                                    <td class="remark-col remark-cell">${person.remark || ''}</td>
+                                                    <td class="action-col"><button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></td>
                                                 </tr>`;
                                 });
                                 dayHtml += `    </tbody>
