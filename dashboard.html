@@ -42,11 +42,9 @@
         .fade-overlay.left { left: 0; background-image: linear-gradient(to right, rgb(var(--background)), transparent); }
         .fade-overlay.right { right: 0; background-image: linear-gradient(to left, rgb(var(--background)), transparent); }
         #upcoming-schedule-container { padding: 1rem; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-        .schedule-day-group { margin-bottom: 2.5rem; }
-        .schedule-day-group > h3 { text-align: left; font-size: 1.5rem; margin-bottom: 1.5rem; color: #333; }
         .schedule-cards-wrapper { 
             display: flex; 
-            flex-direction: column; 
+            flex-direction: column;
             gap: 1.5rem; 
         }
         .schedule-card { 
@@ -55,7 +53,24 @@
             border-radius: 8px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
         }
-        .schedule-card-header { background-color: #6c757d; color: white; padding: 10px 15px; border-top-left-radius: 8px; border-top-right-radius: 8px; font-size: 1.2rem; font-weight: 600; }
+        .schedule-card-header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #6c757d; 
+            color: white; 
+            padding: 10px 15px; 
+            border-top-left-radius: 8px; 
+            border-top-right-radius: 8px; 
+        }
+        .schedule-card-header .site-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .schedule-card-header .date-info {
+            font-size: 1rem;
+            font-weight: 400;
+        }
         .schedule-card-body { padding: 15px; }
         .shift-group { margin-bottom: 1rem; }
         .shift-group:last-child { margin-bottom: 0; }
@@ -228,7 +243,7 @@
             async function initializeDashboard() {
                 renderMarqueeSection();
                 await fetchTableData();
-                await renderUpcomingSchedule(); 
+                await renderUpcomingSchedule();
             }
         
             if(logoutButton) {
@@ -348,7 +363,7 @@
                     alert(isAddingNew ? "Employee added successfully." : "Employee updated successfully.");
                     closeModal();
                     await fetchTableData();
-                    await renderUpcomingSchedule(); 
+                    await renderUpcomingSchedule();
                 } catch (error) { console.error("Save error:", error.message); alert(`An unexpected error occurred: ${error.message}`); }
             };
 
@@ -388,7 +403,7 @@
                     const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedEmployeeData) });
                     await handleApiResponse(response);
                     employee.remarks = newRemark;
-                    await renderUpcomingSchedule(); 
+                    await renderUpcomingSchedule();
                     closeRemarkModal();
                     return true;
                 } catch (error) { console.error("Failed to update remark:", error); alert("Failed to update remark: " + error.message); return false; }
@@ -408,7 +423,7 @@
                 const scheduleDays = 8; 
                 const upcomingDates = [];
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); 
+                today.setHours(0, 0, 0, 0);
 
                 for (let i = 0; i < scheduleDays; i++) {
                     const futureDate = new Date(today);
@@ -442,7 +457,7 @@
                         }
                     });
                 });
-
+                
                 const container = document.getElementById('upcoming-schedule-container');
                 container.innerHTML = `<h2>Upcoming Overtime Schedule</h2>`;
 
@@ -450,68 +465,76 @@
                     container.innerHTML += `<p>No significant overtime (>= 8 hours) scheduled in the next ${scheduleDays} days.</p>`;
                     return;
                 }
-                
-                const scheduleByDay = scheduledWorkers.reduce((acc, item) => {
+
+                const scheduleByDaySite = scheduledWorkers.reduce((acc, item) => {
                     const { employee, date } = item;
                     const dayString = `${date.toLocaleString('en-US', { weekday: 'long' })}, ${date.getMonth() + 1}-${date.getDate()}`;
                     const site = employee.site || 'Unassigned';
                     const shift = employee.shift || 'Unassigned';
+                    const key = `${date.toISOString().split('T')[0]}_${site}`; 
 
-                    if (!acc[dayString]) acc[dayString] = {};
-                    if (!acc[dayString][site]) acc[dayString][site] = {};
-                    if (!acc[dayString][site][shift]) acc[dayString][site][shift] = [];
-                    
-                    acc[dayString][site][shift].push({ id: employee.id_number, name: employee.english_name, remark: employee.remarks || '' });
+                    if (!acc[key]) {
+                        acc[key] = { date, dayString, site, shifts: {} };
+                    }
+                    if (!acc[key].shifts[shift]) {
+                        acc[key].shifts[shift] = [];
+                    }
+                    acc[key].shifts[shift].push({ id: employee.id_number, name: employee.english_name, remark: employee.remarks || '' });
                     return acc;
                 }, {});
 
-                const sortedDays = Object.keys(scheduleByDay).sort((a, b) => new Date(a) - new Date(b));
+                const sortedCardsData = Object.values(scheduleByDaySite).sort((a, b) => {
+                    if (a.date < b.date) return -1;
+                    if (a.date > b.date) return 1;
+                    return a.site.localeCompare(b.site);
+                });
 
-                for(const dayString of sortedDays) {
-                    let dayHtml = `<div class="schedule-day-group"><h3>${dayString}</h3><div class="schedule-cards-wrapper">`;
-                    const sites = scheduleByDay[dayString];
-                    const sortedSites = Object.keys(sites).sort();
+                let cardsHtml = `<div class="schedule-cards-wrapper">`;
+                for (const cardData of sortedCardsData) {
+                    cardsHtml += `<div class="schedule-card">
+                                    <div class="schedule-card-header">
+                                        <span class="site-name">${cardData.site}</span>
+                                        <span class="date-info">${cardData.dayString}</span>
+                                    </div>
+                                    <div class="schedule-card-body">`;
 
-                    for (const site of sortedSites) {
-                        dayHtml += `<div class="schedule-card"><div class="schedule-card-header">${site}</div><div class="schedule-card-body">`;
-                        const shifts = sites[site];
-                        const shiftOrder = ['Dayshift', 'Nightshift'];
-                        
-                        shiftOrder.forEach(shift => {
-                            if (shifts[shift]) {
-                                dayHtml += `<div class="shift-group">
-                                                <div class="shift-label">${shift}</div>
-                                                <table class="shift-details-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="name-col">Name</th>
-                                                            <th class="remark-col">Remark</th>
-                                                            <th class="action-col">Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>`;
-                                shifts[shift].forEach(person => {
-                                    dayHtml += `<tr>
-                                                    <td class="name-col">${person.name}</td>
-                                                    <td class="remark-col remark-cell">${person.remark || ''}</td>
-                                                    <td class="action-col"><button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></td>
-                                                </tr>`;
-                                });
-                                dayHtml += `    </tbody>
-                                            </table>
-                                           </div>`;
-                            }
-                        });
-                        dayHtml += `</div></div>`;
-                    }
-                    dayHtml += `</div></div>`;
-                    container.innerHTML += dayHtml;
+                    const shifts = cardData.shifts;
+                    const shiftOrder = ['Dayshift', 'Nightshift'];
+                    shiftOrder.forEach(shift => {
+                        if (shifts[shift]) {
+                            cardsHtml += `<div class="shift-group">
+                                            <div class="shift-label">${shift}</div>
+                                            <table class="shift-details-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="name-col">Name</th>
+                                                        <th class="remark-col">Remark</th>
+                                                        <th class="action-col">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>`;
+                            shifts[shift].forEach(person => {
+                                cardsHtml += `<tr>
+                                                <td class="name-col">${person.name}</td>
+                                                <td class="remark-col remark-cell">${person.remark || ''}</td>
+                                                <td class="action-col"><button class="edit-remark-btn" onclick="showRemarkModal('${person.id}')">Edit</button></td>
+                                              </tr>`;
+                            });
+                            cardsHtml += `    </tbody>
+                                        </table>
+                                       </div>`;
+                        }
+                    });
+                    cardsHtml += `</div></div>`;
                 }
+                cardsHtml += `</div>`;
+                container.innerHTML += cardsHtml;
             }
             
             initializeDashboard();
         });
     </script>
+
     
     <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -521,7 +544,7 @@
     <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>\
+    <script defer src="/_vercel/speed-insights/script.js"></script>
     
 </body>
 </html>
