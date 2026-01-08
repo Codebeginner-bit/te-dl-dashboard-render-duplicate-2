@@ -331,6 +331,7 @@
                 });
             }
             
+            /* --- REMARK MODAL FUNCTIONS --- */
             window.showRemarkModal = function(employeeId) {
                 const employee = allEmployees.find(emp => emp.id_number === employeeId);
                 if (!employee) return;
@@ -466,6 +467,6 @@
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
-    
+
 </body>
 </html>
